@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Indie game studio. Games, news, devlog, and per-game patch notes." />
+  <meta name="theme-color" content="#0b0f19" />
+
+  <meta property="og:title" content="Copiasoft" />
+  <meta property="og:description" content="Indie game studio. Games, news, devlog, and per-game patch notes." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/assets/og.jpg" />
+  <meta property="og:url" content="https://xxx.com/en/" />
+
+  <link rel="alternate" hreflang="ko" href="https://xxx.com/ko/" />
+  <link rel="alternate" hreflang="en" href="https://xxx.com/en/" />
+  <link rel="canonical" href="https://xxx.com/en/" />
+
+  <title>Copiasoft</title>
+
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.09);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.68);
+      --line: rgba(255,255,255,0.12);
+      --brand: #7c5cff;
+      --brand2: #22c55e;
+      --warn: #f59e0b;
+
+      --shadow: 0 12px 40px rgba(0,0,0,0.45);
+      --radius: 18px;
+      --radius-sm: 14px;
+      --max: 1120px;
+      --pad: 20px;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(900px 380px at 15% 10%, rgba(124,92,255,0.22), transparent 55%),
+        radial-gradient(700px 360px at 80% 15%, rgba(34,197,94,0.16), transparent 60%),
+        radial-gradient(800px 420px at 60% 70%, rgba(245,158,11,0.12), transparent 60%),
+        var(--bg);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(11,15,25,0.62);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 14px; }
+
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 180px; }
+
+    .logo {
+      width: 34px; height: 34px; border-radius: 10px;
+      background:
+        radial-gradient(16px 16px at 30% 30%, rgba(255,255,255,0.38), transparent 60%),
+        linear-gradient(135deg, rgba(124,92,255,1), rgba(34,197,94,1));
+      box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .brand strong { font-size: 14px; letter-spacing: 0.3px; }
+    .brand small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+    .navlinks { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+    .navlinks a {
+      padding: 10px 12px; border-radius: 12px;
+      color: var(--muted); border: 1px solid transparent;
+    }
+    .navlinks a:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .actions { display: flex; align-items: center; gap: 10px; min-width: 180px; justify-content: flex-end; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 11px 14px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      user-select: none;
+      white-space: nowrap;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, rgba(124,92,255,1), rgba(34,197,94,0.9));
+      border-color: rgba(255,255,255,0.14);
+      box-shadow: 0 18px 50px rgba(124,92,255,0.18);
+    }
+
+    .btn.ghost { background: transparent; border-color: rgba(255,255,255,0.12); color: var(--muted); }
+    .btn.ghost:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+
+    .langSwitch {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+    .langSwitch a {
+      padding: 8px 10px; border-radius: 999px;
+      color: var(--muted); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.2px; border: 1px solid transparent;
+    }
+    .langSwitch a.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.14);
+    }
+    .langSwitch a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+
+    .hero { padding: 64px 0 26px; }
+
+    .heroGrid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 26px; align-items: stretch; }
+
+    .card { border-radius: var(--radius); border: 1px solid var(--line); background: rgba(255,255,255,0.05); box-shadow: var(--shadow); }
+
+    .heroCard { padding: 26px; overflow: hidden; position: relative; }
+
+    .kicker {
+      display: inline-flex; gap: 8px; align-items: center;
+      font-family: var(--mono); font-size: 12px;
+      color: rgba(255,255,255,0.72);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      padding: 6px 10px; border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .heroTitle { font-size: clamp(28px, 3.6vw, 44px); margin: 0 0 10px 0; letter-spacing: -0.6px; line-height: 1.1; }
+
+    .heroDesc { margin: 0 0 18px 0; color: var(--muted); font-size: 15px; max-width: 60ch; }
+
+    .heroCtas { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 0; }
+
+    .metaRow {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      margin-top: 18px; padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.78);
+      font-size: 13px;
+    }
+    .metaRow span {
+      display: inline-flex; gap: 8px; align-items: center;
+      padding: 8px 10px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .videoCard { padding: 14px; }
+    .videoFrame { border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.35); aspect-ratio: 16 / 9; }
+    .videoFrame iframe { width: 100%; height: 100%; border: 0; }
+
+    .videoMeta { display: flex; justify-content: space-between; gap: 10px; margin-top: 12px; color: var(--muted); font-size: 13px; }
+
+    section { padding: 34px 0; }
+    .sectionHead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .sectionHead h2 { margin: 0; font-size: 18px; letter-spacing: -0.2px; }
+    .sectionHead p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+    .mini { padding: 16px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); }
+    .mini h3 { margin: 0 0 6px 0; font-size: 14px; letter-spacing: -0.2px; }
+    .mini p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .games { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .game { overflow: hidden; position: relative; padding: 0; }
+    .gameMedia { aspect-ratio: 16 / 9; background: linear-gradient(135deg, rgba(124,92,255,0.25), rgba(34,197,94,0.15)); border-bottom: 1px solid rgba(255,255,255,0.10); position: relative; }
+    .gameMedia img { width: 100%; height: 100%; object-fit: cover; opacity: 0.92; }
+    .gameBody { padding: 14px 14px 16px; }
+    .gameTitle { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 6px 0; font-size: 15px; letter-spacing: -0.2px; }
+
+    .badge {
+      font-family: var(--mono); font-size: 11px;
+      color: rgba(255,255,255,0.78);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      padding: 4px 8px; border-radius: 999px; white-space: nowrap;
+    }
+
+    .gameDesc { margin: 0 0 10px 0; color: var(--muted); font-size: 13px; }
+
+    .gameLinks { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; color: rgba(255,255,255,0.86);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      padding: 8px 10px; border-radius: 999px;
+    }
+    .pill:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.16); }
+
+    .list { display: grid; gap: 10px; }
+    .item {
+      display: grid; grid-template-columns: 120px 1fr auto;
+      gap: 12px; align-items: center;
+      padding: 14px; border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+    .date { font-family: var(--mono); color: rgba(255,255,255,0.72); font-size: 12px; }
+    .item strong { display: block; font-size: 13px; margin-bottom: 2px; letter-spacing: -0.2px; }
+    .item span { display: block; color: var(--muted); font-size: 12px; }
+
+    .shots { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+    .shot { border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.3); cursor: pointer; transition: transform 120ms ease; }
+    .shot:hover { transform: translateY(-2px); }
+    .shot img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 1 / 1; }
+
+    footer { padding: 34px 0 46px; border-top: 1px solid rgba(255,255,255,0.10); color: var(--muted); }
+    .footerGrid { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: start; }
+    .footerLinks { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .footerLinks a { color: var(--muted); border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 14px; }
+    .footerLinks a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+    .lightbox { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,0.75); z-index: 50; padding: 20px; }
+    .lightbox.open { display: grid; }
+    .lightboxInner { max-width: min(1100px, 96vw); max-height: 86vh; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.18); background: rgba(0,0,0,0.4); box-shadow: var(--shadow); }
+    .lightboxInner img { width: 100%; height: 100%; object-fit: contain; background: rgba(0,0,0,0.5); }
+    .lightboxBar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.78); font-size: 12px; }
+    .lightboxBar button { border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); color: var(--text); padding: 8px 10px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 12px; }
+    .lightboxBar button:hover { background: rgba(255,255,255,0.10); }
+
+    @media (max-width: 980px) {
+      .heroGrid { grid-template-columns: 1fr; }
+      .games { grid-template-columns: repeat(2, 1fr); }
+      .grid3 { grid-template-columns: 1fr; }
+      .grid2 { grid-template-columns: 1fr; }
+      .shots { grid-template-columns: repeat(3, 1fr); }
+      .item { grid-template-columns: 110px 1fr; }
+      .item .btn { display: none; }
+    }
+
+    @media (max-width: 760px) {
+      .navlinks { display: none; }
+      .games { grid-template-columns: 1fr; }
+      .shots { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="nav">
+        <a class="brand" href="/en/" aria-label="Go to top">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <strong>Copiasoft</strong>
+            <small>Indie game studio</small>
+          </div>
+        </a>
+
+        <nav class="navlinks" aria-label="Primary">
+          <a href="/en/#games">Games</a>
+          <a href="/en/#news">News</a>
+          <a href="/en/#devlog">Devlog</a>
+          <a href="/en/#patch">Patch Notes</a>
+          <a href="/en/#press">Press</a>
+          <a href="/en/#contact">Contact</a>
+        </nav>
+
+        <div class="actions">
+          <div class="langSwitch" aria-label="Language">
+            <a href="/ko/" data-lang="ko">KO</a>
+            <a href="/en/" data-lang="en" class="active" aria-current="page">EN</a>
+          </div>
+          <a class="btn primary" href="/en/#games">View games</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top" class="hero">
+    <div class="container">
+      <div class="heroGrid">
+        <div class="card heroCard">
+          <div class="kicker">/ko/ default, /en/ optional (static prototype)</div>
+
+          <h1 class="heroTitle">One studio. Multiple games.</h1>
+          <p class="heroDesc">
+            A modern, clean indie studio layout: multi-game catalog, announcements, devlog,
+            and per-game patch notes. Built to scale with your releases.
+          </p>
+
+          <div class="heroCtas">
+            <a class="btn primary" href="/en/#games">Browse games</a>
+            <a class="btn" href="/en/#patch">Patch notes</a>
+            <a class="btn ghost" href="/en/#press">Press kit</a>
+          </div>
+
+          <div class="metaRow">
+            <span>Platforms: Steam, Google Play</span>
+            <span>Content: News, Devlog, Patch</span>
+            <span>Language: KO / EN</span>
+          </div>
+        </div>
+
+        <aside class="card videoCard" aria-label="Featured trailer">
+          <div class="videoFrame">
+            <iframe
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+              title="Trailer"
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+          </div>
+
+          <div class="videoMeta">
+            <div>
+              <div style="color: rgba(255,255,255,0.86); font-weight: 800; letter-spacing: -0.2px;">Featured Trailer</div>
+              <div>Replace with latest title</div>
+            </div>
+            <a class="btn" href="/en/#games" style="padding: 10px 12px;">Game page</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <section>
+    <div class="container">
+      <div class="sectionHead">
+        <h2>What this site covers</h2>
+        <p>Start lean, scale to multiple titles</p>
+      </div>
+
+      <div class="grid3">
+        <div class="mini">
+          <h3>Multi-game catalog</h3>
+          <p>Each game includes Steam / Google Play / trailer / screenshots.</p>
+        </div>
+        <div class="mini">
+          <h3>Per-game patch notes</h3>
+          <p>Split by game: /en/patch/&lt;game&gt;/... and /ko/patch/&lt;game&gt;/...</p>
+        </div>
+        <div class="mini">
+          <h3>News + Devlog</h3>
+          <p>Announcements and development logs, separated and easy to maintain.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="games">
+    <div class="container">
+      <div class="sectionHead">
+        <h2>Games</h2>
+        <p>Replace placeholder data</p>
+      </div>
+
+      <div class="games">
+        <article class="card game">
+          <div class="gameMedia">
+            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=70" alt="Game A key art (placeholder)" loading="lazy">
+          </div>
+          <div class="gameBody">
+            <h3 class="gameTitle">Game A <span class="badge">Released</span></h3>
+            <p class="gameDesc">One-line pitch: genre + hook + differentiation.</p>
+            <div class="gameLinks">
+              <a class="pill" href="https://store.steampowered.com/" target="_blank" rel="noreferrer">Steam</a>
+              <a class="pill" href="https://play.google.com/store" target="_blank" rel="noreferrer">Google Play</a>
+              <a class="pill" href="/en/#screenshots">Screenshots</a>
+              <a class="pill" href="/en/patch/game-a/">Patch notes</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card game">
+          <div class="gameMedia">
+            <img src="https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1200&q=70" alt="Game B key art (placeholder)" loading="lazy">
+          </div>
+          <div class="gameBody">
+            <h3 class="gameTitle">Game B <span class="badge">Wishlist</span></h3>
+            <p class="gameDesc">One-line pitch: genre + hook + differentiation.</p>
+            <div class="gameLinks">
+              <a class="pill" href="https://store.steampowered.com/" target="_blank" rel="noreferrer">Steam</a>
+              <a class="pill" href="https://play.google.com/store" target="_blank" rel="noreferrer">Google Play</a>
+              <a class="pill" href="/en/#screenshots">Screenshots</a>
+              <a class="pill" href="/en/patch/game-b/">Patch notes</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card game">
+          <div class="gameMedia">
+            <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=70" alt="Game C key art (placeholder)" loading="lazy">
+          </div>
+          <div class="gameBody">
+            <h3 class="gameTitle">Game C <span class="badge">Prototype</span></h3>
+            <p class="gameDesc">One-line pitch: genre + hook + differentiation.</p>
+            <div class="gameLinks">
+              <a class="pill" href="https://store.steampowered.com/" target="_blank" rel="noreferrer">Steam</a>
+              <a class="pill" href="https://play.google.com/store" target="_blank" rel="noreferrer">Google Play</a>
+              <a class="pill" href="/en/#screenshots">Screenshots</a>
+              <a class="pill" href="/en/patch/game-c/">Patch notes</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="screenshots">
+    <div class="container">
+      <div class="sectionHead">
+        <h2>Screenshots</h2>
+        <p>Click to preview</p>
+      </div>
+
+      <div class="shots" aria-label="Screenshot grid">
+        <div class="shot" data-full="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=2000&q=80">
+          <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=60" alt="Screenshot 1" loading="lazy">
+        </div>
+        <div class="shot" data-full="https://images.unsplash.com/photo-1520975958225-42d83f0a3e1b?auto=format&fit=crop&w=2000&q=80">
+          <img src="https://images.unsplash.com/photo-1520975958225-42d83f0a3e1b?auto=format&fit=crop&w=600&q=60" alt="Screenshot 2" loading="lazy">
+        </div>
+        <div class="shot" data-full="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=2000&q=80">
+          <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=60" alt="Screenshot 3" loading="lazy">
+        </div>
+        <div class="shot" data-full="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2000&q=80">
+          <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=60" alt="Screenshot 4" loading="lazy">
+        </div>
+        <div class="shot" data-full="https://images.unsplash.com/photo-1527181152855-fc03fc7949c8?auto=format&fit=crop&w=2000&q=80">
+          <img src="https://images.unsplash.com/photo-1527181152855-fc03fc7949c8?auto=format&fit=crop&w=600&q=60" alt="Screenshot 5" loading="lazy">
+        </div>
+        <div class="shot" data-full="https://images.unsplash.com/photo-1546443046-ed1ce6ffd1f0?auto=format&fit=crop&w=2000&q=80">
+          <img src="https://images.unsplash.com/photo-1546443046-ed1ce6ffd1f0?auto=format&fit=crop&w=600&q=60" alt="Screenshot 6" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="news">
+    <div class="container">
+      <div class="sectionHead">
+        <h2>News</h2>
+        <p>Releases, events, platform updates</p>
+      </div>
+
+      <div class="grid2">
+        <div class="list" aria-label="News list">
+          <div class="item">
+            <div class="date">2026-02-05</div>
+            <div>
+              <strong>Game A: Update 1.2.0 is live</strong>
+              <span>Balance changes, a new mode, and bug fixes.</span>
+            </div>
+            <a class="btn" href="/en/patch/game-a/">Read</a>
+          </div>
+        </div>
+
+        <div id="devlog" class="list" aria-label="Devlog list">
+          <div class="item">
+            <div class="date">2026-02-01</div>
+            <div>
+              <strong>Devlog: Mobile performance pass</strong>
+              <span>Profiling notes, bottlenecks, and fixes.</span>
+            </div>
+            <a class="btn" href="/en/devlog/">Open</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="patch">
+    <div class="container">
+      <div class="sectionHead">
+        <h2>Patch Notes</h2>
+        <p>Split by game (required)</p>
+      </div>
+
+      <div class="grid3">
+        <div class="mini">
+          <h3>Game A</h3>
+          <p>Latest: v1.2.0<br /><a class="pill" href="/en/patch/game-a/">Open patch notes</a></p>
+        </div>
+        <div class="mini">
+          <h3>Game B</h3>
+          <p>Latest: v0.7.3<br /><a class="pill" href="/en/patch/game-b/">Open patch notes</a></p>
+        </div>
+        <div class="mini">
+          <h3>Game C</h3>
+          <p>Latest: prototype build<br /><a class="pill" href="/en/patch/game-c/">Open patch notes</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="press">
+    <div class="container">
+      <div class="sectionHead">
+        <h2>Press</h2>
+        <p>Media kit, logos, key art, screenshots</p>
+      </div>
+
+      <div class="grid2">
+        <div class="mini">
+          <h3>Studio press kit</h3>
+          <p>Logos, brand guide, contact, and studio screenshots.</p>
+          <div style="margin-top: 10px;">
+            <a class="btn" href="/en/press/">Open</a>
+            <a class="btn ghost" href="/en/press/presskit.zip">Download .zip</a>
+          </div>
+        </div>
+
+        <div class="mini">
+          <h3>Game press kits</h3>
+          <p>Key art, icons, trailers, and screenshots per title.</p>
+          <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <a class="pill" href="/en/press/game-a/">Game A</a>
+            <a class="pill" href="/en/press/game-b/">Game B</a>
+            <a class="pill" href="/en/press/game-c/">Game C</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container">
+      <div class="sectionHead">
+        <h2>Contact</h2>
+        <p>Start with email</p>
+      </div>
+
+      <div class="grid2">
+        <div class="mini">
+          <h3>Email</h3>
+          <p>
+            General: <a class="pill" href="mailto:contact@xxx.com">contact@xxx.com</a><br />
+            Press: <a class="pill" href="mailto:press@xxx.com">press@xxx.com</a><br />
+            Support: <a class="pill" href="mailto:support@xxx.com">support@xxx.com</a>
+          </p>
+        </div>
+
+        <div class="mini">
+          <h3>Social</h3>
+          <p>Link your channels.</p>
+          <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <a class="pill" href="https://youtube.com" target="_blank" rel="noreferrer">YouTube</a>
+            <a class="pill" href="https://twitter.com" target="_blank" rel="noreferrer">X</a>
+            <a class="pill" href="https://discord.com" target="_blank" rel="noreferrer">Discord</a>
+            <a class="pill" href="https://store.steampowered.com" target="_blank" rel="noreferrer">Steam</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footerGrid">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom: 10px;">
+            <div class="logo" aria-hidden="true" style="width:28px;height:28px;border-radius:10px;"></div>
+            <div>
+              <div style="font-weight: 900; color: rgba(255,255,255,0.86); letter-spacing: -0.2px;">Your Studio Name</div>
+              <div style="font-size: 12px;">Copyright (c) <span id="year"></span> Your Studio Name. All rights reserved.</div>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: var(--muted);">
+            Static prototype. In Astro, split into pages and generate content automatically.
+          </div>
+        </div>
+
+        <div class="footerLinks">
+          <a href="/en/#top">Back to top</a>
+          <a href="/en/privacy/">Privacy</a>
+          <a href="/en/terms/">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+    <div class="lightboxInner">
+      <img id="lightboxImg" alt="Preview" />
+      <div class="lightboxBar">
+        <div id="lightboxLabel">Screenshot</div>
+        <button id="lightboxClose" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = String(new Date().getFullYear());
+
+    // Lightbox
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxLabel = document.getElementById("lightboxLabel");
+
+    function openLightbox(src, label) {
+      lightboxImg.src = src;
+      lightboxLabel.textContent = label || "Screenshot";
+      lightbox.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("open");
+      lightboxImg.src = "";
+      document.body.style.overflow = "";
+    }
+
+    document.querySelectorAll(".shot").forEach((el, idx) => {
+      el.addEventListener("click", () => {
+        const full = el.getAttribute("data-full");
+        const img = el.querySelector("img");
+        openLightbox(full || (img ? img.src : ""), "Screenshot " + (idx + 1));
+      });
+    });
+
+    lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+    lightboxClose.addEventListener("click", closeLightbox);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox(); });
+  </script>
+</body>
+</html>
