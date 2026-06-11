@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Wallbreaker key art</title>
+  <desc id="desc">A stylized wall breaking game card for CopiaSoft's Wallbreaker.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7cff"/>
+      <stop offset="0.55" stop-color="#3dd6a2"/>
+      <stop offset="1" stop-color="#ffd166"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#172039"/>
+      <stop offset="1" stop-color="#0d1324"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="480" fill="#101827"/>
+  <rect x="24" y="24" width="672" height="432" rx="28" fill="url(#sky)"/>
+  <path d="M24 328c72-36 144-42 216-18 88 30 159 28 240-12 76-38 148-31 216 18v140H24z" fill="url(#floor)" opacity=".96"/>
+  <g transform="translate(104 112)">
+    <rect x="0" y="0" width="112" height="68" rx="8" fill="#f2f5ff"/>
+    <rect x="128" y="0" width="112" height="68" rx="8" fill="#dfe8fb"/>
+    <rect x="256" y="0" width="112" height="68" rx="8" fill="#f2f5ff"/>
+    <rect x="384" y="0" width="112" height="68" rx="8" fill="#dfe8fb"/>
+    <rect x="64" y="84" width="112" height="68" rx="8" fill="#dfe8fb"/>
+    <rect x="192" y="84" width="112" height="68" rx="8" fill="#f2f5ff"/>
+    <rect x="320" y="84" width="112" height="68" rx="8" fill="#dfe8fb"/>
+    <rect x="448" y="84" width="48" height="68" rx="8" fill="#f2f5ff"/>
+    <path d="M270 10l-28 56 44 2-38 74 88-92-50-2 30-38z" fill="#ffcf54"/>
+    <path d="M246 166l-48 38 64-9-36 58 92-82-58 5 42-39z" fill="#ff6b6b"/>
+  </g>
+  <g transform="translate(118 314)">
+    <circle cx="52" cy="52" r="52" fill="#111827"/>
+    <circle cx="52" cy="52" r="34" fill="#44d7a8"/>
+    <rect x="41" y="18" width="22" height="68" rx="11" fill="#f8fafc"/>
+    <rect x="18" y="41" width="68" height="22" rx="11" fill="#f8fafc"/>
+  </g>
+  <g transform="translate(246 334)">
+    <text x="0" y="0" fill="#ffffff" font-family="Arial, sans-serif" font-size="48" font-weight="800">Wallbreaker</text>
+    <text x="2" y="38" fill="#dce6f8" font-family="Arial, sans-serif" font-size="18" font-weight="700">Break walls. Earn rewards. Grow stronger.</text>
+  </g>
+</svg>
