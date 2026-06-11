@@ -1,0 +1,44 @@
+{
+  "slug": "animaltop",
+  "visible": false,
+  "featured": false,
+  "image": "/assets/wallbreaker-card.svg",
+  "platforms": ["Google Play", "Android"],
+  "status": {
+    "ko": "개발 중",
+    "en": "In Development"
+  },
+  "genre": {
+    "ko": "캐주얼 / 서바이벌",
+    "en": "Casual / Survival"
+  },
+  "title": {
+    "ko": "AnimalTop",
+    "en": "AnimalTop"
+  },
+  "subtitle": {
+    "ko": "동물 캐릭터와 함께 버티는 캐주얼 서바이벌 게임",
+    "en": "A casual survival game with animal heroes"
+  },
+  "shortDescription": {
+    "ko": "동물 캐릭터와 함께 웨이브를 버텨내는 모바일 캐주얼 서바이벌 게임입니다.",
+    "en": "A mobile casual survival game where animal heroes hold the line wave after wave."
+  },
+  "longDescription": {
+    "ko": "캐릭터와 무기를 성장시키고, 젬을 합성해 더 오래 살아남는 게임으로 준비 중입니다.",
+    "en": "Grow your characters and weapons, fuse gems, and survive longer."
+  },
+  "googlePlayUrl": "",
+  "supportUrl": {
+    "ko": "/ko/support/",
+    "en": "/en/support/"
+  },
+  "privacyUrl": {
+    "ko": "/ko/privacy/animaltop/",
+    "en": "/en/privacy/animaltop/"
+  },
+  "termsUrl": {
+    "ko": "",
+    "en": ""
+  }
+}

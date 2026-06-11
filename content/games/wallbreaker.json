@@ -1,0 +1,44 @@
+{
+  "slug": "wallbreaker",
+  "visible": true,
+  "featured": true,
+  "image": "/assets/wallbreaker-card.svg",
+  "platforms": ["Google Play", "Android"],
+  "status": {
+    "ko": "출시 준비 중",
+    "en": "Coming Soon"
+  },
+  "genre": {
+    "ko": "방치형 / 캐주얼",
+    "en": "Idle / Casual"
+  },
+  "title": {
+    "ko": "Wallbreaker",
+    "en": "Wallbreaker"
+  },
+  "subtitle": {
+    "ko": "벽을 부수고 성장하는 캐주얼 방치형 게임",
+    "en": "A casual idle game about breaking walls and growing stronger"
+  },
+  "shortDescription": {
+    "ko": "벽을 부수고, 보상을 얻고, 더 강한 벽에 도전하는 캐주얼 방치형 게임입니다.",
+    "en": "Break walls, earn rewards, and keep growing stronger in a casual idle game."
+  },
+  "longDescription": {
+    "ko": "벽을 부수며 보상을 모으고, 유닛과 성장을 강화해 더 높은 난이도에 도전합니다. 짧게 접속해도 성장 흐름을 느낄 수 있는 캐주얼 게임을 목표로 합니다.",
+    "en": "Break walls, collect rewards, upgrade your growth, and challenge stronger walls over time. Wallbreaker is designed as a casual game that still gives a clear sense of progress in short sessions."
+  },
+  "googlePlayUrl": "",
+  "supportUrl": {
+    "ko": "/ko/support/",
+    "en": "/en/support/"
+  },
+  "privacyUrl": {
+    "ko": "/ko/privacy/wallbreaker/",
+    "en": "/en/privacy/wallbreaker/"
+  },
+  "termsUrl": {
+    "ko": "/ko/terms/wallbreaker/",
+    "en": "/en/terms/wallbreaker/"
+  }
+}

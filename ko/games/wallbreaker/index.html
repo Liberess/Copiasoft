@@ -3,94 +3,257 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Wallbreaker - 벽을 부수고 성장하는 CopiaSoft의 캐주얼 방치형 게임." />
-  <link rel="canonical" href="https://copiasoft.com/ko/games/wallbreaker/" />
+  <meta name="description" content="벽을 부수고 성장하는 캐주얼 방치형 게임" />
+  <meta name="theme-color" content="#111827" />
+  <meta property="og:title" content="Wallbreaker | CopiaSoft" />
+  <meta property="og:description" content="벽을 부수고 성장하는 캐주얼 방치형 게임" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://copiasoft.com/ko/games/wallbreaker/" />
   <link rel="alternate" hreflang="ko" href="https://copiasoft.com/ko/games/wallbreaker/" />
   <link rel="alternate" hreflang="en" href="https://copiasoft.com/en/games/wallbreaker/" />
+  <link rel="canonical" href="https://copiasoft.com/ko/games/wallbreaker/" />
   <title>Wallbreaker | CopiaSoft</title>
   <style>
-    :root { --bg:#111827; --panel:#182235; --text:#f8fafc; --muted:#b8c2d6; --line:rgba(255,255,255,.14); --max:1040px; }
+    :root {
+      --bg: #111827;
+      --panel: #182235;
+      --panel-soft: #202c42;
+      --text: #f8fafc;
+      --muted: #b8c2d6;
+      --line: rgba(255,255,255,0.14);
+      --mint: #44d7a8;
+      --violet: #8b7cff;
+      --amber: #ffd166;
+      --max: 1120px;
+    }
     * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI","Malgun Gothic",Roboto,Arial,sans-serif; line-height:1.65; }
-    a { color:inherit; text-decoration:none; }
-    img { display:block; max-width:100%; border-radius:8px; }
-    .container { max-width:var(--max); margin:0 auto; padding:0 22px; }
-    header { border-bottom:1px solid var(--line); background:#f7fbff; color:#111827; }
-    nav { min-height:70px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
-    .brand { font-weight:900; }
-    .links { display:flex; gap:14px; flex-wrap:wrap; font-size:14px; font-weight:800; }
-    .hero { padding:56px 0 34px; display:grid; grid-template-columns:1fr 1fr; gap:34px; align-items:center; }
-    .eyebrow { color:#44d7a8; font-weight:900; margin:0 0 8px; }
-    h1 { margin:0; font-size:clamp(36px,6vw,64px); line-height:1.05; letter-spacing:0; }
-    .lead { color:var(--muted); font-size:18px; margin:18px 0 0; }
-    .tags { display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 0; }
-    .tag { padding:7px 11px; border-radius:8px; background:#202c42; color:#dce6f8; font-size:13px; font-weight:800; }
-    .buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
-    .button { min-height:46px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; border-radius:8px; border:1px solid var(--line); font-weight:900; }
-    .button.primary { background:linear-gradient(135deg,#8b7cff,#44d7a8); color:#101827; border:0; }
-    section { padding:28px 0; }
-    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-    .card { padding:20px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
-    .card h2 { margin:0 0 8px; font-size:19px; letter-spacing:0; }
-    .card p, .card li { color:var(--muted); }
-    footer { margin-top:36px; padding:30px 0; border-top:1px solid var(--line); color:var(--muted); font-size:14px; }
-    @media (max-width:820px) { .hero,.grid { grid-template-columns:1fr; } }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: linear-gradient(180deg, #f7fbff 0, #edf4ff 360px, var(--bg) 361px);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Malgun Gothic", Roboto, Arial, sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 22px; }
+    .topbar { position: sticky; top: 0; z-index: 20; background: rgba(247,251,255,0.92); border-bottom: 1px solid rgba(17,24,39,0.1); backdrop-filter: blur(12px); color: #111827; }
+    .nav { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 172px; }
+    .logo { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #7c5cff, #44d7a8); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); }
+    .brand strong { display: block; font-size: 16px; line-height: 1.15; }
+    .brand small { display: block; color: #667085; font-size: 12px; }
+    .navLinks { display: flex; align-items: center; justify-content: flex-end; gap: 18px; font-size: 14px; font-weight: 700; }
+    .navLinks a { color: #25324a; }
+    .navLinks a:hover { color: #5b4dca; }
+    .navCta { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; border-radius: 8px; color: #fff !important; background: #5b4dca; }
+    .langSwitch { display: inline-flex; gap: 4px; padding: 4px; border-radius: 8px; border: 1px solid rgba(17,24,39,0.12); background: #fff; }
+    .langSwitch a { min-width: 38px; padding: 7px 8px; border-radius: 6px; color: #667085; text-align: center; font-size: 12px; }
+    .langSwitch a.active { color: #111827; background: #edf0f7; }
+    .hero { padding: 72px 0 54px; color: #111827; }
+    .heroGrid { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr); gap: 46px; align-items: center; }
+    .eyebrow { margin: 0 0 12px; color: #5b4dca; font-weight: 800; font-size: 13px; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(34px, 5vw, 58px); line-height: 1.08; letter-spacing: 0; }
+    .heroDesc { max-width: 620px; margin: 18px 0 0; color: #475467; font-size: 18px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; border-radius: 8px; font-weight: 800; border: 1px solid transparent; }
+    .button.primary { background: #111827; color: #fff; }
+    .button.secondary { background: #fff; color: #111827; border-color: rgba(17,24,39,0.14); }
+    .heroArt { border-radius: 8px; overflow: hidden; border: 1px solid rgba(17,24,39,0.12); box-shadow: 0 24px 70px rgba(30,41,59,0.18); background: #101827; }
+    .darkBand { background: var(--bg); padding: 56px 0 0; }
+    section { padding: 42px 0; }
+    .sectionHead { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    h2 { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: 0; }
+    .sectionLead { margin: 8px 0 0; color: var(--muted); max-width: 680px; }
+    .gameGrid { display: grid; gap: 18px; }
+    .gameCard { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 26px; align-items: center; padding: 22px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .gameInfo h3 { margin: 0 0 10px; font-size: 30px; letter-spacing: 0; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+    .tag { padding: 6px 10px; border-radius: 8px; background: var(--panel-soft); color: #dce6f8; font-size: 13px; font-weight: 700; }
+    .gameInfo p, .notice p, .supportBox p, .copy { margin: 0 0 18px; color: var(--muted); }
+    .linkRow { display: flex; flex-wrap: wrap; gap: 10px; }
+    .linkButton { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; border-radius: 8px; font-weight: 800; border: 1px solid var(--line); background: rgba(255,255,255,0.06); }
+    .linkButton.accent { background: linear-gradient(135deg, var(--violet), var(--mint)); color: #101827; border: 0; }
+    .noticeList { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .notice { padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,0.05); }
+    .notice time { display: block; color: var(--amber); font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+    .notice strong { display: block; margin-bottom: 6px; }
+    .supportGrid, .infoGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .tabs a { min-height: 42px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); font-weight: 800; }
+    footer { margin-top: 34px; padding: 38px 0; border-top: 1px solid var(--line); color: var(--muted); }
+    .footerGrid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 24px; }
+    .footerTitle { color: var(--text); font-weight: 900; margin-bottom: 8px; }
+    .footerLinks { display: grid; gap: 8px; font-size: 14px; }
+    .copyright { margin-top: 26px; font-size: 13px; }
+    @media (max-width: 860px) {
+      .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
+      .navLinks { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
+      .heroGrid, .gameCard, .noticeList, .supportGrid, .infoGrid, .footerGrid { grid-template-columns: 1fr; }
+      .hero { padding-top: 44px; }
+      .heroDesc { font-size: 16px; }
+      .sectionHead { align-items: flex-start; flex-direction: column; }
+    }
   </style>
 </head>
 <body>
-  <header>
+
+  <header class="topbar">
     <div class="container">
-      <nav aria-label="주요 메뉴">
-        <a class="brand" href="/ko/">CopiaSoft</a>
-        <div class="links">
+      <nav class="nav" aria-label="주요 메뉴">
+        <a class="brand" href="/ko/">
+          <span class="logo" aria-hidden="true"></span>
+          <span><strong>CopiaSoft</strong><small>인디 게임 스튜디오</small></span>
+        </a>
+        <div class="navLinks">
           <a href="/ko/">Home</a>
           <a href="/ko/#games">Games</a>
           <a href="/ko/support/">Support</a>
           <a href="/ko/privacy/wallbreaker/">Privacy</a>
           <a href="/ko/terms/wallbreaker/">Terms</a>
-          <a href="/en/games/wallbreaker/">EN</a>
+          <a class="navCta" href="/ko/#games">게임 보기</a>
+          <span class="langSwitch" aria-label="언어 선택">
+            <a class="active" href="/ko/games/wallbreaker/">KO</a>
+            <a class="" href="/en/games/wallbreaker/">EN</a>
+          </span>
         </div>
       </nav>
     </div>
   </header>
 
-  <main class="container">
+  <main>
     <section class="hero">
-      <div>
-        <p class="eyebrow">Idle / Casual</p>
-        <h1>Wallbreaker</h1>
-        <p class="lead">벽을 부수고, 보상을 얻고, 더 강한 벽에 도전하는 캐주얼 방치형 게임입니다.</p>
-        <div class="tags">
-          <span class="tag">Google Play</span>
-          <span class="tag">Coming Soon</span>
-          <span class="tag">Android</span>
+      <div class="container heroGrid">
+        <div>
+          <p class="eyebrow">방치형 / 캐주얼</p>
+          <h1>Wallbreaker</h1>
+          <p class="heroDesc">벽을 부수고, 보상을 얻고, 더 강한 벽에 도전하는 캐주얼 방치형 게임입니다.</p>
+          <div class="tags">
+            <span class="tag">Google Play</span><span class="tag">Android</span>
+            <span class="tag">출시 준비 중</span>
+          </div>
+          <div class="actions">
+            <span class="button primary" aria-disabled="true">Google Play 준비 중</span>
+            <a class="button secondary" href="/ko/support/">문의하기</a>
+          </div>
+          <div class="tabs">
+            <a href="#overview">게임 소개</a>
+            <a href="#notice">공지사항</a><a href="#update">업데이트</a><a href="#patch-note">패치노트</a><a href="#release-note">출시노트</a>
+            <a href="#support">Support</a>
+          </div>
         </div>
-        <div class="buttons">
-          <span class="button primary" aria-disabled="true">Google Play 준비 중</span>
-          <a class="button" href="/ko/support/">문의하기</a>
-        </div>
+        <div class="heroArt"><img src="/assets/wallbreaker-card.svg" alt="Wallbreaker key art" width="720" height="480" /></div>
       </div>
-      <img src="/assets/wallbreaker-card.svg" alt="Wallbreaker 대표 이미지" width="720" height="480" />
     </section>
 
-    <section class="grid">
-      <article class="card">
-        <h2>게임 플레이</h2>
-        <p>벽을 부수며 보상을 모으고, 유닛과 성장을 강화해 더 높은 난이도에 도전합니다.</p>
-      </article>
-      <article class="card">
-        <h2>플랫폼</h2>
-        <p>Google Play 출시를 기준으로 준비 중이며, 공식 링크가 공개되면 이 페이지에 반영됩니다.</p>
-      </article>
-      <article class="card">
-        <h2>지원 링크</h2>
-        <p><a href="/ko/privacy/wallbreaker/">개인정보처리방침</a><br /><a href="/ko/terms/wallbreaker/">이용약관</a><br /><a href="/ko/support/">고객지원</a></p>
-      </article>
-    </section>
+    <div class="darkBand">
+      <section id="overview">
+        <div class="container">
+          <div class="sectionHead">
+            <div>
+              <h2>게임 소개</h2>
+              <p class="sectionLead">벽을 부수며 보상을 모으고, 유닛과 성장을 강화해 더 높은 난이도에 도전합니다. 짧게 접속해도 성장 흐름을 느낄 수 있는 캐주얼 게임을 목표로 합니다.</p>
+            </div>
+          </div>
+          <div class="infoGrid">
+            <article class="infoBox"><h3>장르</h3><p>방치형 / 캐주얼</p></article>
+            <article class="infoBox"><h3>플랫폼</h3><p>Google Play / Android</p></article>
+            <article class="infoBox"><h3>상태</h3><p>출시 준비 중</p></article>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="notice">
+        <div class="container">
+          <div class="sectionHead">
+            <div><h2>공지사항</h2></div>
+          </div>
+          <div class="noticeList">
+          <article class="notice">
+            <time datetime="2026-06-11">2026.06.11</time>
+            <strong>Wallbreaker 공식 홈페이지 오픈</strong>
+            <p>CopiaSoft 공식 사이트에서 Wallbreaker 정보와 고객지원 링크를 확인할 수 있습니다.</p>
+            <p>Wallbreaker의 공식 홈페이지가 열렸습니다. 개인정보처리방침, 이용약관, 고객지원 페이지도 함께 정리했습니다.</p>
+          </article></div>
+        </div>
+      </section>
+      <section id="update">
+        <div class="container">
+          <div class="sectionHead">
+            <div><h2>업데이트</h2></div>
+          </div>
+          <div class="noticeList">
+          <article class="notice">
+            <time datetime="2026-06-11">2026.06.11</time>
+            <strong>개인정보처리방침 및 이용약관 정리</strong>
+            <p>Google Play 등록과 앱 내 옵션 연결을 위한 정책 페이지를 업데이트했습니다.</p>
+            <p>광고 SDK, Google Play 결제, PlayFab 저장 데이터, 구매 복원 안내를 공식 정책 페이지에 반영했습니다.</p>
+          </article></div>
+        </div>
+      </section>
+      <section id="patch-note">
+        <div class="container">
+          <div class="sectionHead">
+            <div><h2>패치노트</h2></div>
+          </div>
+          <div class="noticeList"><article class="notice"><p>아직 등록된 글이 없습니다.</p></article></div>
+        </div>
+      </section>
+      <section id="release-note">
+        <div class="container">
+          <div class="sectionHead">
+            <div><h2>출시노트</h2></div>
+          </div>
+          <div class="noticeList"><article class="notice"><p>아직 등록된 글이 없습니다.</p></article></div>
+        </div>
+      </section>
+
+      <section id="support">
+        <div class="container">
+          <div class="sectionHead"><div><h2>Support &amp; Policy</h2></div></div>
+          <div class="supportGrid">
+            <a class="supportBox" href="/ko/support/"><h3>문의하기</h3><p>Wallbreaker 관련 정보를 확인합니다.</p><strong>문의하기</strong></a><a class="supportBox" href="/ko/privacy/wallbreaker/"><h3>개인정보처리방침</h3><p>Wallbreaker 관련 정보를 확인합니다.</p><strong>개인정보처리방침</strong></a><a class="supportBox" href="/ko/terms/wallbreaker/"><h3>이용약관</h3><p>Wallbreaker 관련 정보를 확인합니다.</p><strong>이용약관</strong></a>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div class="container">
+          <div class="footerGrid">
+            <div>
+              <div class="footerTitle">CopiaSoft</div>
+              <div>인디 게임 스튜디오</div>
+            </div>
+            <div>
+              <div class="footerTitle">Company</div>
+              <div class="footerLinks">
+                <a href="/ko/">About</a>
+                <a href="/ko/support/">Contact</a>
+              </div>
+            </div>
+            <div>
+              <div class="footerTitle">Games</div>
+              <div class="footerLinks">
+                <a href="/ko/games/wallbreaker/">Wallbreaker</a>
+              </div>
+            </div>
+            <div>
+              <div class="footerTitle">Legal</div>
+              <div class="footerLinks">
+                <a href="/ko/privacy/wallbreaker/">개인정보처리방침</a>
+                <a href="/ko/terms/wallbreaker/">이용약관</a>
+                <a href="mailto:support@copiasoft.com">support@copiasoft.com</a>
+              </div>
+            </div>
+          </div>
+          <div class="copyright">© 2026 CopiaSoft. All rights reserved.</div>
+        </div>
+      </footer>
+    </div>
   </main>
-
-  <footer>
-    <div class="container">© 2026 CopiaSoft. All rights reserved. · <a href="mailto:support@copiasoft.com">support@copiasoft.com</a></div>
-  </footer>
 </body>
 </html>

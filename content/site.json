@@ -1,0 +1,85 @@
+{
+  "baseUrl": "https://copiasoft.com",
+  "supportEmail": "support@copiasoft.com",
+  "company": {
+    "name": "CopiaSoft",
+    "studioLabel": {
+      "ko": "인디 게임 스튜디오",
+      "en": "Indie game studio"
+    }
+  },
+  "home": {
+    "ko": {
+      "metaDescription": "코피아소프트(CopiaSoft) 공식 홈페이지. 캐주얼 인디 게임 Wallbreaker를 개발하는 작은 게임 스튜디오입니다.",
+      "heroEyebrow": "CopiaSoft Official",
+      "heroTitle": "작고 가볍지만, 오래 즐길 수 있는 게임을 만듭니다.",
+      "heroDescription": "CopiaSoft는 모바일과 PC에서 즐길 수 있는 캐주얼 인디 게임을 개발하는 작은 게임 스튜디오입니다.",
+      "primaryCta": "게임 보기",
+      "secondaryCta": "문의하기",
+      "gamesLead": "현재 공개 준비 중인 대표 게임입니다. 추후 같은 카드 구조로 새 게임을 추가할 수 있습니다.",
+      "newsLead": "게임별 공지, 업데이트, 패치노트, 출시노트를 한 곳에서 확인합니다.",
+      "supportLead": "문의, 개인정보처리방침, 이용약관을 한 곳에서 확인할 수 있습니다."
+    },
+    "en": {
+      "metaDescription": "Official CopiaSoft website. A small indie game studio creating casual games including Wallbreaker.",
+      "heroEyebrow": "CopiaSoft Official",
+      "heroTitle": "Small games, simple fun, lasting play.",
+      "heroDescription": "CopiaSoft is a small indie game studio creating casual games for mobile and PC.",
+      "primaryCta": "View Games",
+      "secondaryCta": "Contact Us",
+      "gamesLead": "Our current featured game. The same card structure can expand as new titles are added.",
+      "newsLead": "Game notices, updates, patch notes, and release notes are shown by title.",
+      "supportLead": "Contact, privacy, and terms pages are available from one place."
+    }
+  },
+  "labels": {
+    "ko": {
+      "home": "Home",
+      "games": "Games",
+      "support": "Support",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "latestNews": "Latest News",
+      "supportPolicy": "Support & Policy",
+      "viewDetails": "상세 보기",
+      "googlePlayComingSoon": "Google Play 준비 중",
+      "contactUs": "문의하기",
+      "privacyPolicy": "개인정보처리방침",
+      "termsOfService": "이용약관",
+      "footerAbout": "About",
+      "footerContact": "Contact",
+      "notice": "공지사항",
+      "update": "업데이트",
+      "patch-note": "패치노트",
+      "release-note": "출시노트",
+      "overview": "게임 소개",
+      "platform": "플랫폼",
+      "status": "상태",
+      "genre": "장르"
+    },
+    "en": {
+      "home": "Home",
+      "games": "Games",
+      "support": "Support",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "latestNews": "Latest News",
+      "supportPolicy": "Support & Policy",
+      "viewDetails": "Game Details",
+      "googlePlayComingSoon": "Google Play coming soon",
+      "contactUs": "Contact Us",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "footerAbout": "About",
+      "footerContact": "Contact",
+      "notice": "Notice",
+      "update": "Updates",
+      "patch-note": "Patch Notes",
+      "release-note": "Release Notes",
+      "overview": "Overview",
+      "platform": "Platform",
+      "status": "Status",
+      "genre": "Genre"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "slug": "2026-06-11-site-open",
+  "game": "wallbreaker",
+  "type": "notice",
+  "date": "2026-06-11",
+  "version": "",
+  "visible": true,
+  "showOnHome": true,
+  "title": {
+    "ko": "Wallbreaker 공식 홈페이지 오픈",
+    "en": "Wallbreaker official website opened"
+  },
+  "summary": {
+    "ko": "CopiaSoft 공식 사이트에서 Wallbreaker 정보와 고객지원 링크를 확인할 수 있습니다.",
+    "en": "Game information and support links are now available on the CopiaSoft official site."
+  },
+  "body": {
+    "ko": "Wallbreaker의 공식 홈페이지가 열렸습니다. 개인정보처리방침, 이용약관, 고객지원 페이지도 함께 정리했습니다.",
+    "en": "The official Wallbreaker website is now available. Privacy, terms, and support pages have also been organized."
+  }
+}

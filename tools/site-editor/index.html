@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CopiaSoft Site Editor</title>
+  <link rel="stylesheet" href="/editor/styles.css" />
+</head>
+<body>
+  <header class="appHeader">
+    <div>
+      <h1>CopiaSoft Site Editor</h1>
+      <p>게임 정보, 공지사항, 업데이트, 패치노트, 출시노트를 수정하고 정적 HTML을 생성합니다.</p>
+    </div>
+    <div class="headerActions">
+      <button id="saveButton" type="button">Save JSON</button>
+      <button id="buildButton" type="button">Save & Build</button>
+      <a href="/ko/" target="_blank" rel="noreferrer">KO Preview</a>
+      <a href="/en/" target="_blank" rel="noreferrer">EN Preview</a>
+    </div>
+  </header>
+
+  <main>
+    <nav class="tabs" aria-label="Editor sections">
+      <button class="active" data-panel="sitePanel" type="button">Site Settings</button>
+      <button data-panel="gamesPanel" type="button">Games</button>
+      <button data-panel="postsPanel" type="button">Posts</button>
+      <button data-panel="rawPanel" type="button">Raw JSON</button>
+    </nav>
+
+    <section id="status" class="status">Loading...</section>
+
+    <section id="sitePanel" class="panel active"></section>
+    <section id="gamesPanel" class="panel"></section>
+    <section id="postsPanel" class="panel"></section>
+    <section id="rawPanel" class="panel">
+      <p class="hint">고급 수정용입니다. JSON 문법이 틀리면 저장되지 않습니다.</p>
+      <textarea id="rawJson" spellcheck="false"></textarea>
+      <button id="applyRawButton" type="button">Apply Raw JSON</button>
+    </section>
+  </main>
+
+  <script src="/editor/editor.js"></script>
+</body>
+</html>

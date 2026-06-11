@@ -1,1 +1,59 @@
 # Copiasoft
+
+Static official website for CopiaSoft.
+
+## Local editor
+
+Run:
+
+```bat
+run-editor.cmd
+```
+
+Open:
+
+```txt
+http://localhost:5177
+```
+
+Use the editor to update site settings, games, notices, updates, patch notes, and release notes. Click `Save & Build` to regenerate the static pages.
+
+Preview:
+
+```txt
+http://localhost:5177/ko/
+http://localhost:5177/en/
+http://localhost:5177/ko/games/wallbreaker/
+```
+
+## Manual build
+
+Run:
+
+```bat
+build-site.cmd
+```
+
+The generator updates:
+
+```txt
+ko/index.html
+en/index.html
+ko/games/{game}/index.html
+en/games/{game}/index.html
+sitemap.xml
+```
+
+It does not rewrite:
+
+```txt
+app-ads.txt
+robots.txt
+CNAME
+ko/privacy/*
+en/privacy/*
+ko/terms/*
+en/terms/*
+ko/support/*
+en/support/*
+```
