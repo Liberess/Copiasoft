@@ -1,4 +1,7 @@
 let state = null;
+let visualLang = "ko";
+let selectedSectionId = "hero";
+let previewDevice = "desktop";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -48,6 +51,52 @@ function select(label, value, choices, onChange) {
   return wrapper;
 }
 
+function assetPicker(label, currentValue, onChange, accept = "image/*") {
+  const wrapper = document.createElement("label");
+  wrapper.textContent = label;
+  const row = document.createElement("div");
+  row.className = "row";
+  const pathInput = document.createElement("input");
+  pathInput.value = currentValue || "";
+  pathInput.placeholder = "/assets/example.png";
+  pathInput.addEventListener("input", () => onChange(pathInput.value));
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = accept;
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch("/api/upload-asset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName: file.name, dataUrl })
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Upload failed.");
+
+      pathInput.value = data.path;
+      onChange(data.path);
+      render();
+      setStatus(`Uploaded ${data.path}. Save & Build로 반영하세요.`);
+    } catch (error) {
+      setStatus(error.message, true);
+    }
+  });
+
+  row.append(pathInput, fileInput);
+  wrapper.appendChild(row);
+  return wrapper;
+}
+
 function card(title) {
   const el = document.createElement("article");
   el.className = "card";
@@ -57,6 +106,310 @@ function card(title) {
   return el;
 }
 
+function getHomePage(lang) {
+  let page = state.pages.find((item) => item.lang === lang && item.page === "home");
+  if (!page) {
+    page = {
+      page: "home",
+      lang,
+      sections: [
+        { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light" } },
+        { id: "games", type: "games", visible: true, title: "Games", settings: { paddingTop: 42, paddingBottom: 42, columns: 1, cardImagePosition: "left", background: "dark" } },
+        { id: "news", type: "news", visible: true, title: "Latest News", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+        { id: "support", type: "support", visible: true, title: "Support & Policy", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
+      ]
+    };
+    state.pages.push(page);
+  }
+  return page;
+}
+
+function selectedSection() {
+  const page = getHomePage(visualLang);
+  return page.sections.find((section) => section.id === selectedSectionId) || page.sections[0];
+}
+
+function localized(value, lang) {
+  if (value && typeof value === "object") {
+    return value[lang] || value.en || value.ko || "";
+  }
+  return value || "";
+}
+
+function sectionLabel(section) {
+  const names = {
+    hero: "Hero",
+    games: "Games",
+    news: "Latest News",
+    support: "Support & Policy"
+  };
+  return section.title || names[section.type] || section.type;
+}
+
+function moveSection(delta) {
+  const page = getHomePage(visualLang);
+  const index = page.sections.findIndex((section) => section.id === selectedSectionId);
+  const next = index + delta;
+  if (index < 0 || next < 0 || next >= page.sections.length) {
+    return;
+  }
+  const [item] = page.sections.splice(index, 1);
+  page.sections.splice(next, 0, item);
+  renderVisual();
+  renderRaw();
+}
+
+function ensureSection(type) {
+  const page = getHomePage(visualLang);
+  if (page.sections.some((section) => section.type === type)) {
+    selectedSectionId = page.sections.find((section) => section.type === type).id;
+    renderVisual();
+    return;
+  }
+
+  const defaults = {
+    hero: { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light" } },
+    games: { id: "games", type: "games", visible: true, title: "Games", settings: { paddingTop: 42, paddingBottom: 42, columns: 1, cardImagePosition: "left", background: "dark" } },
+    news: { id: "news", type: "news", visible: true, title: "Latest News", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+    support: { id: "support", type: "support", visible: true, title: "Support & Policy", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
+  };
+  page.sections.push(defaults[type]);
+  selectedSectionId = defaults[type].id;
+  renderVisual();
+  renderRaw();
+}
+
+function renderPreviewSection(section) {
+  const home = state.site.home[visualLang];
+  const visibleGames = state.games.filter((game) => game.visible);
+  const posts = state.posts.filter((post) => post.visible && post.showOnHome).slice(0, 4);
+  const settings = section.settings || {};
+  const bg = settings.background === "light" ? "light" : "dark";
+  const base = document.createElement("section");
+  base.className = `previewSection ${bg} ${section.id === selectedSectionId ? "active" : ""}`;
+  base.style.setProperty("--pt", `${settings.paddingTop || 42}px`);
+  base.style.setProperty("--pb", `${settings.paddingBottom || 42}px`);
+  base.addEventListener("click", () => {
+    selectedSectionId = section.id;
+    renderVisual();
+  });
+
+  if (!section.visible) {
+    base.style.opacity = "0.42";
+  }
+
+  if (section.type === "hero") {
+    const featuredGame = visibleGames.find((game) => game.featured) || visibleGames[0];
+    const heroArt = featuredGame?.image
+      ? `<div class="previewArt"><img src="${featuredGame.image}" alt="" /></div>`
+      : `<div class="previewArt"><span>No game image</span></div>`;
+    const hero = document.createElement("div");
+    hero.className = `previewHero ${settings.textAlign === "center" ? "center" : ""} ${settings.imagePosition === "left" ? "image-left" : ""}`;
+    hero.innerHTML = `
+      <div>
+        <div class="previewText">${home.heroEyebrow}</div>
+        <div class="previewTitle">${home.heroTitle}</div>
+        <div class="previewText">${home.heroDescription}</div>
+      </div>
+      ${heroArt}
+    `;
+    base.appendChild(hero);
+    if (settings.effect === "animated-gradient") {
+      base.style.backgroundImage = "radial-gradient(circle at 20% 20%, rgba(139,124,255,.28), transparent 32%), radial-gradient(circle at 82% 30%, rgba(68,215,168,.24), transparent 34%)";
+    }
+    if (settings.effect === "image" && settings.backgroundImage) {
+      base.style.backgroundImage = `linear-gradient(rgba(247,251,255,.76), rgba(247,251,255,.76)), url("${settings.backgroundImage}")`;
+      base.style.backgroundSize = "cover";
+      base.style.backgroundPosition = "center";
+    }
+    if (settings.effect === "video") {
+      base.style.backgroundImage = "linear-gradient(135deg, rgba(139,124,255,.32), rgba(68,215,168,.24))";
+    }
+    return base;
+  }
+
+  const title = document.createElement("div");
+  title.className = "previewTitle";
+  title.textContent = sectionLabel(section);
+  base.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "previewCardGrid";
+  grid.style.setProperty("--cols", Math.max(1, Math.min(3, Number(settings.columns || (section.type === "support" ? 3 : 2)))));
+
+  const source = section.type === "games" ? visibleGames : section.type === "news" ? posts : [
+    { title: { [visualLang]: "Contact" }, summary: { [visualLang]: "Support page" } },
+    { title: { [visualLang]: "Privacy" }, summary: { [visualLang]: "Privacy policy" } },
+    { title: { [visualLang]: "Terms" }, summary: { [visualLang]: "Terms of service" } }
+  ];
+
+  source.forEach((item) => {
+    const cardEl = document.createElement("div");
+    cardEl.className = "previewCard";
+    cardEl.innerHTML = `<strong>${localized(item.title, visualLang) || item.slug || item.game}</strong><div class="previewText">${localized(item.shortDescription || item.summary, visualLang)}</div>`;
+    grid.appendChild(cardEl);
+  });
+  base.appendChild(grid);
+  return base;
+}
+
+function renderVisual() {
+  const panel = $("#visualPanel");
+  panel.innerHTML = "";
+  const page = getHomePage(visualLang);
+  if (!page.sections.some((section) => section.id === selectedSectionId)) {
+    selectedSectionId = page.sections[0]?.id || "hero";
+  }
+  const section = selectedSection();
+
+  const shell = document.createElement("div");
+  shell.className = "builderShell";
+
+  const hierarchy = document.createElement("aside");
+  hierarchy.className = "builderPane";
+  hierarchy.innerHTML = "<h2>Hierarchy</h2>";
+
+  const langRow = document.createElement("div");
+  langRow.className = "row";
+  langRow.append(
+    select("Language", visualLang, [{ value: "ko", label: "KO" }, { value: "en", label: "EN" }], (value) => {
+      visualLang = value;
+      selectedSectionId = getHomePage(visualLang).sections[0]?.id || "hero";
+      renderVisual();
+    })
+  );
+  hierarchy.appendChild(langRow);
+
+  page.sections.forEach((item) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `sectionNode ${item.id === selectedSectionId ? "active" : ""}`;
+    btn.textContent = `${item.visible ? "●" : "○"} ${sectionLabel(item)}`;
+    btn.addEventListener("click", () => {
+      selectedSectionId = item.id;
+      renderVisual();
+    });
+    hierarchy.appendChild(btn);
+  });
+
+  const mini = document.createElement("div");
+  mini.className = "miniButtons";
+  ["hero", "games", "news", "support"].forEach((type) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = `Add ${type}`;
+    btn.addEventListener("click", () => ensureSection(type));
+    mini.appendChild(btn);
+  });
+  hierarchy.appendChild(mini);
+
+  const canvasPane = document.createElement("section");
+  canvasPane.className = "builderPane";
+  const toolbar = document.createElement("div");
+  toolbar.className = "canvasToolbar";
+  toolbar.innerHTML = "<h2>Canvas Preview</h2>";
+  const device = document.createElement("div");
+  device.className = "deviceSwitch";
+  ["desktop", "mobile"].forEach((mode) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = mode;
+    if (previewDevice === mode) btn.classList.add("primary");
+    btn.addEventListener("click", () => {
+      previewDevice = mode;
+      renderVisual();
+    });
+    device.appendChild(btn);
+  });
+  toolbar.appendChild(device);
+  canvasPane.appendChild(toolbar);
+
+  const canvas = document.createElement("div");
+  canvas.className = "builderCanvas";
+  const preview = document.createElement("div");
+  preview.className = `previewPage ${previewDevice === "mobile" ? "mobile" : ""}`;
+  preview.innerHTML = `<div class="previewHeader"><span>CopiaSoft</span><span>${visualLang.toUpperCase()}</span></div>`;
+  page.sections.forEach((item) => preview.appendChild(renderPreviewSection(item)));
+  canvas.appendChild(preview);
+  canvasPane.appendChild(canvas);
+
+  const inspector = document.createElement("aside");
+  inspector.className = "builderPane";
+  inspector.innerHTML = "<h2>Inspector</h2>";
+  if (section) {
+    const settings = section.settings || (section.settings = {});
+    const fields = document.createElement("div");
+    fields.className = "grid2";
+    fields.append(
+      input("Title", section.title, (value) => section.title = value),
+      checkbox("Visible", section.visible, (value) => section.visible = value),
+      input("Padding Top", settings.paddingTop || 42, (value) => settings.paddingTop = Number(value), { type: "number" }),
+      input("Padding Bottom", settings.paddingBottom || 42, (value) => settings.paddingBottom = Number(value), { type: "number" }),
+      select("Background", settings.background || "dark", [{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }], (value) => settings.background = value)
+    );
+
+    if (section.type === "hero") {
+      fields.append(
+        select("Text Align", settings.textAlign || "left", [{ value: "left", label: "Left" }, { value: "center", label: "Center" }], (value) => settings.textAlign = value),
+        select("Image Position", settings.imagePosition || "right", [{ value: "right", label: "Right" }, { value: "left", label: "Left" }], (value) => settings.imagePosition = value),
+        select("Hero Background Effect", settings.effect || "none", [
+          { value: "none", label: "None" },
+          { value: "animated-gradient", label: "Animated Gradient" },
+          { value: "image", label: "2D Image" },
+          { value: "video", label: "Video" }
+        ], (value) => settings.effect = value),
+        assetPicker("Background Image", settings.backgroundImage || "", (value) => settings.backgroundImage = value),
+        assetPicker("Background Video", settings.backgroundVideo || "", (value) => settings.backgroundVideo = value, "video/mp4,video/webm")
+      );
+    } else {
+      fields.append(
+        select("Columns", String(settings.columns || (section.type === "support" ? 3 : 2)), [{ value: "1", label: "1" }, { value: "2", label: "2" }, { value: "3", label: "3" }], (value) => settings.columns = Number(value))
+      );
+      if (section.type === "games") {
+        fields.append(select("Card Image Position", settings.cardImagePosition || "left", [{ value: "left", label: "Left" }, { value: "right", label: "Right" }], (value) => settings.cardImagePosition = value));
+      }
+    }
+    inspector.appendChild(fields);
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    const up = document.createElement("button");
+    up.type = "button";
+    up.textContent = "Move Up";
+    up.addEventListener("click", () => moveSection(-1));
+    const down = document.createElement("button");
+    down.type = "button";
+    down.textContent = "Move Down";
+    down.addEventListener("click", () => moveSection(1));
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "danger";
+    remove.textContent = "Remove Section";
+    remove.addEventListener("click", () => {
+      if (confirm(`${sectionLabel(section)} 섹션을 제거할까요? Add 버튼으로 다시 추가할 수 있습니다.`)) {
+        page.sections = page.sections.filter((item) => item.id !== section.id);
+        selectedSectionId = page.sections[0]?.id || "hero";
+        renderVisual();
+        renderRaw();
+      }
+    });
+    actions.append(up, down, remove);
+    inspector.appendChild(actions);
+
+    inspector.addEventListener("input", () => {
+      renderVisual();
+      renderRaw();
+    });
+    inspector.addEventListener("change", () => {
+      renderVisual();
+      renderRaw();
+    });
+  }
+
+  shell.append(hierarchy, canvasPane, inspector);
+  panel.appendChild(shell);
+}
+
 function renderSite() {
   const panel = $("#sitePanel");
   panel.innerHTML = "";
@@ -64,10 +417,12 @@ function renderSite() {
   const common = card("Common");
   const grid = document.createElement("div");
   grid.className = "grid2";
+  state.site.assets = state.site.assets || {};
   grid.append(
     input("Base URL", state.site.baseUrl, (value) => state.site.baseUrl = value),
     input("Support Email", state.site.supportEmail, (value) => state.site.supportEmail = value),
     input("Company Name", state.site.company.name, (value) => state.site.company.name = value),
+    assetPicker("Logo Image", state.site.assets.logo, (value) => state.site.assets.logo = value),
     input("Studio Label KO", state.site.company.studioLabel.ko, (value) => state.site.company.studioLabel.ko = value),
     input("Studio Label EN", state.site.company.studioLabel.en, (value) => state.site.company.studioLabel.en = value)
   );
@@ -149,7 +504,7 @@ function renderGames() {
     grid.className = "grid2";
     grid.append(
       input("Slug", game.slug, (value) => game.slug = value),
-      input("Image Path", game.image, (value) => game.image = value),
+      assetPicker("Game Key Art", game.image, (value) => game.image = value),
       input("Platforms (comma separated)", game.platforms.join(", "), (value) => game.platforms = value.split(",").map((x) => x.trim()).filter(Boolean)),
       input("Google Play URL", game.googlePlayUrl, (value) => game.googlePlayUrl = value),
       checkbox("Visible on site", game.visible, (value) => game.visible = value),
@@ -256,6 +611,7 @@ function renderRaw() {
 }
 
 function render() {
+  renderVisual();
   renderSite();
   renderGames();
   renderPosts();

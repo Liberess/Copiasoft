@@ -41,7 +41,8 @@
     .topbar { position: sticky; top: 0; z-index: 20; background: rgba(247,251,255,0.92); border-bottom: 1px solid rgba(17,24,39,0.1); backdrop-filter: blur(12px); color: #111827; }
     .nav { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
     .brand { display: flex; align-items: center; gap: 12px; min-width: 172px; }
-    .logo { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #7c5cff, #44d7a8); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); }
+    .logo { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #7c5cff, #44d7a8); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); overflow: hidden; flex: 0 0 auto; }
+    .logo img { width: 100%; height: 100%; object-fit: cover; }
     .brand strong { display: block; font-size: 16px; line-height: 1.15; }
     .brand small { display: block; color: #667085; font-size: 12px; }
     .navLinks { display: flex; align-items: center; justify-content: flex-end; gap: 18px; font-size: 14px; font-weight: 700; }
@@ -76,14 +77,34 @@
     .linkButton { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; border-radius: 8px; font-weight: 800; border: 1px solid var(--line); background: rgba(255,255,255,0.06); }
     .linkButton.accent { background: linear-gradient(135deg, var(--violet), var(--mint)); color: #101827; border: 0; }
     .noticeList { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .noticeList.columns-1 { grid-template-columns: 1fr; }
+    .noticeList.columns-3 { grid-template-columns: repeat(3, 1fr); }
     .notice { padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,0.05); }
     .notice time { display: block; color: var(--amber); font-size: 13px; font-weight: 800; margin-bottom: 6px; }
     .notice strong { display: block; margin-bottom: 6px; }
     .supportGrid, .infoGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .supportGrid.columns-1, .infoGrid.columns-1 { grid-template-columns: 1fr; }
+    .supportGrid.columns-2, .infoGrid.columns-2 { grid-template-columns: repeat(2, 1fr); }
     .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
     .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
     .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
     .tabs a { min-height: 42px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); font-weight: 800; }
+    .pageSection { padding: var(--section-pt, 42px) 0 var(--section-pb, 42px); }
+    .pageSection.section-light { background: #f7fbff; color: #111827; }
+    .pageSection.section-light .sectionLead { color: #475467; }
+    .pageSection.section-dark { background: var(--bg); color: var(--text); }
+    .hero.pageSection { padding: var(--section-pt, 72px) 0 var(--section-pb, 54px); }
+    .hero.hasFx { position: relative; overflow: hidden; }
+    .hero.hasFx > .container { position: relative; z-index: 2; }
+    .fxLayer { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .fxGradient { background: radial-gradient(circle at 18% 25%, rgba(139,124,255,.26), transparent 28%), radial-gradient(circle at 78% 18%, rgba(68,215,168,.24), transparent 28%), radial-gradient(circle at 60% 80%, rgba(255,209,102,.18), transparent 30%); animation: driftFx 12s ease-in-out infinite alternate; }
+    .fxImage, .fxVideo { width: 100%; height: 100%; object-fit: cover; opacity: .22; filter: saturate(1.1); }
+    .fxVideo { position: absolute; inset: 0; }
+    @keyframes driftFx { from { transform: translate3d(-2%, -1%, 0) scale(1.02); } to { transform: translate3d(2%, 2%, 0) scale(1.08); } }
+    .heroGrid.center { text-align: center; grid-template-columns: 1fr; }
+    .heroGrid.center .heroDesc, .heroGrid.center .actions { margin-left: auto; margin-right: auto; justify-content: center; }
+    .heroGrid.image-left .heroArt { order: -1; }
+    .gameCard.image-right > img { order: 2; }
     footer { margin-top: 34px; padding: 38px 0; border-top: 1px solid var(--line); color: var(--muted); }
     .footerGrid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 24px; }
     .footerTitle { color: var(--text); font-weight: 900; margin-bottom: 8px; }
@@ -105,7 +126,7 @@
     <div class="container">
       <nav class="nav" aria-label="Main navigation">
         <a class="brand" href="/en/">
-          <span class="logo" aria-hidden="true"></span>
+          <span class="logo imageLogo" aria-hidden="true"><img src="/assets/copiasoft-logo.svg" alt="" /></span>
           <span><strong>CopiaSoft</strong><small>Indie game studio</small></span>
         </a>
         <div class="navLinks">
@@ -125,8 +146,11 @@
   </header>
 
   <main>
-    <section class="hero">
-      <div class="container heroGrid">
+    <div class="darkBand">
+
+    <section id="hero" class="hero hasFx pageSection section-light" style="--section-pt:72px;--section-pb:54px;">
+      <div class="fxLayer fxGradient" aria-hidden="true"></div>
+      <div class="container heroGrid  ">
         <div>
           <p class="eyebrow">CopiaSoft Official</p>
           <h1>Small games, simple fun, lasting play.</h1>
@@ -141,9 +165,7 @@
         </a>
       </div>
     </section>
-
-    <div class="darkBand">
-      <section id="games">
+      <section id="games" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
         <div class="container">
           <div class="sectionHead">
             <div>
@@ -152,7 +174,7 @@
             </div>
           </div>
           <div class="gameGrid">
-          <article class="gameCard">
+          <article class="gameCard ">
             <img src="/assets/wallbreaker-card.svg" alt="Wall Smash Mayhem key art" width="720" height="480" />
             <div class="gameInfo">
               <div class="tags">
@@ -171,8 +193,7 @@
           </article></div>
         </div>
       </section>
-
-      <section id="news">
+      <section id="news" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
         <div class="container">
           <div class="sectionHead">
             <div>
@@ -180,7 +201,7 @@
               <p class="sectionLead">Game notices, updates, patch notes, and release notes are shown by title.</p>
             </div>
           </div>
-          <div class="noticeList">
+          <div class="noticeList columns-2">
             <article class="notice">
               <time datetime="2026-06-11">2026.06.11</time>
               <strong>[Wall Smash Mayhem] Wallbreaker official website opened</strong>
@@ -193,8 +214,7 @@
             </article></div>
         </div>
       </section>
-
-      <section id="support">
+      <section id="support" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
         <div class="container">
           <div class="sectionHead">
             <div>
@@ -202,7 +222,7 @@
               <p class="sectionLead">Contact, privacy, and terms pages are available from one place.</p>
             </div>
           </div>
-          <div class="supportGrid">
+          <div class="supportGrid columns-3">
             <a class="supportBox" href="/en/support/">
               <h3>Contact Us</h3>
               <p>Find what to include for bug reports, payment questions, and data deletion requests.</p>

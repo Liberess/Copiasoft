@@ -1,0 +1,59 @@
+{
+  "page": "home",
+  "lang": "en",
+  "sections": [
+    {
+      "id": "hero",
+      "type": "hero",
+      "visible": true,
+      "title": "Hero",
+      "settings": {
+        "paddingTop": 72,
+        "paddingBottom": 54,
+        "textAlign": "left",
+        "imagePosition": "right",
+        "background": "light",
+        "effect": "animated-gradient",
+        "backgroundImage": "",
+        "backgroundVideo": ""
+      }
+    },
+    {
+      "id": "games",
+      "type": "games",
+      "visible": true,
+      "title": "Games",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 1,
+        "cardImagePosition": "left",
+        "background": "dark"
+      }
+    },
+    {
+      "id": "news",
+      "type": "news",
+      "visible": true,
+      "title": "Latest News",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "support",
+      "type": "support",
+      "visible": true,
+      "title": "Support & Policy",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 3,
+        "background": "dark"
+      }
+    }
+  ]
+}

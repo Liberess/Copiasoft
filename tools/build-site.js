@@ -49,8 +49,14 @@ function loadContent() {
   const posts = listJsonFiles(path.join(CONTENT_DIR, "posts"))
     .map(readJson)
     .sort((a, b) => `${b.date}-${b.slug}`.localeCompare(`${a.date}-${a.slug}`));
+  const pages = listJsonFiles(path.join(CONTENT_DIR, "pages"))
+    .map(readJson)
+    .reduce((map, page) => {
+      map[`${page.lang}-${page.page}`] = page;
+      return map;
+    }, {});
 
-  return { site, games, posts };
+  return { site, games, posts, pages };
 }
 
 function esc(value) {
@@ -79,6 +85,15 @@ function gameUrl(game, lang) {
 
 function policyUrl(game, lang, kind) {
   return localize(game[`${kind}Url`], lang, "");
+}
+
+function logoMarkup(site) {
+  const logo = site.assets?.logo;
+  if (logo) {
+    return `<span class="logo imageLogo" aria-hidden="true"><img src="${attr(logo)}" alt="" /></span>`;
+  }
+
+  return `<span class="logo" aria-hidden="true"></span>`;
 }
 
 function sharedStyles() {
@@ -110,7 +125,8 @@ function sharedStyles() {
     .topbar { position: sticky; top: 0; z-index: 20; background: rgba(247,251,255,0.92); border-bottom: 1px solid rgba(17,24,39,0.1); backdrop-filter: blur(12px); color: #111827; }
     .nav { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
     .brand { display: flex; align-items: center; gap: 12px; min-width: 172px; }
-    .logo { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #7c5cff, #44d7a8); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); }
+    .logo { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #7c5cff, #44d7a8); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); overflow: hidden; flex: 0 0 auto; }
+    .logo img { width: 100%; height: 100%; object-fit: cover; }
     .brand strong { display: block; font-size: 16px; line-height: 1.15; }
     .brand small { display: block; color: #667085; font-size: 12px; }
     .navLinks { display: flex; align-items: center; justify-content: flex-end; gap: 18px; font-size: 14px; font-weight: 700; }
@@ -145,14 +161,34 @@ function sharedStyles() {
     .linkButton { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; border-radius: 8px; font-weight: 800; border: 1px solid var(--line); background: rgba(255,255,255,0.06); }
     .linkButton.accent { background: linear-gradient(135deg, var(--violet), var(--mint)); color: #101827; border: 0; }
     .noticeList { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .noticeList.columns-1 { grid-template-columns: 1fr; }
+    .noticeList.columns-3 { grid-template-columns: repeat(3, 1fr); }
     .notice { padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,0.05); }
     .notice time { display: block; color: var(--amber); font-size: 13px; font-weight: 800; margin-bottom: 6px; }
     .notice strong { display: block; margin-bottom: 6px; }
     .supportGrid, .infoGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .supportGrid.columns-1, .infoGrid.columns-1 { grid-template-columns: 1fr; }
+    .supportGrid.columns-2, .infoGrid.columns-2 { grid-template-columns: repeat(2, 1fr); }
     .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
     .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
     .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
     .tabs a { min-height: 42px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); font-weight: 800; }
+    .pageSection { padding: var(--section-pt, 42px) 0 var(--section-pb, 42px); }
+    .pageSection.section-light { background: #f7fbff; color: #111827; }
+    .pageSection.section-light .sectionLead { color: #475467; }
+    .pageSection.section-dark { background: var(--bg); color: var(--text); }
+    .hero.pageSection { padding: var(--section-pt, 72px) 0 var(--section-pb, 54px); }
+    .hero.hasFx { position: relative; overflow: hidden; }
+    .hero.hasFx > .container { position: relative; z-index: 2; }
+    .fxLayer { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .fxGradient { background: radial-gradient(circle at 18% 25%, rgba(139,124,255,.26), transparent 28%), radial-gradient(circle at 78% 18%, rgba(68,215,168,.24), transparent 28%), radial-gradient(circle at 60% 80%, rgba(255,209,102,.18), transparent 30%); animation: driftFx 12s ease-in-out infinite alternate; }
+    .fxImage, .fxVideo { width: 100%; height: 100%; object-fit: cover; opacity: .22; filter: saturate(1.1); }
+    .fxVideo { position: absolute; inset: 0; }
+    @keyframes driftFx { from { transform: translate3d(-2%, -1%, 0) scale(1.02); } to { transform: translate3d(2%, 2%, 0) scale(1.08); } }
+    .heroGrid.center { text-align: center; grid-template-columns: 1fr; }
+    .heroGrid.center .heroDesc, .heroGrid.center .actions { margin-left: auto; margin-right: auto; justify-content: center; }
+    .heroGrid.image-left .heroArt { order: -1; }
+    .gameCard.image-right > img { order: 2; }
     footer { margin-top: 34px; padding: 38px 0; border-top: 1px solid var(--line); color: var(--muted); }
     .footerGrid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 24px; }
     .footerTitle { color: var(--text); font-weight: 900; margin-bottom: 8px; }
@@ -178,7 +214,7 @@ function header(site, lang, titlePath = "") {
     <div class="container">
       <nav class="nav" aria-label="${lang === "ko" ? "주요 메뉴" : "Main navigation"}">
         <a class="brand" href="/${lang}/">
-          <span class="logo" aria-hidden="true"></span>
+          ${logoMarkup(site)}
           <span><strong>${esc(site.company.name)}</strong><small>${esc(localize(site.company.studioLabel, lang))}</small></span>
         </a>
         <div class="navLinks">
@@ -277,18 +313,77 @@ function renderGameButtons(site, game, lang) {
     </div>`;
 }
 
-function renderIndex({ site, games, posts }, lang) {
+function sectionStyle(section) {
+  const settings = section.settings || {};
+  const pt = Number.isFinite(Number(settings.paddingTop)) ? Number(settings.paddingTop) : 42;
+  const pb = Number.isFinite(Number(settings.paddingBottom)) ? Number(settings.paddingBottom) : 42;
+  return `--section-pt:${pt}px;--section-pb:${pb}px;`;
+}
+
+function sectionClass(section, extra = "") {
+  const background = section.settings?.background === "light" ? "section-light" : "section-dark";
+  return `${extra} pageSection ${background}`.trim();
+}
+
+function columnClass(value, fallback) {
+  const columns = Number(value || fallback);
+  return `columns-${Math.max(1, Math.min(3, columns))}`;
+}
+
+function renderHomeHero(site, games, lang, section) {
+  const home = site.home[lang];
+  const featured = games.find((game) => game.visible && game.featured) || games.find((game) => game.visible);
+  const settings = section.settings || {};
+  const imageClass = settings.imagePosition === "left" ? "image-left" : "";
+  const alignClass = settings.textAlign === "center" ? "center" : "";
+  const effect = settings.effect || "none";
+  const fx = renderHeroEffect(settings);
+  const heroImage = featured ? `<a class="heroArt" href="${gameUrl(featured, lang)}" aria-label="${attr(localize(featured.title, lang))}">
+          <img src="${attr(featured.image)}" alt="${attr(localize(featured.title, lang))} key art" width="720" height="480" />
+        </a>` : "";
+
+  return `
+    <section id="hero" class="${sectionClass(section, `hero ${effect !== "none" ? "hasFx" : ""}`)}" style="${sectionStyle(section)}">
+      ${fx}
+      <div class="container heroGrid ${alignClass} ${imageClass}">
+        <div>
+          <p class="eyebrow">${esc(home.heroEyebrow)}</p>
+          <h1>${esc(home.heroTitle)}</h1>
+          <p class="heroDesc">${esc(home.heroDescription)}</p>
+          <div class="actions">
+            <a class="button primary" href="#games">${esc(home.primaryCta)}</a>
+            <a class="button secondary" href="/${lang}/support/">${esc(home.secondaryCta)}</a>
+          </div>
+        </div>
+        ${heroImage}
+      </div>
+    </section>`;
+}
+
+function renderHeroEffect(settings) {
+  const effect = settings.effect || "none";
+  if (effect === "animated-gradient") {
+    return `<div class="fxLayer fxGradient" aria-hidden="true"></div>`;
+  }
+
+  if (effect === "image" && settings.backgroundImage) {
+    return `<div class="fxLayer" aria-hidden="true"><img class="fxImage" src="${attr(settings.backgroundImage)}" alt="" /></div>`;
+  }
+
+  if (effect === "video" && settings.backgroundVideo) {
+    return `<div class="fxLayer" aria-hidden="true"><video class="fxVideo" src="${attr(settings.backgroundVideo)}" autoplay muted loop playsinline></video></div>`;
+  }
+
+  return "";
+}
+
+function renderHomeGames(site, games, lang, section) {
   const labels = site.labels[lang];
   const home = site.home[lang];
   const visibleGames = games.filter((game) => game.visible);
-  const featured = visibleGames[0];
-  const homePosts = posts
-    .filter((post) => post.visible && post.showOnHome)
-    .slice(0, 4);
-  const supportGame = visibleGames.find((game) => game.slug === "wallbreaker") || visibleGames[0];
-
+  const imageClass = section.settings?.cardImagePosition === "right" ? "image-right" : "";
   const gameCards = visibleGames.map((game) => `
-          <article class="gameCard">
+          <article class="gameCard ${imageClass}">
             <img src="${attr(game.image)}" alt="${attr(localize(game.title, lang))} key art" width="720" height="480" />
             <div class="gameInfo">
               <div class="tags">
@@ -302,6 +397,24 @@ function renderIndex({ site, games, posts }, lang) {
             </div>
           </article>`).join("");
 
+  return `
+      <section id="games" class="${sectionClass(section)}" style="${sectionStyle(section)}">
+        <div class="container">
+          <div class="sectionHead">
+            <div>
+              <h2>${esc(labels.games)}</h2>
+              <p class="sectionLead">${esc(home.gamesLead)}</p>
+            </div>
+          </div>
+          <div class="gameGrid">${gameCards}</div>
+        </div>
+      </section>`;
+}
+
+function renderHomeNews(site, games, posts, lang, section) {
+  const labels = site.labels[lang];
+  const home = site.home[lang];
+  const homePosts = posts.filter((post) => post.visible && post.showOnHome).slice(0, 6);
   const postCards = homePosts.map((post) => {
     const game = games.find((candidate) => candidate.slug === post.game);
     return `
@@ -312,6 +425,25 @@ function renderIndex({ site, games, posts }, lang) {
             </article>`;
   }).join("");
 
+  return `
+      <section id="news" class="${sectionClass(section)}" style="${sectionStyle(section)}">
+        <div class="container">
+          <div class="sectionHead">
+            <div>
+              <h2>${esc(labels.latestNews)}</h2>
+              <p class="sectionLead">${esc(home.newsLead)}</p>
+            </div>
+          </div>
+          <div class="noticeList ${columnClass(section.settings?.columns, 2)}">${postCards}</div>
+        </div>
+      </section>`;
+}
+
+function renderHomeSupport(site, games, lang, section) {
+  const labels = site.labels[lang];
+  const home = site.home[lang];
+  const visibleGames = games.filter((game) => game.visible);
+  const supportGame = visibleGames.find((game) => game.slug === "wallbreaker") || visibleGames[0];
   const supportLinks = supportGame ? `
             <a class="supportBox" href="${attr(policyUrl(supportGame, lang, "support"))}">
               <h3>${esc(labels.contactUs)}</h3>
@@ -329,53 +461,8 @@ function renderIndex({ site, games, posts }, lang) {
               <strong>${esc(labels.terms)}</strong>
             </a>` : "";
 
-  const heroImage = featured ? `<a class="heroArt" href="${gameUrl(featured, lang)}" aria-label="${attr(localize(featured.title, lang))}">
-          <img src="${attr(featured.image)}" alt="${attr(localize(featured.title, lang))} key art" width="720" height="480" />
-        </a>` : "";
-
-  const body = `
-  <main>
-    <section class="hero">
-      <div class="container heroGrid">
-        <div>
-          <p class="eyebrow">${esc(home.heroEyebrow)}</p>
-          <h1>${esc(home.heroTitle)}</h1>
-          <p class="heroDesc">${esc(home.heroDescription)}</p>
-          <div class="actions">
-            <a class="button primary" href="#games">${esc(home.primaryCta)}</a>
-            <a class="button secondary" href="/${lang}/support/">${esc(home.secondaryCta)}</a>
-          </div>
-        </div>
-        ${heroImage}
-      </div>
-    </section>
-
-    <div class="darkBand">
-      <section id="games">
-        <div class="container">
-          <div class="sectionHead">
-            <div>
-              <h2>${esc(labels.games)}</h2>
-              <p class="sectionLead">${esc(home.gamesLead)}</p>
-            </div>
-          </div>
-          <div class="gameGrid">${gameCards}</div>
-        </div>
-      </section>
-
-      <section id="news">
-        <div class="container">
-          <div class="sectionHead">
-            <div>
-              <h2>${esc(labels.latestNews)}</h2>
-              <p class="sectionLead">${esc(home.newsLead)}</p>
-            </div>
-          </div>
-          <div class="noticeList">${postCards}</div>
-        </div>
-      </section>
-
-      <section id="support">
+  return `
+      <section id="support" class="${sectionClass(section)}" style="${sectionStyle(section)}">
         <div class="container">
           <div class="sectionHead">
             <div>
@@ -383,9 +470,52 @@ function renderIndex({ site, games, posts }, lang) {
               <p class="sectionLead">${esc(home.supportLead)}</p>
             </div>
           </div>
-          <div class="supportGrid">${supportLinks}</div>
+          <div class="supportGrid ${columnClass(section.settings?.columns, 3)}">${supportLinks}</div>
         </div>
-      </section>
+      </section>`;
+}
+
+function renderHomeSection(content, lang, section) {
+  if (!section.visible) {
+    return "";
+  }
+
+  switch (section.type) {
+    case "hero":
+      return renderHomeHero(content.site, content.games, lang, section);
+    case "games":
+      return renderHomeGames(content.site, content.games, lang, section);
+    case "news":
+      return renderHomeNews(content.site, content.games, content.posts, lang, section);
+    case "support":
+      return renderHomeSupport(content.site, content.games, lang, section);
+    default:
+      return "";
+  }
+}
+
+function fallbackHomePage(lang) {
+  return {
+    sections: [
+      { id: "hero", type: "hero", visible: true, settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light" } },
+      { id: "games", type: "games", visible: true, settings: { paddingTop: 42, paddingBottom: 42, cardImagePosition: "left", background: "dark" } },
+      { id: "news", type: "news", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+      { id: "support", type: "support", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
+    ]
+  };
+}
+
+function renderIndex(content, lang) {
+  const { site, games } = content;
+  const home = site.home[lang];
+  const visibleGames = games.filter((game) => game.visible);
+  const page = content.pages?.[`${lang}-home`] || fallbackHomePage(lang);
+  const sections = page.sections.map((section) => renderHomeSection(content, lang, section)).join("");
+
+  const body = `
+  <main>
+    <div class="darkBand">
+${sections}
 ${footer(site, visibleGames, lang)}
     </div>
   </main>`;

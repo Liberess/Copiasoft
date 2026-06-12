@@ -59,7 +59,8 @@ function loadAllContent() {
   return {
     site: readJson(path.join(CONTENT_DIR, "site.json")),
     games: listJsonFiles(path.join(CONTENT_DIR, "games")).map(readJson).sort((a, b) => a.slug.localeCompare(b.slug)),
-    posts: listJsonFiles(path.join(CONTENT_DIR, "posts")).map(readJson).sort((a, b) => `${b.date}-${b.slug}`.localeCompare(`${a.date}-${a.slug}`))
+    posts: listJsonFiles(path.join(CONTENT_DIR, "posts")).map(readJson).sort((a, b) => `${b.date}-${b.slug}`.localeCompare(`${a.date}-${a.slug}`)),
+    pages: listJsonFiles(path.join(CONTENT_DIR, "pages")).map(readJson).sort((a, b) => `${a.lang}-${a.page}`.localeCompare(`${b.lang}-${b.page}`))
   };
 }
 
@@ -102,6 +103,18 @@ function saveAllContent(payload) {
     const postDir = path.join(CONTENT_DIR, "posts", post.game);
     writeJson(path.join(postDir, `${post.slug}.json`), post);
   }
+
+  const pagesDir = path.join(CONTENT_DIR, "pages");
+  fs.mkdirSync(pagesDir, { recursive: true });
+  for (const filePath of listJsonFiles(pagesDir)) {
+    fs.rmSync(filePath, { force: true });
+  }
+
+  for (const page of payload.pages || []) {
+    const lang = safeSlug(page.lang);
+    const pageName = safeSlug(page.page);
+    writeJson(path.join(pagesDir, `${lang}-${pageName}.json`), page);
+  }
 }
 
 function buildSite() {
@@ -115,6 +128,26 @@ function buildSite() {
   }
 
   return result.stdout.trim();
+}
+
+function uploadAsset(payload) {
+  const fileName = String(payload.fileName || "").replace(/[^a-zA-Z0-9._-]/g, "-");
+  const dataUrl = String(payload.dataUrl || "");
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  if (!fileName || !match) {
+    throw new Error("Invalid upload payload.");
+  }
+
+  const ext = path.extname(fileName).toLowerCase();
+  if (![".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".mp4", ".webm"].includes(ext)) {
+    throw new Error("Unsupported asset type.");
+  }
+
+  const targetDir = path.join(ROOT, "assets", "uploads");
+  fs.mkdirSync(targetDir, { recursive: true });
+  const target = path.join(targetDir, `${Date.now()}-${fileName}`);
+  fs.writeFileSync(target, Buffer.from(match[2], "base64"));
+  return `/assets/uploads/${path.basename(target)}`;
 }
 
 function serveFile(res, filePath) {
@@ -160,6 +193,12 @@ async function handle(req, res) {
     if (req.method === "POST" && url.pathname === "/api/build") {
       const output = buildSite();
       send(res, 200, JSON.stringify({ ok: true, output }));
+      return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/upload-asset") {
+      const publicPath = uploadAsset(JSON.parse(await readBody(req)));
+      send(res, 200, JSON.stringify({ ok: true, path: publicPath }));
       return;
     }
 

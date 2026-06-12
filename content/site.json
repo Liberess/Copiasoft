@@ -1,6 +1,10 @@
 {
   "baseUrl": "https://copiasoft.com",
   "supportEmail": "support@copiasoft.com",
+  "assets": {
+    "logo": "/assets/copiasoft-logo.svg",
+    "defaultHeroBackground": ""
+  },
   "company": {
     "name": "CopiaSoft",
     "studioLabel": {
