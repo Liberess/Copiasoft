@@ -10,13 +10,13 @@
   },
   "home": {
     "ko": {
-      "metaDescription": "코피아소프트(CopiaSoft) 공식 홈페이지. 캐주얼 인디 게임 Wallbreaker를 개발하는 작은 게임 스튜디오입니다.",
+      "metaDescription": "코피아소프트(CopiaSoft) 공식 홈페이지. 캐주얼 인디 게임을 개발하는 소규모 스튜디오입니다.",
       "heroEyebrow": "CopiaSoft Official",
       "heroTitle": "작고 가볍지만, 오래 즐길 수 있는 게임을 만듭니다.",
-      "heroDescription": "CopiaSoft는 모바일과 PC에서 즐길 수 있는 캐주얼 인디 게임을 개발하는 작은 게임 스튜디오입니다.",
+      "heroDescription": "CopiaSoft는 모바일과 PC에서 즐길 수 있는 캐주얼 인디 게임을 개발하는 소규모 스튜디오입니다.",
       "primaryCta": "게임 보기",
       "secondaryCta": "문의하기",
-      "gamesLead": "현재 공개 준비 중인 대표 게임입니다. 추후 같은 카드 구조로 새 게임을 추가할 수 있습니다.",
+      "gamesLead": "현재 공개 준비 중인 대표 게임입니다.",
       "newsLead": "게임별 공지, 업데이트, 패치노트, 출시노트를 한 곳에서 확인합니다.",
       "supportLead": "문의, 개인정보처리방침, 이용약관을 한 곳에서 확인할 수 있습니다."
     },

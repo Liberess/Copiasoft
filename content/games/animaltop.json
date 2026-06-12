@@ -3,7 +3,10 @@
   "visible": false,
   "featured": false,
   "image": "/assets/wallbreaker-card.svg",
-  "platforms": ["Google Play", "Android"],
+  "platforms": [
+    "Google Play",
+    "Android"
+  ],
   "status": {
     "ko": "개발 중",
     "en": "In Development"
