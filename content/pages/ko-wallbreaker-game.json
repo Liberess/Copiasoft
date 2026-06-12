@@ -1,0 +1,96 @@
+{
+  "page": "game",
+  "lang": "ko",
+  "game": "wallbreaker",
+  "buttonStyle": "solid",
+  "sections": [
+    {
+      "id": "hero",
+      "type": "hero",
+      "visible": true,
+      "title": "Hero",
+      "settings": {
+        "paddingTop": 72,
+        "paddingBottom": 54,
+        "textAlign": "left",
+        "imagePosition": "right",
+        "background": "light",
+        "effect": "none",
+        "backgroundImage": "",
+        "backgroundVideo": ""
+      }
+    },
+    {
+      "id": "overview",
+      "type": "overview",
+      "visible": true,
+      "title": "게임 소개",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 3,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "notice",
+      "type": "notice",
+      "visible": true,
+      "title": "공지사항",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "update",
+      "type": "update",
+      "visible": true,
+      "title": "업데이트",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "patch-note",
+      "type": "patch-note",
+      "visible": true,
+      "title": "패치노트",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "release-note",
+      "type": "release-note",
+      "visible": true,
+      "title": "출시노트",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "support",
+      "type": "support",
+      "visible": true,
+      "title": "Support",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 3,
+        "background": "dark"
+      }
+    }
+  ]
+}

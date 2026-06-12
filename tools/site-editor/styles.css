@@ -253,6 +253,41 @@ textarea { min-height: 92px; resize: vertical; }
   color: #b8c2d6;
 }
 
+.previewButtonRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.previewButton {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-weight: 900;
+  background: #111827;
+  color: #fff;
+}
+
+.previewButton.secondary {
+  background: #fff;
+  color: #111827;
+  border: 1px solid #d9e1ee;
+}
+
+.previewButton.outline {
+  background: transparent;
+  color: currentColor;
+  border: 1px solid currentColor;
+}
+
+.previewButton.soft {
+  background: rgba(91,77,202,.14);
+  color: #5b4dca;
+}
+
 .previewArt {
   min-height: 160px;
   border-radius: 8px;

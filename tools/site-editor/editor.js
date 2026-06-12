@@ -1,6 +1,9 @@
 let state = null;
 let visualLang = "ko";
 let selectedSectionId = "hero";
+let gameVisualLang = "ko";
+let selectedGameSlug = "wallbreaker";
+let selectedGameSectionId = "hero";
 let previewDevice = "desktop";
 
 const $ = (selector) => document.querySelector(selector);
@@ -124,9 +127,37 @@ function getHomePage(lang) {
   return page;
 }
 
+function getGamePage(lang, gameSlug) {
+  let page = state.pages.find((item) => item.lang === lang && item.page === "game" && item.game === gameSlug);
+  if (!page) {
+    page = {
+      page: "game",
+      lang,
+      game: gameSlug,
+      buttonStyle: "solid",
+      sections: [
+        { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" } },
+        { id: "overview", type: "overview", visible: true, title: lang === "ko" ? "게임 소개" : "Overview", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } },
+        { id: "notice", type: "notice", visible: true, title: lang === "ko" ? "공지사항" : "Notice", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+        { id: "update", type: "update", visible: true, title: lang === "ko" ? "업데이트" : "Updates", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+        { id: "patch-note", type: "patch-note", visible: true, title: lang === "ko" ? "패치노트" : "Patch Notes", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+        { id: "release-note", type: "release-note", visible: true, title: lang === "ko" ? "출시노트" : "Release Notes", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+        { id: "support", type: "support", visible: true, title: "Support", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
+      ]
+    };
+    state.pages.push(page);
+  }
+  return page;
+}
+
 function selectedSection() {
   const page = getHomePage(visualLang);
   return page.sections.find((section) => section.id === selectedSectionId) || page.sections[0];
+}
+
+function selectedGameSection() {
+  const page = getGamePage(gameVisualLang, selectedGameSlug);
+  return page.sections.find((section) => section.id === selectedGameSectionId) || page.sections[0];
 }
 
 function localized(value, lang) {
@@ -176,6 +207,52 @@ function ensureSection(type) {
   page.sections.push(defaults[type]);
   selectedSectionId = defaults[type].id;
   renderVisual();
+  renderRaw();
+}
+
+function defaultGameSection(type, lang) {
+  const titles = {
+    hero: "Hero",
+    overview: lang === "ko" ? "게임 소개" : "Overview",
+    notice: lang === "ko" ? "공지사항" : "Notice",
+    update: lang === "ko" ? "업데이트" : "Updates",
+    "patch-note": lang === "ko" ? "패치노트" : "Patch Notes",
+    "release-note": lang === "ko" ? "출시노트" : "Release Notes",
+    support: "Support"
+  };
+  return {
+    id: type,
+    type,
+    visible: true,
+    title: titles[type] || type,
+    settings: type === "hero"
+      ? { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" }
+      : { paddingTop: 42, paddingBottom: 42, columns: type === "support" || type === "overview" ? 3 : 2, background: "dark" }
+  };
+}
+
+function moveGameSection(delta) {
+  const page = getGamePage(gameVisualLang, selectedGameSlug);
+  const index = page.sections.findIndex((section) => section.id === selectedGameSectionId);
+  const next = index + delta;
+  if (index < 0 || next < 0 || next >= page.sections.length) return;
+  const [item] = page.sections.splice(index, 1);
+  page.sections.splice(next, 0, item);
+  renderGameVisual();
+  renderRaw();
+}
+
+function ensureGameSection(type) {
+  const page = getGamePage(gameVisualLang, selectedGameSlug);
+  const existing = page.sections.find((section) => section.type === type);
+  if (existing) {
+    selectedGameSectionId = existing.id;
+  } else {
+    const item = defaultGameSection(type, gameVisualLang);
+    page.sections.push(item);
+    selectedGameSectionId = item.id;
+  }
+  renderGameVisual();
   renderRaw();
 }
 
@@ -410,6 +487,235 @@ function renderVisual() {
   panel.appendChild(shell);
 }
 
+function renderGamePreviewSection(section, game, page) {
+  const posts = state.posts.filter((post) => post.game === game.slug && post.visible && post.type === section.type).slice(0, 4);
+  const settings = section.settings || {};
+  const bg = settings.background === "light" ? "light" : "dark";
+  const base = document.createElement("section");
+  base.className = `previewSection ${bg} ${section.id === selectedGameSectionId ? "active" : ""}`;
+  base.style.setProperty("--pt", `${settings.paddingTop || 42}px`);
+  base.style.setProperty("--pb", `${settings.paddingBottom || 42}px`);
+  base.addEventListener("click", () => {
+    selectedGameSectionId = section.id;
+    renderGameVisual();
+  });
+  if (!section.visible) base.style.opacity = "0.42";
+
+  if (section.type === "hero") {
+    const hero = document.createElement("div");
+    hero.className = `previewHero ${settings.textAlign === "center" ? "center" : ""} ${settings.imagePosition === "left" ? "image-left" : ""}`;
+    hero.innerHTML = `
+      <div>
+        <div class="previewText">${localized(game.genre, gameVisualLang)}</div>
+        <div class="previewTitle">${localized(game.title, gameVisualLang)}</div>
+        <div class="previewText">${localized(game.shortDescription, gameVisualLang)}</div>
+        <div class="previewButtonRow"><span class="previewButton ${page.buttonStyle || "solid"}">Google Play</span><span class="previewButton secondary">Contact</span></div>
+      </div>
+      <div class="previewArt">${game.image ? `<img src="${game.image}" alt="" />` : "<span>No game image</span>"}</div>
+    `;
+    base.appendChild(hero);
+    if (settings.effect === "animated-gradient") {
+      base.style.backgroundImage = "radial-gradient(circle at 20% 20%, rgba(139,124,255,.28), transparent 32%), radial-gradient(circle at 82% 30%, rgba(68,215,168,.24), transparent 34%)";
+    }
+    if (settings.effect === "image" && settings.backgroundImage) {
+      base.style.backgroundImage = `linear-gradient(rgba(247,251,255,.76), rgba(247,251,255,.76)), url("${settings.backgroundImage}")`;
+      base.style.backgroundSize = "cover";
+      base.style.backgroundPosition = "center";
+    }
+    if (settings.effect === "video") {
+      base.style.backgroundImage = "linear-gradient(135deg, rgba(139,124,255,.32), rgba(68,215,168,.24))";
+    }
+    return base;
+  }
+
+  const title = document.createElement("div");
+  title.className = "previewTitle";
+  title.textContent = section.title || section.type;
+  base.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "previewCardGrid";
+  grid.style.setProperty("--cols", Math.max(1, Math.min(3, Number(settings.columns || 2))));
+  let source = posts;
+  if (section.type === "overview") {
+    source = [
+      { title: { [gameVisualLang]: "Genre" }, summary: game.genre },
+      { title: { [gameVisualLang]: "Platform" }, summary: { [gameVisualLang]: game.platforms.join(" / ") } },
+      { title: { [gameVisualLang]: "Status" }, summary: game.status }
+    ];
+  }
+  if (section.type === "support") {
+    source = [
+      { title: { [gameVisualLang]: "Support" }, summary: { [gameVisualLang]: "Contact and help" } },
+      { title: { [gameVisualLang]: "Privacy" }, summary: { [gameVisualLang]: "Privacy policy" } },
+      { title: { [gameVisualLang]: "Terms" }, summary: { [gameVisualLang]: "Terms of service" } }
+    ];
+  }
+  if (source.length === 0) {
+    source = [{ title: { [gameVisualLang]: "No posts yet" }, summary: { [gameVisualLang]: "" } }];
+  }
+  source.forEach((item) => {
+    const cardEl = document.createElement("div");
+    cardEl.className = "previewCard";
+    cardEl.innerHTML = `<strong>${localized(item.title, gameVisualLang) || item.slug || item.game}</strong><div class="previewText">${localized(item.shortDescription || item.summary || item.body, gameVisualLang)}</div>`;
+    grid.appendChild(cardEl);
+  });
+  base.appendChild(grid);
+  return base;
+}
+
+function renderGameVisual() {
+  const panel = $("#gameVisualPanel");
+  panel.innerHTML = "";
+  const visibleGames = state.games.filter((game) => game.visible);
+  const game = state.games.find((item) => item.slug === selectedGameSlug) || visibleGames[0] || state.games[0];
+  if (!game) {
+    panel.textContent = "No game data.";
+    return;
+  }
+  selectedGameSlug = game.slug;
+  const page = getGamePage(gameVisualLang, selectedGameSlug);
+  if (!page.sections.some((section) => section.id === selectedGameSectionId)) {
+    selectedGameSectionId = page.sections[0]?.id || "hero";
+  }
+  const section = selectedGameSection();
+
+  const shell = document.createElement("div");
+  shell.className = "builderShell";
+
+  const hierarchy = document.createElement("aside");
+  hierarchy.className = "builderPane";
+  hierarchy.innerHTML = "<h2>Game Page Hierarchy</h2>";
+  hierarchy.append(
+    select("Language", gameVisualLang, [{ value: "ko", label: "KO" }, { value: "en", label: "EN" }], (value) => {
+      gameVisualLang = value;
+      selectedGameSectionId = getGamePage(gameVisualLang, selectedGameSlug).sections[0]?.id || "hero";
+      renderGameVisual();
+    }),
+    select("Game", selectedGameSlug, state.games.map((item) => ({ value: item.slug, label: item.slug })), (value) => {
+      selectedGameSlug = value;
+      selectedGameSectionId = getGamePage(gameVisualLang, selectedGameSlug).sections[0]?.id || "hero";
+      renderGameVisual();
+    })
+  );
+  page.sections.forEach((item) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `sectionNode ${item.id === selectedGameSectionId ? "active" : ""}`;
+    btn.textContent = `${item.visible ? "●" : "○"} ${sectionLabel(item)}`;
+    btn.addEventListener("click", () => {
+      selectedGameSectionId = item.id;
+      renderGameVisual();
+    });
+    hierarchy.appendChild(btn);
+  });
+  const mini = document.createElement("div");
+  mini.className = "miniButtons";
+  ["hero", "overview", "notice", "update", "patch-note", "release-note", "support"].forEach((type) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = `Add ${type}`;
+    btn.addEventListener("click", () => ensureGameSection(type));
+    mini.appendChild(btn);
+  });
+  hierarchy.appendChild(mini);
+
+  const canvasPane = document.createElement("section");
+  canvasPane.className = "builderPane";
+  const toolbar = document.createElement("div");
+  toolbar.className = "canvasToolbar";
+  toolbar.innerHTML = "<h2>Game Page Preview</h2>";
+  const device = document.createElement("div");
+  device.className = "deviceSwitch";
+  ["desktop", "mobile"].forEach((mode) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = mode;
+    if (previewDevice === mode) btn.classList.add("primary");
+    btn.addEventListener("click", () => {
+      previewDevice = mode;
+      renderGameVisual();
+    });
+    device.appendChild(btn);
+  });
+  toolbar.appendChild(device);
+  canvasPane.appendChild(toolbar);
+
+  const canvas = document.createElement("div");
+  canvas.className = "builderCanvas";
+  const preview = document.createElement("div");
+  preview.className = `previewPage ${previewDevice === "mobile" ? "mobile" : ""}`;
+  preview.innerHTML = `<div class="previewHeader"><span>${localized(game.title, gameVisualLang)}</span><span>${gameVisualLang.toUpperCase()}</span></div>`;
+  page.sections.forEach((item) => preview.appendChild(renderGamePreviewSection(item, game, page)));
+  canvas.appendChild(preview);
+  canvasPane.appendChild(canvas);
+
+  const inspector = document.createElement("aside");
+  inspector.className = "builderPane";
+  inspector.innerHTML = "<h2>Inspector</h2>";
+  if (section) {
+    const settings = section.settings || (section.settings = {});
+    const fields = document.createElement("div");
+    fields.className = "grid2";
+    fields.append(
+      select("Button Style", page.buttonStyle || "solid", [{ value: "solid", label: "Solid" }, { value: "outline", label: "Outline" }, { value: "soft", label: "Soft" }], (value) => page.buttonStyle = value),
+      input("Title", section.title, (value) => section.title = value),
+      checkbox("Visible", section.visible, (value) => section.visible = value),
+      input("Padding Top", settings.paddingTop || 42, (value) => settings.paddingTop = Number(value), { type: "number" }),
+      input("Padding Bottom", settings.paddingBottom || 42, (value) => settings.paddingBottom = Number(value), { type: "number" }),
+      select("Background", settings.background || "dark", [{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }], (value) => settings.background = value)
+    );
+    if (section.type === "hero") {
+      fields.append(
+        select("Text Align", settings.textAlign || "left", [{ value: "left", label: "Left" }, { value: "center", label: "Center" }], (value) => settings.textAlign = value),
+        select("Image Position", settings.imagePosition || "right", [{ value: "right", label: "Right" }, { value: "left", label: "Left" }], (value) => settings.imagePosition = value),
+        select("Hero Background Effect", settings.effect || "none", [{ value: "none", label: "None" }, { value: "animated-gradient", label: "Animated Gradient" }, { value: "image", label: "2D Image" }, { value: "video", label: "Video" }], (value) => settings.effect = value),
+        assetPicker("Background Image", settings.backgroundImage || "", (value) => settings.backgroundImage = value),
+        assetPicker("Background Video", settings.backgroundVideo || "", (value) => settings.backgroundVideo = value, "video/mp4,video/webm")
+      );
+    } else {
+      fields.append(select("Columns", String(settings.columns || 2), [{ value: "1", label: "1" }, { value: "2", label: "2" }, { value: "3", label: "3" }], (value) => settings.columns = Number(value)));
+    }
+    inspector.appendChild(fields);
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    const up = document.createElement("button");
+    up.type = "button";
+    up.textContent = "Move Up";
+    up.addEventListener("click", () => moveGameSection(-1));
+    const down = document.createElement("button");
+    down.type = "button";
+    down.textContent = "Move Down";
+    down.addEventListener("click", () => moveGameSection(1));
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "danger";
+    remove.textContent = "Remove Section";
+    remove.addEventListener("click", () => {
+      if (confirm(`${sectionLabel(section)} 섹션을 제거할까요?`)) {
+        page.sections = page.sections.filter((item) => item.id !== section.id);
+        selectedGameSectionId = page.sections[0]?.id || "hero";
+        renderGameVisual();
+        renderRaw();
+      }
+    });
+    actions.append(up, down, remove);
+    inspector.appendChild(actions);
+    inspector.addEventListener("input", () => {
+      renderGameVisual();
+      renderRaw();
+    });
+    inspector.addEventListener("change", () => {
+      renderGameVisual();
+      renderRaw();
+    });
+  }
+
+  shell.append(hierarchy, canvasPane, inspector);
+  panel.appendChild(shell);
+}
+
 function renderSite() {
   const panel = $("#sitePanel");
   panel.innerHTML = "";
@@ -612,6 +918,7 @@ function renderRaw() {
 
 function render() {
   renderVisual();
+  renderGameVisual();
   renderSite();
   renderGames();
   renderPosts();

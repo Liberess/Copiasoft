@@ -322,7 +322,7 @@ function sectionStyle(section) {
 
 function sectionClass(section, extra = "") {
   const background = section.settings?.background === "light" ? "section-light" : "section-dark";
-  return `${extra} pageSection ${background}`.trim();
+  return `${extra} pageSection ${background}`.replace(/\s+/g, " ").trim();
 }
 
 function columnClass(value, fallback) {
@@ -545,7 +545,7 @@ function renderPostSection(site, posts, lang, type) {
     : `<article class="notice"><p>${lang === "ko" ? "아직 등록된 글이 없습니다." : "No posts yet."}</p></article>`;
 
   return `
-      <section id="${attr(type)}">
+      <section id="${attr(type)}" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
         <div class="container">
           <div class="sectionHead">
             <div><h2>${esc(labels[type])}</h2></div>
@@ -555,22 +555,42 @@ function renderPostSection(site, posts, lang, type) {
       </section>`;
 }
 
-function renderGamePage({ site, games, posts }, game, lang) {
-  const labels = site.labels[lang];
-  const gamePosts = posts.filter((post) => post.game === game.slug);
-  const title = `${localize(game.title, lang)} | ${site.company.name}`;
-  const canonical = `${site.baseUrl}${gameUrl(game, lang)}`;
-  const titlePath = `/games/${game.slug}/`;
-  const supportLinks = [
-    ["support", labels.contactUs, policyUrl(game, lang, "support")],
-    ["privacy", labels.privacyPolicy, policyUrl(game, lang, "privacy")],
-    ["terms", labels.termsOfService, policyUrl(game, lang, "terms")]
-  ].filter((entry) => entry[2]);
+function fallbackGamePage(lang, game) {
+  return {
+    page: "game",
+    lang,
+    game: game.slug,
+    buttonStyle: "solid",
+    sections: [
+      { id: "hero", type: "hero", visible: true, settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" } },
+      { id: "overview", type: "overview", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } },
+      ...POST_TYPES.map((type) => ({ id: type, type, visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } })),
+      { id: "support", type: "support", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
+    ]
+  };
+}
 
-  const body = `
-  <main>
-    <section class="hero">
-      <div class="container heroGrid">
+function buttonClass(page, kind) {
+  const style = page.buttonStyle || "solid";
+  if (style === "outline") {
+    return kind === "primary" ? "button secondary" : "button secondary";
+  }
+  if (style === "soft") {
+    return kind === "primary" ? "linkButton" : "linkButton";
+  }
+  return kind === "primary" ? "button primary" : "button secondary";
+}
+
+function renderGameHero(site, game, lang, page, section) {
+  const labels = site.labels[lang];
+  const settings = section.settings || {};
+  const imageClass = settings.imagePosition === "left" ? "image-left" : "";
+  const alignClass = settings.textAlign === "center" ? "center" : "";
+  const effect = settings.effect || "none";
+  return `
+    <section id="hero" class="${sectionClass(section, `hero ${effect !== "none" ? "hasFx" : ""}`)}" style="${sectionStyle(section)}">
+      ${renderHeroEffect(settings)}
+      <div class="container heroGrid ${alignClass} ${imageClass}">
         <div>
           <p class="eyebrow">${esc(localize(game.genre, lang))}</p>
           <h1>${esc(localize(game.title, lang))}</h1>
@@ -581,47 +601,115 @@ function renderGamePage({ site, games, posts }, game, lang) {
           </div>
           <div class="actions">
             ${game.googlePlayUrl
-              ? `<a class="button primary" href="${attr(game.googlePlayUrl)}" target="_blank" rel="noreferrer">Google Play</a>`
-              : `<span class="button primary" aria-disabled="true">${esc(labels.googlePlayComingSoon)}</span>`}
-            <a class="button secondary" href="${attr(policyUrl(game, lang, "support"))}">${esc(labels.contactUs)}</a>
+              ? `<a class="${buttonClass(page, "primary")}" href="${attr(game.googlePlayUrl)}" target="_blank" rel="noreferrer">Google Play</a>`
+              : `<span class="${buttonClass(page, "primary")}" aria-disabled="true">${esc(labels.googlePlayComingSoon)}</span>`}
+            <a class="${buttonClass(page, "secondary")}" href="${attr(policyUrl(game, lang, "support"))}">${esc(labels.contactUs)}</a>
           </div>
           <div class="tabs">
-            <a href="#overview">${esc(labels.overview)}</a>
-            ${POST_TYPES.map((type) => `<a href="#${type}">${esc(labels[type])}</a>`).join("")}
-            <a href="#support">${esc(labels.support)}</a>
+            ${page.sections.filter((item) => item.visible && item.type !== "hero").map((item) => `<a href="#${attr(item.id)}">${esc(item.title || labels[item.type] || item.type)}</a>`).join("")}
           </div>
         </div>
         <div class="heroArt"><img src="${attr(game.image)}" alt="${attr(localize(game.title, lang))} key art" width="720" height="480" /></div>
       </div>
-    </section>
+    </section>`;
+}
 
-    <div class="darkBand">
-      <section id="overview">
+function renderGameOverview(site, game, lang, section) {
+  const labels = site.labels[lang];
+  return `
+      <section id="overview" class="${sectionClass(section)}" style="${sectionStyle(section)}">
         <div class="container">
           <div class="sectionHead">
             <div>
-              <h2>${esc(labels.overview)}</h2>
+              <h2>${esc(section.title || labels.overview)}</h2>
               <p class="sectionLead">${esc(localize(game.longDescription, lang))}</p>
             </div>
           </div>
-          <div class="infoGrid">
+          <div class="infoGrid ${columnClass(section.settings?.columns, 3)}">
             <article class="infoBox"><h3>${esc(labels.genre)}</h3><p>${esc(localize(game.genre, lang))}</p></article>
             <article class="infoBox"><h3>${esc(labels.platform)}</h3><p>${esc(game.platforms.join(" / "))}</p></article>
             <article class="infoBox"><h3>${esc(labels.status)}</h3><p>${esc(localize(game.status, lang))}</p></article>
           </div>
         </div>
-      </section>
+      </section>`;
+}
 
-      ${POST_TYPES.map((type) => renderPostSection(site, gamePosts, lang, type)).join("")}
+function renderGamePostList(site, posts, lang, section) {
+  const type = section.type;
+  const typedPosts = posts.filter((post) => post.visible && post.type === type);
+  const content = typedPosts.length > 0
+    ? typedPosts.map((post) => `
+            <article class="notice">
+              <time datetime="${attr(post.date)}">${esc(post.date.replaceAll("-", "."))}${post.version ? ` · ${esc(post.version)}` : ""}</time>
+              <strong>${esc(localize(post.title, lang))}</strong>
+              <p>${esc(localize(post.summary, lang))}</p>
+              <p>${esc(localize(post.body, lang))}</p>
+            </article>`).join("")
+    : `<article class="notice"><p>${lang === "ko" ? "아직 등록된 글이 없습니다." : "No posts yet."}</p></article>`;
 
-      <section id="support">
+  return `
+      <section id="${attr(section.id)}" class="${sectionClass(section)}" style="${sectionStyle(section)}">
         <div class="container">
-          <div class="sectionHead"><div><h2>${esc(labels.supportPolicy)}</h2></div></div>
-          <div class="supportGrid">
+          <div class="sectionHead"><div><h2>${esc(section.title || site.labels[lang][type])}</h2></div></div>
+          <div class="noticeList ${columnClass(section.settings?.columns, 2)}">${content}</div>
+        </div>
+      </section>`;
+}
+
+function renderGameSupport(site, games, game, lang, section) {
+  const labels = site.labels[lang];
+  const supportLinks = [
+    ["support", labels.contactUs, policyUrl(game, lang, "support")],
+    ["privacy", labels.privacyPolicy, policyUrl(game, lang, "privacy")],
+    ["terms", labels.termsOfService, policyUrl(game, lang, "terms")]
+  ].filter((entry) => entry[2]);
+
+  return `
+      <section id="support" class="${sectionClass(section)}" style="${sectionStyle(section)}">
+        <div class="container">
+          <div class="sectionHead"><div><h2>${esc(section.title || labels.supportPolicy)}</h2></div></div>
+          <div class="supportGrid ${columnClass(section.settings?.columns, 3)}">
             ${supportLinks.map(([, label, url]) => `<a class="supportBox" href="${attr(url)}"><h3>${esc(label)}</h3><p>${esc(localize(game.title, lang))} ${lang === "ko" ? "관련 정보를 확인합니다." : "related information."}</p><strong>${esc(label)}</strong></a>`).join("")}
           </div>
         </div>
-      </section>
+      </section>`;
+}
+
+function renderGameSection(content, game, lang, page, section) {
+  if (!section.visible) {
+    return "";
+  }
+
+  const gamePosts = content.posts.filter((post) => post.game === game.slug);
+  switch (section.type) {
+    case "hero":
+      return renderGameHero(content.site, game, lang, page, section);
+    case "overview":
+      return renderGameOverview(content.site, game, lang, section);
+    case "notice":
+    case "update":
+    case "patch-note":
+    case "release-note":
+      return renderGamePostList(content.site, gamePosts, lang, section);
+    case "support":
+      return renderGameSupport(content.site, content.games, game, lang, section);
+    default:
+      return "";
+  }
+}
+
+function renderGamePage(content, game, lang) {
+  const { site, games } = content;
+  const title = `${localize(game.title, lang)} | ${site.company.name}`;
+  const canonical = `${site.baseUrl}${gameUrl(game, lang)}`;
+  const titlePath = `/games/${game.slug}/`;
+  const page = content.pages?.[`${lang}-${game.slug}-game`] || fallbackGamePage(lang, game);
+  const sections = page.sections.map((section) => renderGameSection(content, game, lang, page, section)).join("");
+
+  const body = `
+  <main>
+    <div class="darkBand">
+${sections}
 ${footer(site, games.filter((candidate) => candidate.visible), lang)}
     </div>
   </main>`;
