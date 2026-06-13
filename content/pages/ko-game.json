@@ -1,7 +1,7 @@
 {
   "page": "game",
   "lang": "ko",
-  "game": "animaltop",
+  "game": "waterballoon",
   "buttonStyle": "solid",
   "sections": [
     {
@@ -15,13 +15,13 @@
         "textAlign": "left",
         "showImage": true,
         "imageWidth": 100,
-        "imageWidthPx": 360,
-        "imageHeightPx": 260,
+        "imageWidthPx": 180,
+        "imageHeightPx": 180,
         "imageFit": "contain",
         "imagePosition": "right",
         "background": "light",
-        "effect": "none",
-        "backgroundImage": "",
+        "effect": "image",
+        "backgroundImage": "/assets/uploads/1781327357971-WaterBalloon_Library_Hero.png",
         "backgroundVideo": ""
       }
     },

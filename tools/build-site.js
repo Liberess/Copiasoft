@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { polishPages } = require("./polish-policy-pages");
 
 const ROOT = path.resolve(__dirname, "..");
 const CONTENT_DIR = path.join(ROOT, "content");
@@ -780,6 +781,7 @@ function build() {
   }
 
   writeFile("sitemap.xml", renderSitemap(content.site, content.games));
+  polishPages();
 }
 
 if (require.main === module) {

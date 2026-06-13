@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
+const SITE = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json"), "utf8"));
 
 const TARGETS = [
   {
@@ -56,8 +57,8 @@ function policyStyle() {
     .navLinks { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; font-size: 14px; font-weight: 800; }
     .navLinks a { color: #25324a; text-decoration: none; padding: 8px 10px; border-radius: 8px; min-height: 40px; display: inline-flex; align-items: center; }
     .navLinks a:hover { background: #edf2fb; color: var(--primary); }
-    .navLinks .navCta { background: #5b4dca; color: #fff; padding-left: 14px; padding-right: 14px; }
-    .navLinks .navCta:hover { background: #4939b7; color: #fff; }
+    .navLinks .active { background: #5b4dca; color: #fff; padding-left: 14px; padding-right: 14px; }
+    .navLinks .active:hover { background: #4939b7; color: #fff; }
     .navLinks .langPill { border: 1px solid var(--line); background: #fff; }
     .docHero { background: linear-gradient(135deg, #111827, #1e2a44); color: #fff; }
     .docHeroInner { max-width: 980px; margin: 0 auto; padding: 42px 20px; }
@@ -82,21 +83,24 @@ function header(target) {
   const support = target.lang === "ko" ? "/ko/support/" : "/en/support/";
   const privacy = target.lang === "ko" ? "/ko/privacy/wallbreaker/" : "/en/privacy/wallbreaker/";
   const terms = target.lang === "ko" ? "/ko/terms/wallbreaker/" : "/en/terms/wallbreaker/";
+  const current = target.file.includes("/support/") ? "support" : target.file.includes("/privacy/") ? "privacy" : "terms";
+  const active = (key) => current === key ? ` class="active"` : "";
+  const logo = SITE.assets && SITE.assets.logo ? SITE.assets.logo : "/assets/copiasoft-logo.svg";
   const subtitle = target.lang === "ko" ? "공식 문서" : "Official document";
   const studio = target.lang === "ko" ? "인디 게임 스튜디오" : "Indie game studio";
   const altLabel = target.lang === "ko" ? "English" : "한국어";
   return `<header class="siteHeader">
     <nav class="siteNav" aria-label="${target.lang === "ko" ? "문서 메뉴" : "Document navigation"}">
       <a class="brand" href="${home}">
-        <span class="brandMark"><img src="/assets/copiasoft-logo.svg" alt="" onerror="this.style.display='none'" /></span>
+        <span class="brandMark"><img src="${logo}" alt="" onerror="this.style.display='none'" /></span>
         <span><strong>CopiaSoft</strong><small>${studio}</small></span>
       </a>
       <div class="navLinks">
         <a href="${home}">Home</a>
         <a href="${games}">Games</a>
-        <a class="navCta" href="${support}">Support</a>
-        <a href="${privacy}">Privacy</a>
-        <a href="${terms}">Terms</a>
+        <a${active("support")} href="${support}">Support</a>
+        <a${active("privacy")} href="${privacy}">Privacy</a>
+        <a${active("terms")} href="${terms}">Terms</a>
         <a class="langPill" href="${target.alt}">${altLabel}</a>
       </div>
     </nav>
@@ -110,15 +114,22 @@ function header(target) {
   <main class="docPage">`;
 }
 
-for (const target of TARGETS) {
-  const filePath = path.join(ROOT, target.file);
-  let html = fs.readFileSync(filePath, "utf8");
-  html = html.replace(/\s*<header class="siteHeader">[\s\S]*?<main class="docPage">\s*/, "\n");
-  html = html.replace(/\s*<\/main>\s*(?=<\/body>)/, "\n");
-  html = html.replace(/<style>[\s\S]*?<\/style>/, `<style>\n${policyStyle()}\n  </style>`);
-  html = html.replace(/<body>\s*/, `<body>\n  ${header(target)}\n`);
-  html = html.replace(/\s*<\/body>/, "\n  </main>\n</body>");
-  fs.writeFileSync(filePath, html.replace(/[ \t]+$/gm, ""), "utf8");
+function polishPages() {
+  for (const target of TARGETS) {
+    const filePath = path.join(ROOT, target.file);
+    let html = fs.readFileSync(filePath, "utf8");
+    html = html.replace(/\s*<header class="siteHeader">[\s\S]*?<main class="docPage">\s*/, "\n");
+    html = html.replace(/\s*<\/main>\s*(?=<\/body>)/, "\n");
+    html = html.replace(/<style>[\s\S]*?<\/style>/, `<style>\n${policyStyle()}\n  </style>`);
+    html = html.replace(/<body>\s*/, `<body>\n  ${header(target)}\n`);
+    html = html.replace(/\s*<\/body>/, "\n  </main>\n</body>");
+    fs.writeFileSync(filePath, html.replace(/[ \t]+$/gm, ""), "utf8");
+  }
 }
 
-console.log("Policy/support pages polished.");
+if (require.main === module) {
+  polishPages();
+  console.log("Policy/support pages polished.");
+}
+
+module.exports = { polishPages };

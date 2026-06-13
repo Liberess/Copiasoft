@@ -22,8 +22,8 @@
     .navLinks { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; font-size: 14px; font-weight: 800; }
     .navLinks a { color: #25324a; text-decoration: none; padding: 8px 10px; border-radius: 8px; min-height: 40px; display: inline-flex; align-items: center; }
     .navLinks a:hover { background: #edf2fb; color: var(--primary); }
-    .navLinks .navCta { background: #5b4dca; color: #fff; padding-left: 14px; padding-right: 14px; }
-    .navLinks .navCta:hover { background: #4939b7; color: #fff; }
+    .navLinks .active { background: #5b4dca; color: #fff; padding-left: 14px; padding-right: 14px; }
+    .navLinks .active:hover { background: #4939b7; color: #fff; }
     .navLinks .langPill { border: 1px solid var(--line); background: #fff; }
     .docHero { background: linear-gradient(135deg, #111827, #1e2a44); color: #fff; }
     .docHeroInner { max-width: 980px; margin: 0 auto; padding: 42px 20px; }
@@ -46,14 +46,14 @@
   <header class="siteHeader">
     <nav class="siteNav" aria-label="Document navigation">
       <a class="brand" href="/en/">
-        <span class="brandMark"><img src="/assets/copiasoft-logo.svg" alt="" onerror="this.style.display='none'" /></span>
+        <span class="brandMark"><img src="/assets/uploads/1781326753210-Copiasoft_Logo.jpg" alt="" onerror="this.style.display='none'" /></span>
         <span><strong>CopiaSoft</strong><small>Indie game studio</small></span>
       </a>
       <div class="navLinks">
         <a href="/en/">Home</a>
         <a href="/en/#games">Games</a>
-        <a class="navCta" href="/en/support/">Support</a>
-        <a href="/en/privacy/wallbreaker/">Privacy</a>
+        <a href="/en/support/">Support</a>
+        <a class="active" href="/en/privacy/wallbreaker/">Privacy</a>
         <a href="/en/terms/wallbreaker/">Terms</a>
         <a class="langPill" href="/ko/privacy/wallbreaker/">한국어</a>
       </div>
