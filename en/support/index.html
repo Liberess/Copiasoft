@@ -3,101 +3,227 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Copiasoft Support - Contact for Wallbreaker" />
-  <link rel="canonical" href="https://copiasoft.com/en/support/" />
+  <meta name="description" content="If you experience an issue while playing a game, contact us by email." />
+  <meta name="theme-color" content="#111827" />
+  <meta property="og:title" content="Support | CopiaSoft" />
+  <meta property="og:description" content="If you experience an issue while playing a game, contact us by email." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://copiasoft.com/en/support/" />
   <link rel="alternate" hreflang="ko" href="https://copiasoft.com/ko/support/" />
   <link rel="alternate" hreflang="en" href="https://copiasoft.com/en/support/" />
-  <title>Support | Copiasoft</title>
+  <link rel="canonical" href="https://copiasoft.com/en/support/" />
+  <title>Support | CopiaSoft</title>
   <style>
-    :root { --bg:#f6f9fe; --ink:#111827; --muted:#667085; --line:#d9e1ee; --primary:#5b4dca; }
+    :root {
+      --bg: #111827;
+      --panel: #182235;
+      --panel-soft: #202c42;
+      --text: #f8fafc;
+      --muted: #b8c2d6;
+      --line: rgba(255,255,255,0.14);
+      --mint: #44d7a8;
+      --violet: #8b7cff;
+      --amber: #ffd166;
+      --max: 1120px;
+    }
     * { box-sizing: border-box; }
-    body { font-family: -apple-system, "Segoe UI", "Malgun Gothic", Roboto, Arial, sans-serif; margin: 0; line-height: 1.7; color: #222; background: var(--bg); }
-    .siteHeader { background: rgba(247,251,255,.94); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(10px); }
-    .siteNav { max-width: 980px; min-height: 72px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-    .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
-    .brandMark { width: 40px; height: 40px; border-radius: 8px; flex: 0 0 auto; overflow: hidden; background: linear-gradient(135deg, #8b7cff, #44d7a8); box-shadow: inset 0 0 0 1px rgba(255,255,255,.58); }
-    .brandMark img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .brand strong { display: block; font-size: 16px; line-height: 1.1; }
-    .brand small { display: block; color: var(--muted); font-size: 12px; }
-    .navLinks { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; font-size: 14px; font-weight: 800; }
-    .navLinks a { color: #25324a; text-decoration: none; padding: 8px 10px; border-radius: 8px; min-height: 40px; display: inline-flex; align-items: center; }
-    .navLinks a:hover { background: #edf2fb; color: var(--primary); }
-    .navLinks .active { background: #5b4dca; color: #fff; padding-left: 14px; padding-right: 14px; }
-    .navLinks .active:hover { background: #4939b7; color: #fff; }
-    .navLinks .langPill { border: 1px solid var(--line); background: #fff; }
-    .docHero { background: linear-gradient(135deg, #111827, #1e2a44); color: #fff; }
-    .docHeroInner { max-width: 980px; margin: 0 auto; padding: 42px 20px; }
-    .docHero h1 { color: #fff; margin: 0 0 8px; font-size: 34px; line-height: 1.2; }
-    .docHero p { margin: 0; color: #cbd5e1; }
-    .docPage { max-width: 900px; margin: 28px auto 60px; padding: 30px 24px; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 18px 50px rgba(17,24,39,.08); }
-    h1 { font-size: 26px; margin: 18px 0 6px; }
-    h2 { font-size: 18px; margin: 28px 0 8px; border-bottom: 1px solid #e5e5e5; padding-bottom: 6px; }
-    .meta { color: #666; font-size: 14px; margin-bottom: 24px; }
-    ul, ol { margin: 8px 0 8px 22px; padding: 0; }
-    li { margin: 4px 0; }
-    a { color: #4338ca; }
-    .mailbox { display: inline-block; margin: 8px 0; padding: 12px 18px; border: 1px solid #ddd; border-radius: 10px; background: #f8f8fb; font-size: 16px; }
-    .footer { margin-top: 44px; padding-top: 16px; border-top: 1px solid #e5e5e5; color: #666; font-size: 14px; }
-    .nav { display: none; }
-    @media (max-width: 720px) { .siteNav { align-items: flex-start; flex-direction: column; padding: 14px 20px; } .docHeroInner { padding-top: 32px; padding-bottom: 32px; } .docPage { margin: 0; border-left: 0; border-right: 0; border-radius: 0; } }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: linear-gradient(180deg, #f7fbff 0, #edf4ff 360px, var(--bg) 361px);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Malgun Gothic", Roboto, Arial, sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 22px; }
+    .topbar { position: sticky; top: 0; z-index: 20; background: rgba(247,251,255,0.92); border-bottom: 1px solid rgba(17,24,39,0.1); backdrop-filter: blur(12px); color: #111827; }
+    .nav { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 172px; }
+    .logo { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #7c5cff, #44d7a8); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); overflow: hidden; flex: 0 0 auto; }
+    .logo img { width: 100%; height: 100%; object-fit: cover; }
+    .brand strong { display: block; font-size: 16px; line-height: 1.15; }
+    .brand small { display: block; color: #667085; font-size: 12px; }
+    .navLinks { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 14px; font-weight: 800; }
+    .mainNav { display: inline-flex; align-items: center; gap: 4px; padding: 5px; border: 1px solid rgba(17,24,39,0.1); border-radius: 999px; background: #fff; box-shadow: 0 12px 30px rgba(17,24,39,0.07); }
+    .navItem { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 14px; border-radius: 999px; color: #25324a; transition: color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease; }
+    .navItem:hover { color: #111827; background: #edf2fb; transform: translateY(-1px); }
+    .navItem.active { color: #fff; background: linear-gradient(135deg, #5b4dca, #44d7a8); box-shadow: 0 10px 24px rgba(91,77,202,0.28); }
+    .caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; display: inline-block; transform: translateY(1px); }
+    .dropdown { position: relative; z-index: 2; }
+    .dropdownPanel { position: absolute; top: calc(100% + 10px); left: 0; min-width: 220px; display: grid; gap: 4px; padding: 10px; border: 1px solid rgba(17,24,39,0.12); border-radius: 8px; background: #fff; box-shadow: 0 18px 42px rgba(17,24,39,0.14); opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .18s ease, transform .18s ease, visibility .18s ease; }
+    .dropdown:hover .dropdownPanel, .dropdown:focus-within .dropdownPanel { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdownPanel a { padding: 9px 10px; border-radius: 6px; color: #25324a; }
+    .dropdownPanel a:hover { background: #edf2fb; color: #5b4dca; }
+    .langSwitch { display: inline-flex; gap: 4px; padding: 4px; border-radius: 8px; border: 1px solid rgba(17,24,39,0.12); background: #fff; }
+    .langSwitch a { min-width: 38px; padding: 7px 8px; border-radius: 6px; color: #667085; text-align: center; font-size: 12px; }
+    .langSwitch a.active { color: #111827; background: #edf0f7; }
+    .hero { padding: 72px 0 54px; color: #111827; }
+    .heroGrid { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr); gap: 46px; align-items: center; }
+    .heroGrid.noImage { grid-template-columns: minmax(0, 1fr); }
+    .eyebrow { margin: 0 0 12px; color: #5b4dca; font-weight: 800; font-size: 13px; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(34px, 5vw, 58px); line-height: 1.08; letter-spacing: 0; }
+    .heroDesc { max-width: 620px; margin: 18px 0 0; color: #475467; font-size: 18px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; border-radius: 8px; font-weight: 800; border: 1px solid transparent; }
+    .button.primary { background: #111827; color: #fff; }
+    .button.secondary { background: #fff; color: #111827; border-color: rgba(17,24,39,0.14); }
+    .heroArt { border-radius: 8px; overflow: hidden; border: 1px solid rgba(17,24,39,0.12); box-shadow: 0 24px 70px rgba(30,41,59,0.18); background: #101827; justify-self: stretch; }
+    .heroArt.resized { width: var(--hero-image-width, 100%); max-width: none; height: var(--hero-image-height, auto); }
+    .heroArt.resized img { width: 100%; height: 100%; object-fit: var(--hero-image-fit, cover); }
+    .darkBand { background: var(--bg); padding: 56px 0 0; }
+    section { padding: 42px 0; }
+    .sectionHead { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    h2 { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: 0; }
+    .sectionLead { margin: 8px 0 0; color: var(--muted); max-width: 680px; }
+    .gameGrid { display: grid; gap: var(--game-card-gap, 18px); }
+    .gameCard { width: 100%; max-width: var(--game-card-max, 100%); display: grid; grid-template-columns: 0.92fr 1.08fr; gap: var(--game-card-gap, 26px); align-items: center; padding: var(--game-card-padding, 22px); border: 1px solid var(--line); border-radius: 8px; background: var(--panel); box-shadow: 0 10px 28px rgba(0,0,0,0.12); transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; overflow: hidden; }
+    .gameCard:hover { transform: translateY(-6px); border-color: rgba(139,124,255,0.52); box-shadow: 0 24px 56px rgba(0,0,0,0.28); }
+    .gameCard img { width: 100%; height: var(--game-card-image-height, auto); object-fit: var(--game-card-image-fit, cover); transition: transform .28s ease; }
+    .gameCard:hover img { transform: scale(1.045); }
+    .gameInfo h3 { margin: 0 0 10px; font-size: 30px; letter-spacing: 0; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+    .tag { padding: 6px 10px; border-radius: 8px; background: var(--panel-soft); color: #dce6f8; font-size: 13px; font-weight: 700; }
+    .gameInfo p, .notice p, .supportBox p, .copy { margin: 0 0 18px; color: var(--muted); }
+    .linkRow { display: flex; flex-wrap: wrap; gap: 10px; }
+    .linkButton { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; border-radius: 8px; font-weight: 800; border: 1px solid var(--line); background: rgba(255,255,255,0.06); }
+    .linkButton.accent { background: linear-gradient(135deg, var(--violet), var(--mint)); color: #101827; border: 0; }
+    .noticeList { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .noticeList.columns-1 { grid-template-columns: 1fr; }
+    .noticeList.columns-3 { grid-template-columns: repeat(3, 1fr); }
+    .notice { padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,0.05); }
+    .notice time { display: block; color: var(--amber); font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+    .notice strong { display: block; margin-bottom: 6px; }
+    .supportGrid, .infoGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .supportGrid.columns-1, .infoGrid.columns-1 { grid-template-columns: 1fr; }
+    .supportGrid.columns-2, .infoGrid.columns-2 { grid-template-columns: repeat(2, 1fr); }
+    .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
+    .pageHero { padding: 64px 0 34px; color: #111827; }
+    .pageHero p { max-width: 680px; color: #475467; font-size: 18px; }
+    .splitHead { margin: 34px 0 14px; font-size: 22px; color: var(--text); }
+    .filterRow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+    .filterPill { min-height: 36px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--text); font-weight: 800; font-size: 13px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .tabs a { min-height: 42px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); font-weight: 800; }
+    .pageSection { padding: var(--section-pt, 42px) 0 var(--section-pb, 42px); }
+    .pageSection.section-light { background: #f7fbff; color: #111827; }
+    .pageSection.section-light .sectionLead { color: #475467; }
+    .pageSection.section-dark { background: var(--bg); color: var(--text); }
+    .hero.pageSection { padding: var(--section-pt, 72px) 0 var(--section-pb, 54px); }
+    .hero.hasFx { position: relative; overflow: hidden; }
+    .hero.hasFx > .container { position: relative; z-index: 2; }
+    .fxLayer { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .fxGradient { background: radial-gradient(circle at 18% 25%, rgba(139,124,255,.26), transparent 28%), radial-gradient(circle at 78% 18%, rgba(68,215,168,.24), transparent 28%), radial-gradient(circle at 60% 80%, rgba(255,209,102,.18), transparent 30%); animation: driftFx 12s ease-in-out infinite alternate; }
+    .fxImage, .fxVideo { width: 100%; height: 100%; object-fit: cover; opacity: .22; filter: saturate(1.1); }
+    .fxVideo { position: absolute; inset: 0; }
+    @keyframes driftFx { from { transform: translate3d(-2%, -1%, 0) scale(1.02); } to { transform: translate3d(2%, 2%, 0) scale(1.08); } }
+    .heroGrid.center { text-align: center; grid-template-columns: 1fr; }
+    .heroGrid.center .heroDesc, .heroGrid.center .actions { margin-left: auto; margin-right: auto; justify-content: center; }
+    .heroGrid.image-left .heroArt { order: -1; }
+    .gameCard.image-right > img { order: 2; }
+    footer { margin-top: 34px; padding: 38px 0; border-top: 1px solid var(--line); color: var(--muted); }
+    .footerGrid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 24px; }
+    .footerTitle { color: var(--text); font-weight: 900; margin-bottom: 8px; }
+    .footerLinks { display: grid; gap: 8px; font-size: 14px; }
+    .copyright { margin-top: 26px; font-size: 13px; }
+    @media (max-width: 860px) {
+      .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
+      .navLinks { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
+      .mainNav { flex-wrap: wrap; border-radius: 8px; }
+      .dropdownPanel { position: static; min-width: 100%; margin-top: 6px; opacity: 1; visibility: visible; transform: none; box-shadow: none; }
+      .heroGrid, .gameCard, .noticeList, .supportGrid, .infoGrid, .footerGrid { grid-template-columns: 1fr; }
+      .heroArt.resized { max-width: 100%; }
+      .hero { padding-top: 44px; }
+      .heroDesc { font-size: 16px; }
+      .sectionHead { align-items: flex-start; flex-direction: column; }
+    }
   </style>
 </head>
 <body>
-  <header class="siteHeader">
-    <nav class="siteNav" aria-label="Document navigation">
-      <a class="brand" href="/en/">
-        <span class="brandMark"><img src="/assets/uploads/1781326753210-Copiasoft_Logo.jpg" alt="" onerror="this.style.display='none'" /></span>
-        <span><strong>CopiaSoft</strong><small>Indie game studio</small></span>
-      </a>
-      <div class="navLinks">
-        <a href="/en/">Home</a>
-        <a href="/en/#games">Games</a>
-        <a class="active" href="/en/support/">Support</a>
-        <a href="/en/privacy/wallbreaker/">Privacy</a>
-        <a href="/en/terms/wallbreaker/">Terms</a>
-        <a class="langPill" href="/ko/support/">한국어</a>
-      </div>
-    </nav>
-  </header>
-  <section class="docHero">
-    <div class="docHeroInner">
-      <h1>Support</h1>
-      <p>Official document · Wallbreaker · CopiaSoft</p>
+
+  <header class="topbar">
+    <div class="container">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href="/en/">
+          <span class="logo imageLogo" aria-hidden="true"><img src="/assets/uploads/1781326753210-Copiasoft_Logo.jpg" alt="" /></span>
+          <span><strong>CopiaSoft</strong><small>Indie game studio</small></span>
+        </a>
+        <div class="navLinks">
+          <div class="mainNav">
+            <a class="navItem" href="/en/">Home</a>
+            <div class="dropdown">
+              <a class="navItem" href="/en/games/">Games <span class="caret" aria-hidden="true"></span></a>
+              <div class="dropdownPanel">
+                <a href="/en/games/wallbreaker/">Wall Smash Mayhem</a><a href="/en/games/waterballoon/">Don't Pop!: Splash Race</a>
+              </div>
+            </div>
+            <a class="navItem" href="/en/news/">News</a>
+            <a class="navItem active" href="/en/support/">Support</a>
+            <a class="navItem" href="/en/legal/">Legal</a>
+          </div>
+          <span class="langSwitch" aria-label="Language">
+            <a class="" href="/ko/support/">KO</a>
+            <a class="active" href="/en/support/">EN</a>
+          </span>
+        </div>
+      </nav>
     </div>
-  </section>
-  <main class="docPage">
-<p class="nav"><a href="/en/">Copiasoft Home</a> · <a href="/ko/support/">한국어</a></p>
+  </header>
 
-  <h1>Support</h1>
-  <p class="meta">App: <b>Wallbreaker (우당탕탕 벽뿌셔)</b> · Developer: Copiasoft</p>
+  <main>
+    <section class="pageHero">
+      <div class="container">
+        <h1>Support</h1>
+        <p>If you experience an issue while playing a game, contact us by email.</p>
+      </div>
+    </section>
+    <div class="darkBand">
+      <section class="pageSection section-dark">
+        <div class="container">
+          <div class="supportGrid columns-2">
+            <article class="supportBox"><h3>Email</h3><p><a href="mailto:support@copiasoft.com">support@copiasoft.com</a></p></article>
+            <article class="supportBox"><h3>Refund Policy</h3><p>Google Play purchases and refunds follow Google Play policies. Steam purchases and refunds follow Steam policies.</p></article>
+          </div>
+          <h2 class="splitHead">Information to Include</h2>
+          <div class="noticeList columns-1"><article class="notice"><ul><li>Game title</li><li>Nickname or user ID</li><li>Device</li><li>Time of occurrence</li><li>Issue details</li><li>Order number for payment inquiries</li><li>Ad watch time for ad reward inquiries</li></ul></article></div>
+        </div>
+      </section>
 
-  <h2>Contact Email</h2>
-  <p>If you have any problems or questions while playing the game, please contact us at the email below.</p>
-  <p class="mailbox"><a href="mailto:support@copiasoft.com?subject=%5BWallbreaker%5D%20Support">support@copiasoft.com</a></p>
-  <p>If your mail app does not open, long-press the address above to copy it and send an email from your mail service directly.</p>
-
-  <h2>Information to Include</h2>
-  <p>Including the following information helps us respond faster and more accurately:</p>
-  <ol>
-    <li>Game name: Wallbreaker</li>
-    <li>Your user ID or PlayFab ID (available in the in-game options)</li>
-    <li>For payment issues, your Google Play order number (e.g., GPA.XXXX-XXXX-XXXX-XXXXX)</li>
-    <li>Date and time the problem occurred</li>
-    <li>Description of the problem (what you did and what happened)</li>
-    <li>Screenshots, if available</li>
-  </ol>
-
-  <h2>Common Topics</h2>
-  <ul>
-    <li><b>Payments / refunds</b>: Refunds for in-app purchases follow the Google Play refund policy. See the <a href="/en/terms/wallbreaker/">Terms of Service</a> for details.</li>
-    <li><b>Purchase restoration</b>: Non-consumable products such as permanent ad removal can be restored from the restore purchases button in the in-game options.</li>
-    <li><b>Data deletion</b>: See the <a href="/en/privacy/wallbreaker/">Privacy Policy</a> for how to request game data deletion.</li>
-  </ul>
-
-  <div class="footer">
-    Copiasoft<br />
-    Contact: <a href="mailto:support@copiasoft.com">support@copiasoft.com</a>
-  </div>
+      <footer>
+        <div class="container">
+          <div class="footerGrid">
+            <div>
+              <div class="footerTitle">CopiaSoft</div>
+              <div>Indie game studio</div>
+            </div>
+            <div>
+              <div class="footerTitle">Company</div>
+              <div class="footerLinks">
+                <a href="/en/">About</a>
+                <a href="/en/support/">Contact</a>
+              </div>
+            </div>
+            <div>
+              <div class="footerTitle">Games</div>
+              <div class="footerLinks">
+                <a href="/en/games/wallbreaker/">Wall Smash Mayhem</a><a href="/en/games/waterballoon/">Don't Pop!: Splash Race</a>
+              </div>
+            </div>
+            <div>
+              <div class="footerTitle">Legal</div>
+              <div class="footerLinks">
+                <a href="/en/legal/">Legal</a>
+                <a href="/en/news/">News</a>
+                <a href="mailto:support@copiasoft.com">support@copiasoft.com</a>
+              </div>
+            </div>
+          </div>
+          <div class="copyright">© 2026 CopiaSoft. All rights reserved.</div>
+        </div>
+      </footer>
+    </div>
   </main>
 </body>
 </html>

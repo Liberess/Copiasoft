@@ -117,9 +117,9 @@ function getHomePage(lang) {
       lang,
       sections: [
         { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 320, imageHeightPx: 240, imageFit: "contain", imagePosition: "right", background: "light" } },
-        { id: "games", type: "games", visible: true, title: "Games", settings: { paddingTop: 42, paddingBottom: 42, columns: 1, cardImagePosition: "left", background: "dark" } },
+        { id: "games", type: "games", visible: true, title: "Games", settings: { paddingTop: 42, paddingBottom: 42, columns: 1, cardImagePosition: "left", cardMaxWidthPx: 980, cardImageHeightPx: 300, cardPaddingPx: 18, cardGapPx: 22, cardImageFit: "cover", background: "dark" } },
         { id: "news", type: "news", visible: true, title: "Latest News", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
-        { id: "support", type: "support", visible: true, title: "Support & Policy", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
+        { id: "support", type: "support", visible: false, title: "Support & Policy", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
       ]
     };
     state.pages.push(page);
@@ -200,9 +200,9 @@ function ensureSection(type) {
 
   const defaults = {
     hero: { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 320, imageHeightPx: 240, imageFit: "contain", imagePosition: "right", background: "light" } },
-    games: { id: "games", type: "games", visible: true, title: "Games", settings: { paddingTop: 42, paddingBottom: 42, columns: 1, cardImagePosition: "left", background: "dark" } },
+    games: { id: "games", type: "games", visible: true, title: "Games", settings: { paddingTop: 42, paddingBottom: 42, columns: 1, cardImagePosition: "left", cardMaxWidthPx: 980, cardImageHeightPx: 300, cardPaddingPx: 18, cardGapPx: 22, cardImageFit: "cover", background: "dark" } },
     news: { id: "news", type: "news", visible: true, title: "Latest News", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
-    support: { id: "support", type: "support", visible: true, title: "Support & Policy", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
+    support: { id: "support", type: "support", visible: false, title: "Support & Policy", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
   };
   page.sections.push(defaults[type]);
   selectedSectionId = defaults[type].id;
@@ -459,7 +459,14 @@ function renderVisual() {
         select("Columns", String(settings.columns || (section.type === "support" ? 3 : 2)), [{ value: "1", label: "1" }, { value: "2", label: "2" }, { value: "3", label: "3" }], (value) => settings.columns = Number(value))
       );
       if (section.type === "games") {
-        fields.append(select("Card Image Position", settings.cardImagePosition || "left", [{ value: "left", label: "Left" }, { value: "right", label: "Right" }], (value) => settings.cardImagePosition = value));
+        fields.append(
+          select("Card Image Position", settings.cardImagePosition || "left", [{ value: "left", label: "Left" }, { value: "right", label: "Right" }], (value) => settings.cardImagePosition = value),
+          input("Card Max Width px", settings.cardMaxWidthPx || "", (value) => settings.cardMaxWidthPx = Number(value), { type: "number" }),
+          input("Card Image Height px", settings.cardImageHeightPx || "", (value) => settings.cardImageHeightPx = Number(value), { type: "number" }),
+          input("Card Padding px", settings.cardPaddingPx || "", (value) => settings.cardPaddingPx = Number(value), { type: "number" }),
+          input("Card Gap px", settings.cardGapPx || "", (value) => settings.cardGapPx = Number(value), { type: "number" }),
+          select("Card Image Fit", settings.cardImageFit || "cover", [{ value: "cover", label: "Cover" }, { value: "contain", label: "Contain" }, { value: "fill", label: "Fill" }], (value) => settings.cardImageFit = value)
+        );
       }
     }
     inspector.appendChild(fields);

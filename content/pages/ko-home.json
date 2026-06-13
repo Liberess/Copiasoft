@@ -33,6 +33,11 @@
         "paddingBottom": 42,
         "columns": 2,
         "cardImagePosition": "left",
+        "cardMaxWidthPx": 980,
+        "cardImageHeightPx": 250,
+        "cardPaddingPx": 18,
+        "cardGapPx": 22,
+        "cardImageFit": "cover",
         "background": "dark"
       }
     },
@@ -51,7 +56,7 @@
     {
       "id": "support",
       "type": "support",
-      "visible": true,
+      "visible": false,
       "title": "Support & Policy",
       "settings": {
         "paddingTop": 42,

@@ -21,8 +21,8 @@
       "primaryCta": "게임 보기",
       "secondaryCta": "문의하기",
       "gamesLead": "현재 공개 준비 중인 대표 게임입니다.",
-      "newsLead": "게임별 공지, 업데이트, 패치노트, 출시노트를 한 곳에서 확인합니다.",
-      "supportLead": "문의, 개인정보처리방침, 이용약관을 한 곳에서 확인할 수 있습니다."
+      "newsLead": "전체 게임의 최신 공지사항과 패치노트를 확인합니다.",
+      "supportLead": "고객지원과 법적 문서 링크를 한 곳에서 확인할 수 있습니다."
     },
     "en": {
       "metaDescription": "Official CopiaSoft website. A small indie game studio creating casual games including Wallbreaker.",
@@ -32,8 +32,8 @@
       "primaryCta": "View Games",
       "secondaryCta": "Contact Us",
       "gamesLead": "Our current featured game. The same card structure can expand as new titles are added.",
-      "newsLead": "Game notices, updates, patch notes, and release notes are shown by title.",
-      "supportLead": "Contact, privacy, and terms pages are available from one place."
+      "newsLead": "Latest notices and patch notes across all games.",
+      "supportLead": "Support and legal document links are available from one place."
     }
   },
   "labels": {
@@ -41,6 +41,8 @@
       "home": "Home",
       "games": "Games",
       "support": "Support",
+      "news": "News",
+      "legal": "Legal",
       "privacy": "Privacy",
       "terms": "Terms",
       "latestNews": "Latest News",
@@ -56,6 +58,7 @@
       "update": "업데이트",
       "patch-note": "패치노트",
       "release-note": "출시노트",
+      "probability": "확률정보",
       "overview": "게임 소개",
       "platform": "플랫폼",
       "status": "상태",
@@ -65,6 +68,8 @@
       "home": "Home",
       "games": "Games",
       "support": "Support",
+      "news": "News",
+      "legal": "Legal",
       "privacy": "Privacy",
       "terms": "Terms",
       "latestNews": "Latest News",
@@ -80,6 +85,7 @@
       "update": "Updates",
       "patch-note": "Patch Notes",
       "release-note": "Release Notes",
+      "probability": "Probability Info",
       "overview": "Overview",
       "platform": "Platform",
       "status": "Status",

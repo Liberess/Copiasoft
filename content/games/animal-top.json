@@ -1,5 +1,5 @@
 {
-  "slug": "animaltop",
+  "slug": "animal-top",
   "visible": false,
   "featured": false,
   "image": "/assets/wallbreaker-card.svg",
@@ -37,11 +37,11 @@
     "en": "/en/support/"
   },
   "privacyUrl": {
-    "ko": "/ko/privacy/animaltop/",
-    "en": "/en/privacy/animaltop/"
+    "ko": "/ko/privacy/animal-top/",
+    "en": "/en/privacy/animal-top/"
   },
   "termsUrl": {
-    "ko": "",
-    "en": ""
+    "ko": "/ko/terms/",
+    "en": "/en/terms/"
   }
 }

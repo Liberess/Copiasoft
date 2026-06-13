@@ -30,6 +30,18 @@ const TARGETS = [
     title: "Terms of Service"
   },
   {
+    file: "ko/privacy/animal-top/index.html",
+    lang: "ko",
+    alt: "/en/privacy/animal-top/",
+    title: "개인정보처리방침"
+  },
+  {
+    file: "en/privacy/animal-top/index.html",
+    lang: "en",
+    alt: "/ko/privacy/animal-top/",
+    title: "Privacy Policy"
+  },
+  {
     file: "ko/privacy/waterballoon/index.html",
     lang: "ko",
     alt: "/en/privacy/waterballoon/",
@@ -53,18 +65,6 @@ const TARGETS = [
     alt: "/ko/terms/waterballoon/",
     title: "Terms of Service"
   },
-  {
-    file: "ko/support/index.html",
-    lang: "ko",
-    alt: "/en/support/",
-    title: "고객지원"
-  },
-  {
-    file: "en/support/index.html",
-    lang: "en",
-    alt: "/ko/support/",
-    title: "Support"
-  }
 ];
 
 function policyStyle() {
@@ -78,12 +78,12 @@ function policyStyle() {
     .brandMark img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .brand strong { display: block; font-size: 16px; line-height: 1.1; }
     .brand small { display: block; color: var(--muted); font-size: 12px; }
-    .navLinks { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; font-size: 14px; font-weight: 800; }
-    .navLinks a { color: #25324a; text-decoration: none; padding: 8px 10px; border-radius: 8px; min-height: 40px; display: inline-flex; align-items: center; }
-    .navLinks a:hover { background: #edf2fb; color: var(--primary); }
-    .navLinks .active { background: #5b4dca; color: #fff; padding-left: 14px; padding-right: 14px; }
-    .navLinks .active:hover { background: #4939b7; color: #fff; }
-    .navLinks .langPill { border: 1px solid var(--line); background: #fff; }
+    .navLinks { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; font-size: 14px; font-weight: 800; }
+    .mainNav { display: inline-flex; align-items: center; gap: 4px; padding: 5px; border: 1px solid rgba(17,24,39,0.1); border-radius: 999px; background: #fff; box-shadow: 0 12px 30px rgba(17,24,39,0.07); }
+    .navItem { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 14px; border-radius: 999px; color: #25324a; text-decoration: none; transition: color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease; }
+    .navItem:hover { color: #111827; background: #edf2fb; transform: translateY(-1px); }
+    .navItem.active { color: #fff; background: linear-gradient(135deg, #5b4dca, #44d7a8); box-shadow: 0 10px 24px rgba(91,77,202,0.28); }
+    .langPill { min-height: 48px; display: inline-flex; align-items: center; padding: 0 16px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: #25324a; text-decoration: none; }
     .docHero { background: linear-gradient(135deg, #111827, #1e2a44); color: #fff; }
     .docHeroInner { max-width: 980px; margin: 0 auto; padding: 42px 20px; }
     .docHero h1 { color: #fff; margin: 0 0 8px; font-size: 34px; line-height: 1.2; }
@@ -98,19 +98,17 @@ function policyStyle() {
     .mailbox { display: inline-block; margin: 8px 0; padding: 12px 18px; border: 1px solid #ddd; border-radius: 10px; background: #f8f8fb; font-size: 16px; }
     .footer { margin-top: 44px; padding-top: 16px; border-top: 1px solid #e5e5e5; color: #666; font-size: 14px; }
     .nav { display: none; }
-    @media (max-width: 720px) { .siteNav { align-items: flex-start; flex-direction: column; padding: 14px 20px; } .docHeroInner { padding-top: 32px; padding-bottom: 32px; } .docPage { margin: 0; border-left: 0; border-right: 0; border-radius: 0; } }`;
+    @media (max-width: 720px) { .siteNav { align-items: flex-start; flex-direction: column; padding: 14px 20px; } .mainNav { flex-wrap: wrap; border-radius: 8px; } .docHeroInner { padding-top: 32px; padding-bottom: 32px; } .docPage { margin: 0; border-left: 0; border-right: 0; border-radius: 0; } }`;
 }
 
 function header(target) {
   const home = target.lang === "ko" ? "/ko/" : "/en/";
-  const games = `${home}#games`;
-  const gameSlug = target.file.includes("/waterballoon/") ? "waterballoon" : "wallbreaker";
-  const gameName = gameSlug === "waterballoon" ? "Don't Pop!: Splash Race" : "Wallbreaker";
+  const games = target.lang === "ko" ? "/ko/games/" : "/en/games/";
+  const news = target.lang === "ko" ? "/ko/news/" : "/en/news/";
+  const legal = target.lang === "ko" ? "/ko/legal/" : "/en/legal/";
+  const gameSlug = target.file.includes("/waterballoon/") ? "waterballoon" : target.file.includes("/animal-top/") ? "animal-top" : "wallbreaker";
+  const gameName = gameSlug === "waterballoon" ? "Don't Pop!: Splash Race" : gameSlug === "animal-top" ? "AnimalTop" : "Wallbreaker";
   const support = target.lang === "ko" ? "/ko/support/" : "/en/support/";
-  const privacy = target.lang === "ko" ? `/ko/privacy/${gameSlug}/` : `/en/privacy/${gameSlug}/`;
-  const terms = target.lang === "ko" ? `/ko/terms/${gameSlug}/` : `/en/terms/${gameSlug}/`;
-  const current = target.file.includes("/support/") ? "support" : target.file.includes("/privacy/") ? "privacy" : "terms";
-  const active = (key) => current === key ? ` class="active"` : "";
   const logo = SITE.assets && SITE.assets.logo ? SITE.assets.logo : "/assets/copiasoft-logo.svg";
   const subtitle = target.lang === "ko" ? "공식 문서" : "Official document";
   const studio = target.lang === "ko" ? "인디 게임 스튜디오" : "Indie game studio";
@@ -122,11 +120,13 @@ function header(target) {
         <span><strong>CopiaSoft</strong><small>${studio}</small></span>
       </a>
       <div class="navLinks">
-        <a href="${home}">Home</a>
-        <a href="${games}">Games</a>
-        <a${active("support")} href="${support}">Support</a>
-        <a${active("privacy")} href="${privacy}">Privacy</a>
-        <a${active("terms")} href="${terms}">Terms</a>
+        <div class="mainNav">
+          <a class="navItem" href="${home}">Home</a>
+          <a class="navItem" href="${games}">Games</a>
+          <a class="navItem" href="${news}">News</a>
+          <a class="navItem" href="${support}">Support</a>
+          <a class="navItem active" href="${legal}">Legal</a>
+        </div>
         <a class="langPill" href="${target.alt}">${altLabel}</a>
       </div>
     </nav>

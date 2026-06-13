@@ -45,10 +45,17 @@
     .logo img { width: 100%; height: 100%; object-fit: cover; }
     .brand strong { display: block; font-size: 16px; line-height: 1.15; }
     .brand small { display: block; color: #667085; font-size: 12px; }
-    .navLinks { display: flex; align-items: center; justify-content: flex-end; gap: 18px; font-size: 14px; font-weight: 700; }
-    .navLinks a { color: #25324a; }
-    .navLinks a:hover { color: #5b4dca; }
-    .navCta { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; border-radius: 8px; color: #fff !important; background: #5b4dca; }
+    .navLinks { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 14px; font-weight: 800; }
+    .mainNav { display: inline-flex; align-items: center; gap: 4px; padding: 5px; border: 1px solid rgba(17,24,39,0.1); border-radius: 999px; background: #fff; box-shadow: 0 12px 30px rgba(17,24,39,0.07); }
+    .navItem { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 14px; border-radius: 999px; color: #25324a; transition: color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease; }
+    .navItem:hover { color: #111827; background: #edf2fb; transform: translateY(-1px); }
+    .navItem.active { color: #fff; background: linear-gradient(135deg, #5b4dca, #44d7a8); box-shadow: 0 10px 24px rgba(91,77,202,0.28); }
+    .caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; display: inline-block; transform: translateY(1px); }
+    .dropdown { position: relative; z-index: 2; }
+    .dropdownPanel { position: absolute; top: calc(100% + 10px); left: 0; min-width: 220px; display: grid; gap: 4px; padding: 10px; border: 1px solid rgba(17,24,39,0.12); border-radius: 8px; background: #fff; box-shadow: 0 18px 42px rgba(17,24,39,0.14); opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .18s ease, transform .18s ease, visibility .18s ease; }
+    .dropdown:hover .dropdownPanel, .dropdown:focus-within .dropdownPanel { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdownPanel a { padding: 9px 10px; border-radius: 6px; color: #25324a; }
+    .dropdownPanel a:hover { background: #edf2fb; color: #5b4dca; }
     .langSwitch { display: inline-flex; gap: 4px; padding: 4px; border-radius: 8px; border: 1px solid rgba(17,24,39,0.12); background: #fff; }
     .langSwitch a { min-width: 38px; padding: 7px 8px; border-radius: 6px; color: #667085; text-align: center; font-size: 12px; }
     .langSwitch a.active { color: #111827; background: #edf0f7; }
@@ -70,8 +77,11 @@
     .sectionHead { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
     h2 { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: 0; }
     .sectionLead { margin: 8px 0 0; color: var(--muted); max-width: 680px; }
-    .gameGrid { display: grid; gap: 18px; }
-    .gameCard { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 26px; align-items: center; padding: 22px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .gameGrid { display: grid; gap: var(--game-card-gap, 18px); }
+    .gameCard { width: 100%; max-width: var(--game-card-max, 100%); display: grid; grid-template-columns: 0.92fr 1.08fr; gap: var(--game-card-gap, 26px); align-items: center; padding: var(--game-card-padding, 22px); border: 1px solid var(--line); border-radius: 8px; background: var(--panel); box-shadow: 0 10px 28px rgba(0,0,0,0.12); transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; overflow: hidden; }
+    .gameCard:hover { transform: translateY(-6px); border-color: rgba(139,124,255,0.52); box-shadow: 0 24px 56px rgba(0,0,0,0.28); }
+    .gameCard img { width: 100%; height: var(--game-card-image-height, auto); object-fit: var(--game-card-image-fit, cover); transition: transform .28s ease; }
+    .gameCard:hover img { transform: scale(1.045); }
     .gameInfo h3 { margin: 0 0 10px; font-size: 30px; letter-spacing: 0; }
     .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
     .tag { padding: 6px 10px; border-radius: 8px; background: var(--panel-soft); color: #dce6f8; font-size: 13px; font-weight: 700; }
@@ -90,6 +100,11 @@
     .supportGrid.columns-2, .infoGrid.columns-2 { grid-template-columns: repeat(2, 1fr); }
     .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
     .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
+    .pageHero { padding: 64px 0 34px; color: #111827; }
+    .pageHero p { max-width: 680px; color: #475467; font-size: 18px; }
+    .splitHead { margin: 34px 0 14px; font-size: 22px; color: var(--text); }
+    .filterRow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+    .filterPill { min-height: 36px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--text); font-weight: 800; font-size: 13px; }
     .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
     .tabs a { min-height: 42px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); font-weight: 800; }
     .pageSection { padding: var(--section-pt, 42px) 0 var(--section-pb, 42px); }
@@ -116,6 +131,8 @@
     @media (max-width: 860px) {
       .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
       .navLinks { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
+      .mainNav { flex-wrap: wrap; border-radius: 8px; }
+      .dropdownPanel { position: static; min-width: 100%; margin-top: 6px; opacity: 1; visibility: visible; transform: none; box-shadow: none; }
       .heroGrid, .gameCard, .noticeList, .supportGrid, .infoGrid, .footerGrid { grid-template-columns: 1fr; }
       .heroArt.resized { max-width: 100%; }
       .hero { padding-top: 44px; }
@@ -134,12 +151,18 @@
           <span><strong>CopiaSoft</strong><small>Indie game studio</small></span>
         </a>
         <div class="navLinks">
-          <a href="/en/">Home</a>
-          <a href="/en/#games">Games</a>
-          <a href="/en/support/">Support</a>
-          <a href="/en/privacy/wallbreaker/">Privacy</a>
-          <a href="/en/terms/wallbreaker/">Terms</a>
-          <a class="navCta" href="/en/#games">View Games</a>
+          <div class="mainNav">
+            <a class="navItem" href="/en/">Home</a>
+            <div class="dropdown">
+              <a class="navItem active" href="/en/games/">Games <span class="caret" aria-hidden="true"></span></a>
+              <div class="dropdownPanel">
+                <a href="/en/games/wallbreaker/">Wall Smash Mayhem</a><a href="/en/games/waterballoon/">Don't Pop!: Splash Race</a>
+              </div>
+            </div>
+            <a class="navItem" href="/en/news/">News</a>
+            <a class="navItem" href="/en/support/">Support</a>
+            <a class="navItem" href="/en/legal/">Legal</a>
+          </div>
           <span class="langSwitch" aria-label="Language">
             <a class="" href="/ko/games/wallbreaker/">KO</a>
             <a class="active" href="/en/games/wallbreaker/">EN</a>
@@ -240,7 +263,7 @@ CopiaSoft</p>
         <div class="container">
           <div class="sectionHead"><div><h2>Support &amp; Policy</h2></div></div>
           <div class="supportGrid columns-3">
-            <a class="supportBox" href="/en/support/"><h3>Contact Us</h3><p>Wall Smash Mayhem related information.</p><strong>Contact Us</strong></a><a class="supportBox" href="/en/privacy/wallbreaker/"><h3>Privacy Policy</h3><p>Wall Smash Mayhem related information.</p><strong>Privacy Policy</strong></a><a class="supportBox" href="/en/terms/wallbreaker/"><h3>Terms of Service</h3><p>Wall Smash Mayhem related information.</p><strong>Terms of Service</strong></a>
+            <a class="supportBox" href="/en/support/"><h3>Contact Us</h3><p>Wall Smash Mayhem related information.</p><strong>Contact Us</strong></a><a class="supportBox" href="/en/privacy/wallbreaker/"><h3>Privacy Policy</h3><p>Wall Smash Mayhem related information.</p><strong>Privacy Policy</strong></a><a class="supportBox" href="/en/terms/"><h3>Terms of Service</h3><p>Wall Smash Mayhem related information.</p><strong>Terms of Service</strong></a>
           </div>
         </div>
       </section>
@@ -268,8 +291,8 @@ CopiaSoft</p>
             <div>
               <div class="footerTitle">Legal</div>
               <div class="footerLinks">
-                <a href="/en/privacy/wallbreaker/">Privacy Policy</a>
-                <a href="/en/terms/wallbreaker/">Terms of Service</a>
+                <a href="/en/legal/">Legal</a>
+                <a href="/en/news/">News</a>
                 <a href="mailto:support@copiasoft.com">support@copiasoft.com</a>
               </div>
             </div>

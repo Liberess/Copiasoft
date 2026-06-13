@@ -47,6 +47,7 @@ function loadContent() {
   const games = listJsonFiles(path.join(CONTENT_DIR, "games"))
     .map(readJson)
     .sort((a, b) => a.slug.localeCompare(b.slug));
+  site._games = games;
   const posts = listJsonFiles(path.join(CONTENT_DIR, "posts"))
     .map(readJson)
     .sort((a, b) => `${b.date}-${b.slug}`.localeCompare(`${a.date}-${a.slug}`));
@@ -109,6 +110,27 @@ function primaryStore(game, lang) {
   };
 }
 
+function gameGroup(game) {
+  return hasPlatform(game, "steam") || hasPlatform(game, "windows") ? "pc" : "mobile";
+}
+
+function storeTag(game, platform) {
+  const store = primaryStore(game, "en");
+  if (store.url && String(platform).toLowerCase().includes(store.label.toLowerCase())) {
+    return `<a class="tag" href="${attr(store.url)}" target="_blank" rel="noreferrer">${esc(platform)}</a>`;
+  }
+
+  return `<span class="tag">${esc(platform)}</span>`;
+}
+
+function postTypeLabel(type, lang) {
+  if (type === "patch-note") {
+    return lang === "ko" ? "패치노트" : "Patch Notes";
+  }
+
+  return lang === "ko" ? "공지사항" : "Notice";
+}
+
 function logoMarkup(site) {
   const logo = site.assets?.logo;
   if (logo) {
@@ -151,10 +173,17 @@ function sharedStyles() {
     .logo img { width: 100%; height: 100%; object-fit: cover; }
     .brand strong { display: block; font-size: 16px; line-height: 1.15; }
     .brand small { display: block; color: #667085; font-size: 12px; }
-    .navLinks { display: flex; align-items: center; justify-content: flex-end; gap: 18px; font-size: 14px; font-weight: 700; }
-    .navLinks a { color: #25324a; }
-    .navLinks a:hover { color: #5b4dca; }
-    .navCta { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; border-radius: 8px; color: #fff !important; background: #5b4dca; }
+    .navLinks { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 14px; font-weight: 800; }
+    .mainNav { display: inline-flex; align-items: center; gap: 4px; padding: 5px; border: 1px solid rgba(17,24,39,0.1); border-radius: 999px; background: #fff; box-shadow: 0 12px 30px rgba(17,24,39,0.07); }
+    .navItem { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 14px; border-radius: 999px; color: #25324a; transition: color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease; }
+    .navItem:hover { color: #111827; background: #edf2fb; transform: translateY(-1px); }
+    .navItem.active { color: #fff; background: linear-gradient(135deg, #5b4dca, #44d7a8); box-shadow: 0 10px 24px rgba(91,77,202,0.28); }
+    .caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; display: inline-block; transform: translateY(1px); }
+    .dropdown { position: relative; z-index: 2; }
+    .dropdownPanel { position: absolute; top: calc(100% + 10px); left: 0; min-width: 220px; display: grid; gap: 4px; padding: 10px; border: 1px solid rgba(17,24,39,0.12); border-radius: 8px; background: #fff; box-shadow: 0 18px 42px rgba(17,24,39,0.14); opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .18s ease, transform .18s ease, visibility .18s ease; }
+    .dropdown:hover .dropdownPanel, .dropdown:focus-within .dropdownPanel { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdownPanel a { padding: 9px 10px; border-radius: 6px; color: #25324a; }
+    .dropdownPanel a:hover { background: #edf2fb; color: #5b4dca; }
     .langSwitch { display: inline-flex; gap: 4px; padding: 4px; border-radius: 8px; border: 1px solid rgba(17,24,39,0.12); background: #fff; }
     .langSwitch a { min-width: 38px; padding: 7px 8px; border-radius: 6px; color: #667085; text-align: center; font-size: 12px; }
     .langSwitch a.active { color: #111827; background: #edf0f7; }
@@ -176,8 +205,11 @@ function sharedStyles() {
     .sectionHead { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
     h2 { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: 0; }
     .sectionLead { margin: 8px 0 0; color: var(--muted); max-width: 680px; }
-    .gameGrid { display: grid; gap: 18px; }
-    .gameCard { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 26px; align-items: center; padding: 22px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .gameGrid { display: grid; gap: var(--game-card-gap, 18px); }
+    .gameCard { width: 100%; max-width: var(--game-card-max, 100%); display: grid; grid-template-columns: 0.92fr 1.08fr; gap: var(--game-card-gap, 26px); align-items: center; padding: var(--game-card-padding, 22px); border: 1px solid var(--line); border-radius: 8px; background: var(--panel); box-shadow: 0 10px 28px rgba(0,0,0,0.12); transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; overflow: hidden; }
+    .gameCard:hover { transform: translateY(-6px); border-color: rgba(139,124,255,0.52); box-shadow: 0 24px 56px rgba(0,0,0,0.28); }
+    .gameCard img { width: 100%; height: var(--game-card-image-height, auto); object-fit: var(--game-card-image-fit, cover); transition: transform .28s ease; }
+    .gameCard:hover img { transform: scale(1.045); }
     .gameInfo h3 { margin: 0 0 10px; font-size: 30px; letter-spacing: 0; }
     .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
     .tag { padding: 6px 10px; border-radius: 8px; background: var(--panel-soft); color: #dce6f8; font-size: 13px; font-weight: 700; }
@@ -196,6 +228,11 @@ function sharedStyles() {
     .supportGrid.columns-2, .infoGrid.columns-2 { grid-template-columns: repeat(2, 1fr); }
     .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
     .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
+    .pageHero { padding: 64px 0 34px; color: #111827; }
+    .pageHero p { max-width: 680px; color: #475467; font-size: 18px; }
+    .splitHead { margin: 34px 0 14px; font-size: 22px; color: var(--text); }
+    .filterRow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+    .filterPill { min-height: 36px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--text); font-weight: 800; font-size: 13px; }
     .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
     .tabs a { min-height: 42px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); font-weight: 800; }
     .pageSection { padding: var(--section-pt, 42px) 0 var(--section-pb, 42px); }
@@ -222,6 +259,8 @@ function sharedStyles() {
     @media (max-width: 860px) {
       .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
       .navLinks { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
+      .mainNav { flex-wrap: wrap; border-radius: 8px; }
+      .dropdownPanel { position: static; min-width: 100%; margin-top: 6px; opacity: 1; visibility: visible; transform: none; box-shadow: none; }
       .heroGrid, .gameCard, .noticeList, .supportGrid, .infoGrid, .footerGrid { grid-template-columns: 1fr; }
       .heroArt.resized { max-width: 100%; }
       .hero { padding-top: 44px; }
@@ -235,6 +274,17 @@ function header(site, lang, titlePath = "") {
   const labels = site.labels[lang];
   const altLang = lang === "ko" ? "en" : "ko";
   const altPath = titlePath ? `/${altLang}${titlePath}` : `/${altLang}/`;
+  const current = titlePath.startsWith("/games") ? "games"
+    : titlePath.startsWith("/news") ? "news"
+      : titlePath.startsWith("/support") ? "support"
+        : titlePath.startsWith("/legal") || titlePath.startsWith("/privacy") || titlePath.startsWith("/terms") ? "legal"
+          : "home";
+  const navOrder = ["home", "games", "news", "support", "legal"];
+  const navIndex = Math.max(0, navOrder.indexOf(current));
+  const activeLeft = 5 + navIndex * 82;
+  const activeWidth = current === "support" ? 82 : current === "games" ? 76 : current === "legal" ? 70 : 68;
+  const visibleGames = (site._games || []).filter((game) => game.visible);
+  const navClass = (key) => `navItem${current === key ? " active" : ""}`;
   return `
   <header class="topbar">
     <div class="container">
@@ -244,12 +294,18 @@ function header(site, lang, titlePath = "") {
           <span><strong>${esc(site.company.name)}</strong><small>${esc(localize(site.company.studioLabel, lang))}</small></span>
         </a>
         <div class="navLinks">
-          <a href="/${lang}/">${esc(labels.home)}</a>
-          <a href="/${lang}/#games">${esc(labels.games)}</a>
-          <a href="/${lang}/support/">${esc(labels.support)}</a>
-          <a href="/${lang}/privacy/wallbreaker/">${esc(labels.privacy)}</a>
-          <a href="/${lang}/terms/wallbreaker/">${esc(labels.terms)}</a>
-          <a class="navCta" href="/${lang}/#games">${esc(site.home[lang].primaryCta)}</a>
+          <div class="mainNav">
+            <a class="${navClass("home")}" href="/${lang}/">${esc(labels.home)}</a>
+            <div class="dropdown">
+              <a class="${navClass("games")}" href="/${lang}/games/">${esc(labels.games)} <span class="caret" aria-hidden="true"></span></a>
+              <div class="dropdownPanel">
+                ${visibleGames.map((game) => `<a href="${gameUrl(game, lang)}">${esc(localize(game.title, lang))}</a>`).join("")}
+              </div>
+            </div>
+            <a class="${navClass("news")}" href="/${lang}/news/">${esc(labels.news || "News")}</a>
+            <a class="${navClass("support")}" href="/${lang}/support/">${esc(labels.support)}</a>
+            <a class="${navClass("legal")}" href="/${lang}/legal/">${esc(labels.legal || "Legal")}</a>
+          </div>
           <span class="langSwitch" aria-label="${lang === "ko" ? "언어 선택" : "Language"}">
             <a class="${lang === "ko" ? "active" : ""}" href="${lang === "ko" ? `/${lang}${titlePath || "/"}` : altPath}">KO</a>
             <a class="${lang === "en" ? "active" : ""}" href="${lang === "en" ? `/${lang}${titlePath || "/"}` : altPath}">EN</a>
@@ -287,8 +343,8 @@ function footer(site, games, lang) {
             <div>
               <div class="footerTitle">Legal</div>
               <div class="footerLinks">
-                <a href="/${lang}/privacy/wallbreaker/">${esc(labels.privacyPolicy)}</a>
-                <a href="/${lang}/terms/wallbreaker/">${esc(labels.termsOfService)}</a>
+                <a href="/${lang}/legal/">${esc(labels.legal || "Legal")}</a>
+                <a href="/${lang}/news/">${esc(labels.news || "News")}</a>
                 <a href="mailto:${attr(site.supportEmail)}">${esc(site.supportEmail)}</a>
               </div>
             </div>
@@ -344,6 +400,21 @@ function sectionStyle(section) {
   const pt = Number.isFinite(Number(settings.paddingTop)) ? Number(settings.paddingTop) : 42;
   const pb = Number.isFinite(Number(settings.paddingBottom)) ? Number(settings.paddingBottom) : 42;
   return `--section-pt:${pt}px;--section-pb:${pb}px;`;
+}
+
+function gameCardStyle(settings = {}, defaults = {}) {
+  const maxWidth = Number(settings.cardMaxWidthPx || defaults.cardMaxWidthPx || 0);
+  const imageHeight = Number(settings.cardImageHeightPx || defaults.cardImageHeightPx || 0);
+  const padding = Number(settings.cardPaddingPx || defaults.cardPaddingPx || 0);
+  const gap = Number(settings.cardGapPx || defaults.cardGapPx || 0);
+  const fit = ["contain", "cover", "fill"].includes(settings.cardImageFit) ? settings.cardImageFit : (defaults.cardImageFit || "cover");
+  return [
+    maxWidth > 0 ? `--game-card-max:${maxWidth}px;` : "",
+    imageHeight > 0 ? `--game-card-image-height:${imageHeight}px;` : "",
+    padding > 0 ? `--game-card-padding:${padding}px;` : "",
+    gap > 0 ? `--game-card-gap:${gap}px;` : "",
+    `--game-card-image-fit:${fit};`
+  ].join("");
 }
 
 function sectionClass(section, extra = "") {
@@ -426,7 +497,7 @@ function renderHomeGames(site, games, lang, section) {
             <div class="gameInfo">
               <div class="tags">
                 <span class="tag">${esc(localize(game.genre, lang))}</span>
-                ${game.platforms.map((platform) => `<span class="tag">${esc(platform)}</span>`).join("")}
+                ${game.platforms.map((platform) => storeTag(game, platform)).join("")}
                 <span class="tag">${esc(localize(game.status, lang))}</span>
               </div>
               <h3>${esc(localize(game.title, lang))}</h3>
@@ -436,7 +507,7 @@ function renderHomeGames(site, games, lang, section) {
           </article>`).join("");
 
   return `
-      <section id="games" class="${sectionClass(section)}" style="${sectionStyle(section)}">
+      <section id="games" class="${sectionClass(section)}" style="${sectionStyle(section)}${gameCardStyle(section.settings, { cardMaxWidthPx: 980, cardImageHeightPx: 300, cardPaddingPx: 18, cardGapPx: 22, cardImageFit: "cover" })}">
         <div class="container">
           <div class="sectionHead">
             <div>
@@ -488,12 +559,17 @@ function renderHomeSupport(site, games, lang, section) {
               <p>${lang === "ko" ? "버그 제보, 결제 문의, 데이터 삭제 요청에 필요한 정보를 확인합니다." : "Find what to include for bug reports, payment questions, and data deletion requests."}</p>
               <strong>${esc(labels.support)}</strong>
             </a>
+            <a class="supportBox" href="/${lang}/legal/">
+              <h3>${esc(labels.legal || "Legal")}</h3>
+              <p>${lang === "ko" ? "게임별 개인정보처리방침, 공통 이용약관, 확률정보 문서를 확인합니다." : "Find privacy policies, common terms, and probability information documents."}</p>
+              <strong>${esc(labels.legal || "Legal")}</strong>
+            </a>
             <a class="supportBox" href="${attr(policyUrl(supportGame, lang, "privacy"))}">
               <h3>${esc(labels.privacyPolicy)}</h3>
               <p>${lang === "ko" ? "게임의 데이터 수집, 광고 SDK, 서버 저장 정보를 확인합니다." : "Review data collection, advertising SDK, and server storage information."}</p>
               <strong>${esc(labels.privacy)}</strong>
             </a>
-            <a class="supportBox" href="${attr(policyUrl(supportGame, lang, "terms"))}">
+            <a class="supportBox" href="/${lang}/terms/">
               <h3>${esc(labels.termsOfService)}</h3>
               <p>${lang === "ko" ? "인앱결제, 광고 보상, 구매 복원, 환불 기준을 확인합니다." : "Review in-app purchases, ad rewards, purchase restoration, and refund policy notes."}</p>
               <strong>${esc(labels.terms)}</strong>
@@ -536,9 +612,9 @@ function fallbackHomePage(lang) {
   return {
     sections: [
       { id: "hero", type: "hero", visible: true, settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 320, imageHeightPx: 240, imageFit: "contain", imagePosition: "right", background: "light" } },
-      { id: "games", type: "games", visible: true, settings: { paddingTop: 42, paddingBottom: 42, cardImagePosition: "left", background: "dark" } },
+      { id: "games", type: "games", visible: true, settings: { paddingTop: 42, paddingBottom: 42, cardImagePosition: "left", cardMaxWidthPx: 980, cardImageHeightPx: 300, cardPaddingPx: 18, cardGapPx: 22, cardImageFit: "cover", background: "dark" } },
       { id: "news", type: "news", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
-      { id: "support", type: "support", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
+      { id: "support", type: "support", visible: false, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
     ]
   };
 }
@@ -566,6 +642,241 @@ ${footer(site, visibleGames, lang)}
     canonical: `${site.baseUrl}/${lang}/`,
     body,
     titlePath: "/"
+  });
+}
+
+function renderGameCards(site, games, lang) {
+  return games.map((game) => `
+          <article class="gameCard">
+            <img src="${attr(game.image)}" alt="${attr(localize(game.title, lang))} key art" width="720" height="480" />
+            <div class="gameInfo">
+              <div class="tags">
+                ${game.platforms.map((platform) => storeTag(game, platform)).join("")}
+                <span class="tag">${esc(localize(game.status, lang))}</span>
+              </div>
+              <h3>${esc(localize(game.title, lang))}</h3>
+              <p>${esc(localize(game.shortDescription, lang))}</p>
+              ${renderGameButtons(site, game, lang)}
+            </div>
+          </article>`).join("");
+}
+
+function renderGamesIndex(content, lang) {
+  const { site } = content;
+  const visibleGames = content.games.filter((game) => game.visible);
+  const mobileGames = visibleGames.filter((game) => gameGroup(game) === "mobile");
+  const pcGames = visibleGames.filter((game) => gameGroup(game) === "pc");
+  const title = lang === "ko" ? "Games | CopiaSoft" : "Games | CopiaSoft";
+  const lead = lang === "ko"
+    ? "CopiaSoft에서 개발 중이거나 공개한 게임 목록입니다."
+    : "Games developed or published by CopiaSoft.";
+  const body = `
+  <main>
+    <section class="pageHero">
+      <div class="container">
+        <h1>Games</h1>
+        <p>${esc(lead)}</p>
+      </div>
+    </section>
+    <div class="darkBand">
+      <section class="pageSection section-dark" style="${gameCardStyle({}, { cardMaxWidthPx: 920, cardImageHeightPx: 260, cardPaddingPx: 18, cardGapPx: 22, cardImageFit: "cover" })}">
+        <div class="container">
+          <h2 class="splitHead">Mobile Games</h2>
+          <div class="gameGrid">${renderGameCards(site, mobileGames, lang)}</div>
+          <h2 class="splitHead">PC / Steam Games</h2>
+          <div class="gameGrid">${renderGameCards(site, pcGames, lang)}</div>
+        </div>
+      </section>
+${footer(site, visibleGames, lang)}
+    </div>
+  </main>`;
+
+  return pageShell({
+    site,
+    lang,
+    title,
+    description: lead,
+    canonical: `${site.baseUrl}/${lang}/games/`,
+    body,
+    titlePath: "/games/"
+  });
+}
+
+function renderNewsIndex(content, lang) {
+  const { site, games } = content;
+  const labels = site.labels[lang];
+  const posts = content.posts
+    .filter((post) => post.visible && ["notice", "patch-note"].includes(post.type))
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  const filters = ["All", "Notice", "Patch Notes", ...games.filter((game) => game.visible).map((game) => localize(game.title, lang))];
+  const cards = posts.length > 0 ? posts.map((post) => {
+    const game = games.find((candidate) => candidate.slug === post.game);
+    return `
+          <article class="notice">
+            <time datetime="${attr(post.date)}">[${esc(postTypeLabel(post.type, lang))}] ${esc(game ? localize(game.title, lang) : post.game)} · ${esc(post.date.replaceAll("-", "."))}</time>
+            <strong>${esc(localize(post.title, lang))}</strong>
+            <p>${esc(localize(post.summary, lang))}</p>
+          </article>`;
+  }).join("") : `<article class="notice"><p>${lang === "ko" ? "아직 등록된 소식이 없습니다." : "No news yet."}</p></article>`;
+  const lead = lang === "ko" ? "전체 게임의 공지사항과 패치노트 모음입니다." : "Notices and patch notes across all games.";
+  const body = `
+  <main>
+    <section class="pageHero">
+      <div class="container">
+        <h1>${esc(labels.news || "News")}</h1>
+        <p>${esc(lead)}</p>
+      </div>
+    </section>
+    <div class="darkBand">
+      <section class="pageSection section-dark">
+        <div class="container">
+          <div class="filterRow">${filters.map((item) => `<span class="filterPill">${esc(item)}</span>`).join("")}</div>
+          <div class="noticeList columns-1">${cards}</div>
+        </div>
+      </section>
+${footer(site, games.filter((game) => game.visible), lang)}
+    </div>
+  </main>`;
+
+  return pageShell({
+    site,
+    lang,
+    title: `${labels.news || "News"} | CopiaSoft`,
+    description: lead,
+    canonical: `${site.baseUrl}/${lang}/news/`,
+    body,
+    titlePath: "/news/"
+  });
+}
+
+function renderSupportPage(content, lang) {
+  const { site, games } = content;
+  const labels = site.labels[lang];
+  const lead = lang === "ko"
+    ? "게임 이용 중 문제가 발생한 경우 아래 이메일로 문의해 주세요."
+    : "If you experience an issue while playing a game, contact us by email.";
+  const details = lang === "ko"
+    ? ["게임명", "닉네임 또는 유저 ID", "사용 기기", "발생 시간", "문제 내용", "결제 문의의 경우 주문번호", "광고 보상 문의의 경우 광고 시청 시간"]
+    : ["Game title", "Nickname or user ID", "Device", "Time of occurrence", "Issue details", "Order number for payment inquiries", "Ad watch time for ad reward inquiries"];
+  const body = `
+  <main>
+    <section class="pageHero">
+      <div class="container">
+        <h1>${esc(labels.support)}</h1>
+        <p>${esc(lead)}</p>
+      </div>
+    </section>
+    <div class="darkBand">
+      <section class="pageSection section-dark">
+        <div class="container">
+          <div class="supportGrid columns-2">
+            <article class="supportBox"><h3>Email</h3><p><a href="mailto:${attr(site.supportEmail)}">${esc(site.supportEmail)}</a></p></article>
+            <article class="supportBox"><h3>${lang === "ko" ? "환불 안내" : "Refund Policy"}</h3><p>${lang === "ko" ? "Google Play 게임의 결제 및 환불은 Google Play 정책을 따릅니다. Steam 게임의 구매 및 환불은 Steam 정책을 따릅니다." : "Google Play purchases and refunds follow Google Play policies. Steam purchases and refunds follow Steam policies."}</p></article>
+          </div>
+          <h2 class="splitHead">${lang === "ko" ? "문의 시 포함할 정보" : "Information to Include"}</h2>
+          <div class="noticeList columns-1"><article class="notice"><ul>${details.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></article></div>
+        </div>
+      </section>
+${footer(site, games.filter((game) => game.visible), lang)}
+    </div>
+  </main>`;
+
+  return pageShell({
+    site,
+    lang,
+    title: `${labels.support} | CopiaSoft`,
+    description: lead,
+    canonical: `${site.baseUrl}/${lang}/support/`,
+    body,
+    titlePath: "/support/"
+  });
+}
+
+function renderLegalPage(content, lang) {
+  const { site, games } = content;
+  const labels = site.labels[lang];
+  const visibleGames = games.filter((game) => game.visible);
+  const probabilityGames = visibleGames.filter((game) => fs.existsSync(path.join(ROOT, lang, "games", game.slug, "probability", "index.html")));
+  const lead = lang === "ko"
+    ? "CopiaSoft 게임 서비스와 관련된 정책 문서입니다. 개인정보처리방침과 확률정보는 게임별 서비스 구조에 따라 개별로 제공됩니다."
+    : "Policy documents for CopiaSoft game services. Privacy policies and probability information are provided per game where applicable.";
+  const body = `
+  <main>
+    <section class="pageHero">
+      <div class="container">
+        <h1>${esc(labels.legal || "Legal")}</h1>
+        <p>${esc(lead)}</p>
+      </div>
+    </section>
+    <div class="darkBand">
+      <section class="pageSection section-dark">
+        <div class="container">
+          <h2 class="splitHead">${esc(labels.privacyPolicy)}</h2>
+          <div class="supportGrid columns-3">
+            ${visibleGames.map((game) => `<a class="supportBox" href="${attr(policyUrl(game, lang, "privacy"))}"><h3>${esc(localize(game.title, lang))}</h3><p>${esc(labels.privacyPolicy)}</p><strong>${esc(labels.privacy)}</strong></a>`).join("")}
+          </div>
+          <h2 class="splitHead">${esc(labels.termsOfService)}</h2>
+          <div class="supportGrid columns-1">
+            <a class="supportBox" href="/${lang}/terms/"><h3>CopiaSoft</h3><p>${esc(labels.termsOfService)}</p><strong>${esc(labels.terms)}</strong></a>
+          </div>
+          <h2 class="splitHead">${esc(labels.probability || "Probability Info")}</h2>
+          <div class="supportGrid columns-3">
+            ${probabilityGames.length > 0 ? probabilityGames.map((game) => `<a class="supportBox" href="/${lang}/games/${attr(game.slug)}/probability/"><h3>${esc(localize(game.title, lang))}</h3><p>${esc(labels.probability || "Probability Info")}</p><strong>${esc(labels.probability || "Probability Info")}</strong></a>`).join("") : `<article class="supportBox"><p>${lang === "ko" ? "현재 표시할 확률정보 문서가 없습니다." : "No probability information documents are currently listed."}</p></article>`}
+          </div>
+        </div>
+      </section>
+${footer(site, visibleGames, lang)}
+    </div>
+  </main>`;
+
+  return pageShell({
+    site,
+    lang,
+    title: `${labels.legal || "Legal"} | CopiaSoft`,
+    description: lead,
+    canonical: `${site.baseUrl}/${lang}/legal/`,
+    body,
+    titlePath: "/legal/"
+  });
+}
+
+function renderCommonTermsPage(content, lang) {
+  const { site, games } = content;
+  const labels = site.labels[lang];
+  const bodyText = lang === "ko"
+    ? {
+      lead: "본 약관은 CopiaSoft가 제공하는 게임 서비스의 공통 이용 조건을 정합니다.",
+      platform: "Google Play 게임의 결제, 환불, 구매 복원은 Google Play 정책을 따릅니다. Steam 게임의 구매, 환불, 다운로드는 Steam 정책을 따릅니다."
+    }
+    : {
+      lead: "These Terms define the common conditions for using game services provided by CopiaSoft.",
+      platform: "Payments, refunds, and purchase restoration for Google Play games follow Google Play policies. Purchases, refunds, and downloads for Steam games follow Steam policies."
+    };
+  const body = `
+  <main>
+    <section class="pageHero"><div class="container"><h1>${esc(labels.termsOfService)}</h1><p>${esc(bodyText.lead)}</p></div></section>
+    <div class="darkBand">
+      <section class="pageSection section-dark">
+        <div class="container">
+          <div class="noticeList columns-1">
+            <article class="notice"><h2>1. CopiaSoft</h2><p>${esc(bodyText.lead)}</p></article>
+            <article class="notice"><h2>2. Platform Policy</h2><p>${esc(bodyText.platform)}</p></article>
+            <article class="notice"><h2>3. Contact</h2><p><a href="mailto:${attr(site.supportEmail)}">${esc(site.supportEmail)}</a></p></article>
+          </div>
+        </div>
+      </section>
+${footer(site, games.filter((game) => game.visible), lang)}
+    </div>
+  </main>`;
+
+  return pageShell({
+    site,
+    lang,
+    title: `${labels.termsOfService} | CopiaSoft`,
+    description: bodyText.lead,
+    canonical: `${site.baseUrl}/${lang}/terms/`,
+    body,
+    titlePath: "/terms/"
   });
 }
 
@@ -637,7 +948,7 @@ function renderGameHero(site, game, lang, page, section) {
           <h1>${esc(localize(game.title, lang))}</h1>
           <p class="heroDesc">${esc(localize(game.shortDescription, lang))}</p>
           <div class="tags">
-            ${game.platforms.map((platform) => `<span class="tag">${esc(platform)}</span>`).join("")}
+            ${game.platforms.map((platform) => storeTag(game, platform)).join("")}
             <span class="tag">${esc(localize(game.status, lang))}</span>
           </div>
           <div class="actions">
@@ -767,9 +1078,16 @@ ${footer(site, games.filter((candidate) => candidate.visible), lang)}
 }
 
 function renderSitemap(site, games) {
-  const urls = [
+  const urls = Array.from(new Set([
     "/ko/",
     "/en/",
+    ...LANGS.flatMap((lang) => [
+      `/${lang}/games/`,
+      `/${lang}/news/`,
+      `/${lang}/support/`,
+      `/${lang}/legal/`,
+      `/${lang}/terms/`
+    ]),
     ...games.filter((game) => game.visible).flatMap((game) => LANGS.map((lang) => gameUrl(game, lang))),
     ...games.filter((game) => game.visible).flatMap((game) => LANGS.flatMap((lang) => [
       policyUrl(game, lang, "privacy"),
@@ -777,7 +1095,7 @@ function renderSitemap(site, games) {
     ]).filter(Boolean)),
     "/ko/support/",
     "/en/support/"
-  ];
+  ]));
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -794,6 +1112,11 @@ function build() {
 
   for (const lang of LANGS) {
     writeFile(`${lang}/index.html`, renderIndex(content, lang));
+    writeFile(`${lang}/games/index.html`, renderGamesIndex(content, lang));
+    writeFile(`${lang}/news/index.html`, renderNewsIndex(content, lang));
+    writeFile(`${lang}/support/index.html`, renderSupportPage(content, lang));
+    writeFile(`${lang}/legal/index.html`, renderLegalPage(content, lang));
+    writeFile(`${lang}/terms/index.html`, renderCommonTermsPage(content, lang));
   }
 
   for (const game of visibleGames) {
