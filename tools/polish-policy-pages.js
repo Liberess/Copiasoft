@@ -30,6 +30,30 @@ const TARGETS = [
     title: "Terms of Service"
   },
   {
+    file: "ko/privacy/waterballoon/index.html",
+    lang: "ko",
+    alt: "/en/privacy/waterballoon/",
+    title: "개인정보처리방침"
+  },
+  {
+    file: "en/privacy/waterballoon/index.html",
+    lang: "en",
+    alt: "/ko/privacy/waterballoon/",
+    title: "Privacy Policy"
+  },
+  {
+    file: "ko/terms/waterballoon/index.html",
+    lang: "ko",
+    alt: "/en/terms/waterballoon/",
+    title: "이용약관"
+  },
+  {
+    file: "en/terms/waterballoon/index.html",
+    lang: "en",
+    alt: "/ko/terms/waterballoon/",
+    title: "Terms of Service"
+  },
+  {
     file: "ko/support/index.html",
     lang: "ko",
     alt: "/en/support/",
@@ -80,9 +104,11 @@ function policyStyle() {
 function header(target) {
   const home = target.lang === "ko" ? "/ko/" : "/en/";
   const games = `${home}#games`;
+  const gameSlug = target.file.includes("/waterballoon/") ? "waterballoon" : "wallbreaker";
+  const gameName = gameSlug === "waterballoon" ? "Don't Pop!: Splash Race" : "Wallbreaker";
   const support = target.lang === "ko" ? "/ko/support/" : "/en/support/";
-  const privacy = target.lang === "ko" ? "/ko/privacy/wallbreaker/" : "/en/privacy/wallbreaker/";
-  const terms = target.lang === "ko" ? "/ko/terms/wallbreaker/" : "/en/terms/wallbreaker/";
+  const privacy = target.lang === "ko" ? `/ko/privacy/${gameSlug}/` : `/en/privacy/${gameSlug}/`;
+  const terms = target.lang === "ko" ? `/ko/terms/${gameSlug}/` : `/en/terms/${gameSlug}/`;
   const current = target.file.includes("/support/") ? "support" : target.file.includes("/privacy/") ? "privacy" : "terms";
   const active = (key) => current === key ? ` class="active"` : "";
   const logo = SITE.assets && SITE.assets.logo ? SITE.assets.logo : "/assets/copiasoft-logo.svg";
@@ -108,7 +134,7 @@ function header(target) {
   <section class="docHero">
     <div class="docHeroInner">
       <h1>${target.title}</h1>
-      <p>${subtitle} · Wallbreaker · CopiaSoft</p>
+      <p>${subtitle} · ${gameName} · CopiaSoft</p>
     </div>
   </section>
   <main class="docPage">`;

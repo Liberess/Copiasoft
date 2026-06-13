@@ -88,6 +88,27 @@ function policyUrl(game, lang, kind) {
   return localize(game[`${kind}Url`], lang, "");
 }
 
+function hasPlatform(game, platform) {
+  const target = platform.toLowerCase();
+  return (game.platforms || []).some((item) => String(item).toLowerCase().includes(target));
+}
+
+function primaryStore(game, lang) {
+  if (game.steamUrl || hasPlatform(game, "steam") || hasPlatform(game, "windows")) {
+    return {
+      label: "Steam",
+      url: game.steamUrl || "",
+      comingSoon: lang === "ko" ? "Steam 준비 중" : "Steam coming soon"
+    };
+  }
+
+  return {
+    label: "Google Play",
+    url: game.googlePlayUrl || "",
+    comingSoon: lang === "ko" ? "Google Play 준비 중" : "Google Play coming soon"
+  };
+}
+
 function logoMarkup(site) {
   const logo = site.assets?.logo;
   if (logo) {
@@ -306,10 +327,10 @@ ${body}
 
 function renderGameButtons(site, game, lang) {
   const labels = site.labels[lang];
-  const store = game.googlePlayUrl;
-  const storeButton = store
-    ? `<a class="linkButton accent" href="${attr(store)}" target="_blank" rel="noreferrer">Google Play</a>`
-    : `<span class="linkButton accent" aria-disabled="true">${esc(labels.googlePlayComingSoon)}</span>`;
+  const store = primaryStore(game, lang);
+  const storeButton = store.url
+    ? `<a class="linkButton accent" href="${attr(store.url)}" target="_blank" rel="noreferrer">${esc(store.label)}</a>`
+    : `<span class="linkButton accent" aria-disabled="true">${esc(store.comingSoon)}</span>`;
 
   return `
     <div class="linkRow">
@@ -601,6 +622,7 @@ function buttonClass(page, kind) {
 function renderGameHero(site, game, lang, page, section) {
   const labels = site.labels[lang];
   const settings = section.settings || {};
+  const store = primaryStore(game, lang);
   const imageClass = settings.imagePosition === "left" ? "image-left" : "";
   const alignClass = settings.textAlign === "center" ? "center" : "";
   const effect = settings.effect || "none";
@@ -619,9 +641,9 @@ function renderGameHero(site, game, lang, page, section) {
             <span class="tag">${esc(localize(game.status, lang))}</span>
           </div>
           <div class="actions">
-            ${game.googlePlayUrl
-              ? `<a class="${buttonClass(page, "primary")}" href="${attr(game.googlePlayUrl)}" target="_blank" rel="noreferrer">Google Play</a>`
-              : `<span class="${buttonClass(page, "primary")}" aria-disabled="true">${esc(labels.googlePlayComingSoon)}</span>`}
+            ${store.url
+              ? `<a class="${buttonClass(page, "primary")}" href="${attr(store.url)}" target="_blank" rel="noreferrer">${esc(store.label)}</a>`
+              : `<span class="${buttonClass(page, "primary")}" aria-disabled="true">${esc(store.comingSoon)}</span>`}
             <a class="${buttonClass(page, "secondary")}" href="${attr(policyUrl(game, lang, "support"))}">${esc(labels.contactUs)}</a>
           </div>
           <div class="tabs">
@@ -749,10 +771,10 @@ function renderSitemap(site, games) {
     "/ko/",
     "/en/",
     ...games.filter((game) => game.visible).flatMap((game) => LANGS.map((lang) => gameUrl(game, lang))),
-    "/ko/privacy/wallbreaker/",
-    "/en/privacy/wallbreaker/",
-    "/ko/terms/wallbreaker/",
-    "/en/terms/wallbreaker/",
+    ...games.filter((game) => game.visible).flatMap((game) => LANGS.flatMap((lang) => [
+      policyUrl(game, lang, "privacy"),
+      policyUrl(game, lang, "terms")
+    ]).filter(Boolean)),
     "/ko/support/",
     "/en/support/"
   ];

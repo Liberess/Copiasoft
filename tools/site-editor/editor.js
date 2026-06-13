@@ -801,6 +801,7 @@ function renderGames() {
       shortDescription: { ko: "", en: "" },
       longDescription: { ko: "", en: "" },
       googlePlayUrl: "",
+      steamUrl: "",
       supportUrl: { ko: "/ko/support/", en: "/en/support/" },
       privacyUrl: { ko: "", en: "" },
       termsUrl: { ko: "", en: "" }
@@ -834,6 +835,7 @@ function renderGames() {
       assetPicker("Game Key Art", game.image, (value) => game.image = value),
       input("Platforms (comma separated)", game.platforms.join(", "), (value) => game.platforms = value.split(",").map((x) => x.trim()).filter(Boolean)),
       input("Google Play URL", game.googlePlayUrl, (value) => game.googlePlayUrl = value),
+      input("Steam URL", game.steamUrl || "", (value) => game.steamUrl = value),
       checkbox("Visible on site", game.visible, (value) => game.visible = value),
       checkbox("Featured on home", game.featured, (value) => game.featured = value)
     );
