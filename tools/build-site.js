@@ -137,7 +137,8 @@ function sharedStyles() {
     .langSwitch a { min-width: 38px; padding: 7px 8px; border-radius: 6px; color: #667085; text-align: center; font-size: 12px; }
     .langSwitch a.active { color: #111827; background: #edf0f7; }
     .hero { padding: 72px 0 54px; color: #111827; }
-    .heroGrid { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr); gap: 46px; align-items: center; }
+    .heroGrid { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr); gap: 46px; align-items: center; }
+    .heroGrid.noImage { grid-template-columns: minmax(0, 1fr); }
     .eyebrow { margin: 0 0 12px; color: #5b4dca; font-weight: 800; font-size: 13px; text-transform: uppercase; }
     h1 { margin: 0; font-size: clamp(34px, 5vw, 58px); line-height: 1.08; letter-spacing: 0; }
     .heroDesc { max-width: 620px; margin: 18px 0 0; color: #475467; font-size: 18px; }
@@ -145,7 +146,9 @@ function sharedStyles() {
     .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; border-radius: 8px; font-weight: 800; border: 1px solid transparent; }
     .button.primary { background: #111827; color: #fff; }
     .button.secondary { background: #fff; color: #111827; border-color: rgba(17,24,39,0.14); }
-    .heroArt { border-radius: 8px; overflow: hidden; border: 1px solid rgba(17,24,39,0.12); box-shadow: 0 24px 70px rgba(30,41,59,0.18); background: #101827; }
+    .heroArt { border-radius: 8px; overflow: hidden; border: 1px solid rgba(17,24,39,0.12); box-shadow: 0 24px 70px rgba(30,41,59,0.18); background: #101827; justify-self: stretch; }
+    .heroArt.resized { width: var(--hero-image-width, 100%); max-width: none; height: var(--hero-image-height, auto); }
+    .heroArt.resized img { width: 100%; height: 100%; object-fit: var(--hero-image-fit, cover); }
     .darkBand { background: var(--bg); padding: 56px 0 0; }
     section { padding: 42px 0; }
     .sectionHead { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
@@ -198,6 +201,7 @@ function sharedStyles() {
       .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
       .navLinks { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
       .heroGrid, .gameCard, .noticeList, .supportGrid, .infoGrid, .footerGrid { grid-template-columns: 1fr; }
+      .heroArt.resized { max-width: 100%; }
       .hero { padding-top: 44px; }
       .heroDesc { font-size: 16px; }
       .sectionHead { align-items: flex-start; flex-direction: column; }
@@ -338,14 +342,16 @@ function renderHomeHero(site, games, lang, section) {
   const alignClass = settings.textAlign === "center" ? "center" : "";
   const effect = settings.effect || "none";
   const fx = renderHeroEffect(settings);
-  const heroImage = featured ? `<a class="heroArt" href="${gameUrl(featured, lang)}" aria-label="${attr(localize(featured.title, lang))}">
+  const showImage = settings.showImage !== false;
+  const imageStyle = heroImageStyle(settings);
+  const heroImage = featured && showImage ? `<a class="heroArt resized" style="${imageStyle}" href="${gameUrl(featured, lang)}" aria-label="${attr(localize(featured.title, lang))}">
           <img src="${attr(featured.image)}" alt="${attr(localize(featured.title, lang))} key art" width="720" height="480" />
         </a>` : "";
 
   return `
     <section id="hero" class="${sectionClass(section, `hero ${effect !== "none" ? "hasFx" : ""}`)}" style="${sectionStyle(section)}">
       ${fx}
-      <div class="container heroGrid ${alignClass} ${imageClass}">
+      <div class="container heroGrid ${alignClass} ${imageClass} ${heroImage ? "" : "noImage"}">
         <div>
           <p class="eyebrow">${esc(home.heroEyebrow)}</p>
           <h1>${esc(home.heroTitle)}</h1>
@@ -358,6 +364,16 @@ function renderHomeHero(site, games, lang, section) {
         ${heroImage}
       </div>
     </section>`;
+}
+
+function heroImageStyle(settings) {
+  const widthPx = Number(settings.imageWidthPx || 0);
+  const heightPx = Number(settings.imageHeightPx || 0);
+  const widthPercent = Math.max(1, Math.min(100, Number(settings.imageWidth || 100)));
+  const fit = ["contain", "cover", "fill"].includes(settings.imageFit) ? settings.imageFit : "cover";
+  const width = widthPx > 0 ? `${widthPx}px` : `${widthPercent}%`;
+  const height = heightPx > 0 ? `${heightPx}px` : "auto";
+  return `--hero-image-width:${width};--hero-image-height:${height};--hero-image-fit:${fit};`;
 }
 
 function renderHeroEffect(settings) {
@@ -497,7 +513,7 @@ function renderHomeSection(content, lang, section) {
 function fallbackHomePage(lang) {
   return {
     sections: [
-      { id: "hero", type: "hero", visible: true, settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light" } },
+      { id: "hero", type: "hero", visible: true, settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 320, imageHeightPx: 240, imageFit: "contain", imagePosition: "right", background: "light" } },
       { id: "games", type: "games", visible: true, settings: { paddingTop: 42, paddingBottom: 42, cardImagePosition: "left", background: "dark" } },
       { id: "news", type: "news", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
       { id: "support", type: "support", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
@@ -562,9 +578,9 @@ function fallbackGamePage(lang, game) {
     game: game.slug,
     buttonStyle: "solid",
     sections: [
-      { id: "hero", type: "hero", visible: true, settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" } },
+      { id: "hero", type: "hero", visible: true, settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 360, imageHeightPx: 260, imageFit: "contain", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" } },
       { id: "overview", type: "overview", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } },
-      ...POST_TYPES.map((type) => ({ id: type, type, visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } })),
+      ...POST_TYPES.map((type) => ({ id: type, type, visible: type !== "update" && type !== "release-note", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } })),
       { id: "support", type: "support", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
     ]
   };
@@ -587,10 +603,12 @@ function renderGameHero(site, game, lang, page, section) {
   const imageClass = settings.imagePosition === "left" ? "image-left" : "";
   const alignClass = settings.textAlign === "center" ? "center" : "";
   const effect = settings.effect || "none";
+  const showImage = settings.showImage !== false;
+  const imageStyle = heroImageStyle(settings);
   return `
     <section id="hero" class="${sectionClass(section, `hero ${effect !== "none" ? "hasFx" : ""}`)}" style="${sectionStyle(section)}">
       ${renderHeroEffect(settings)}
-      <div class="container heroGrid ${alignClass} ${imageClass}">
+      <div class="container heroGrid ${alignClass} ${imageClass} ${showImage ? "" : "noImage"}">
         <div>
           <p class="eyebrow">${esc(localize(game.genre, lang))}</p>
           <h1>${esc(localize(game.title, lang))}</h1>
@@ -609,7 +627,7 @@ function renderGameHero(site, game, lang, page, section) {
             ${page.sections.filter((item) => item.visible && item.type !== "hero").map((item) => `<a href="#${attr(item.id)}">${esc(item.title || labels[item.type] || item.type)}</a>`).join("")}
           </div>
         </div>
-        <div class="heroArt"><img src="${attr(game.image)}" alt="${attr(localize(game.title, lang))} key art" width="720" height="480" /></div>
+        ${showImage ? `<div class="heroArt resized" style="${imageStyle}"><img src="${attr(game.image)}" alt="${attr(localize(game.title, lang))} key art" width="720" height="480" /></div>` : ""}
       </div>
     </section>`;
 }

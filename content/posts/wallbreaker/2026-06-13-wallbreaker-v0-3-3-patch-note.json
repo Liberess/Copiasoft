@@ -1,0 +1,21 @@
+{
+  "slug": "2026-06-13-wallbreaker-v0-3-3-patch-note",
+  "game": "wallbreaker",
+  "type": "patch-note",
+  "date": "2026-06-12",
+  "version": "v0.3.3",
+  "visible": true,
+  "showOnHome": false,
+  "title": {
+    "ko": "[우당탕탕 벽뿌셔] v0.3.3 패치노트",
+    "en": "[Wall Smash Mayhem] v0.3.3 Patch Notes"
+  },
+  "summary": {
+    "ko": "까마귀 이벤트 밸런스가 조정되었습니다.\n\n- 까마귀 등장 확률 및 등장 간격 조정\n- 골드 보상 수량 조정\n- 다이아 보상 획득 확률 및 수량 조정",
+    "en": "The balance of the Crow Event has been adjusted.\n\n* Adjusted crow appearance rate and interval\n* Adjusted gold reward amount\n* Adjusted diamond reward chance and amount"
+  },
+  "body": {
+    "ko": "안녕하세요. CopiaSoft입니다.\n\n우당탕탕 벽뿌셔 v0.3.3 패치가 적용되었습니다.\n\n이번 패치에서는 까마귀 이벤트의 보상 밸런스를 조정했습니다.\n\n변경사항\n\n* 까마귀 등장 확률을 조정했습니다.\n* 까마귀 등장 시간 간격을 조정했습니다.\n* 까마귀 이벤트를 통해 획득할 수 있는 골드 보상 수량을 조정했습니다.\n* 까마귀 이벤트를 통해 획득할 수 있는 다이아 보상 확률 및 수량을 조정했습니다.\n\n안내\n\n업데이트 적용을 위해 게임을 최신 버전으로 이용해 주세요.\n게임 이용 중 문제가 발생하는 경우 고객지원 페이지를 통해 문의해 주세요.\n\n감사합니다.\nCopiaSoft",
+    "en": "Hello, this is CopiaSoft.\n\nWall Smash Mayhem v0.3.3 has been updated.\n\nThis patch adjusts the reward balance of the Crow Event.\n\nChanges\n\n* Adjusted the crow appearance rate.\n* Adjusted the crow appearance interval.\n* Adjusted the amount of gold rewards from the Crow Event.\n* Adjusted the chance and amount of diamond rewards from the Crow Event.\n\nNotice\n\nPlease use the latest version of the game to apply the update.\nIf you experience any issues, please contact us through the support page.\n\nThank you.\nCopiaSoft"
+  }
+}

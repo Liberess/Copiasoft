@@ -1,7 +1,7 @@
 {
   "page": "game",
-  "lang": "en",
-  "game": "wallbreaker",
+  "lang": "ko",
+  "game": "animaltop",
   "buttonStyle": "solid",
   "sections": [
     {
@@ -13,6 +13,11 @@
         "paddingTop": 72,
         "paddingBottom": 54,
         "textAlign": "left",
+        "showImage": true,
+        "imageWidth": 100,
+        "imageWidthPx": 360,
+        "imageHeightPx": 260,
+        "imageFit": "contain",
         "imagePosition": "right",
         "background": "light",
         "effect": "none",
@@ -24,7 +29,7 @@
       "id": "overview",
       "type": "overview",
       "visible": true,
-      "title": "Overview",
+      "title": "게임 소개",
       "settings": {
         "paddingTop": 42,
         "paddingBottom": 42,
@@ -36,7 +41,7 @@
       "id": "notice",
       "type": "notice",
       "visible": true,
-      "title": "Notice",
+      "title": "공지사항",
       "settings": {
         "paddingTop": 42,
         "paddingBottom": 42,
@@ -47,8 +52,8 @@
     {
       "id": "update",
       "type": "update",
-      "visible": true,
-      "title": "Updates",
+      "visible": false,
+      "title": "업데이트",
       "settings": {
         "paddingTop": 42,
         "paddingBottom": 42,
@@ -60,7 +65,7 @@
       "id": "patch-note",
       "type": "patch-note",
       "visible": true,
-      "title": "Patch Notes",
+      "title": "패치노트",
       "settings": {
         "paddingTop": 42,
         "paddingBottom": 42,
@@ -71,8 +76,8 @@
     {
       "id": "release-note",
       "type": "release-note",
-      "visible": true,
-      "title": "Release Notes",
+      "visible": false,
+      "title": "출시노트",
       "settings": {
         "paddingTop": 42,
         "paddingBottom": 42,

@@ -49,12 +49,16 @@ function policyStyle() {
     .siteHeader { background: rgba(247,251,255,.94); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(10px); }
     .siteNav { max-width: 980px; min-height: 72px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
     .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
-    .brand img { width: 40px; height: 40px; border-radius: 8px; }
+    .brandMark { width: 40px; height: 40px; border-radius: 8px; flex: 0 0 auto; overflow: hidden; background: linear-gradient(135deg, #8b7cff, #44d7a8); box-shadow: inset 0 0 0 1px rgba(255,255,255,.58); }
+    .brandMark img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .brand strong { display: block; font-size: 16px; line-height: 1.1; }
     .brand small { display: block; color: var(--muted); font-size: 12px; }
-    .navLinks { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 14px; font-weight: 800; }
-    .navLinks a { color: #25324a; text-decoration: none; padding: 8px 10px; border-radius: 8px; }
+    .navLinks { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; font-size: 14px; font-weight: 800; }
+    .navLinks a { color: #25324a; text-decoration: none; padding: 8px 10px; border-radius: 8px; min-height: 40px; display: inline-flex; align-items: center; }
     .navLinks a:hover { background: #edf2fb; color: var(--primary); }
+    .navLinks .navCta { background: #5b4dca; color: #fff; padding-left: 14px; padding-right: 14px; }
+    .navLinks .navCta:hover { background: #4939b7; color: #fff; }
+    .navLinks .langPill { border: 1px solid var(--line); background: #fff; }
     .docHero { background: linear-gradient(135deg, #111827, #1e2a44); color: #fff; }
     .docHeroInner { max-width: 980px; margin: 0 auto; padding: 42px 20px; }
     .docHero h1 { color: #fff; margin: 0 0 8px; font-size: 34px; line-height: 1.2; }
@@ -84,16 +88,16 @@ function header(target) {
   return `<header class="siteHeader">
     <nav class="siteNav" aria-label="${target.lang === "ko" ? "문서 메뉴" : "Document navigation"}">
       <a class="brand" href="${home}">
-        <img src="/assets/copiasoft-logo.svg" alt="" />
+        <span class="brandMark"><img src="/assets/copiasoft-logo.svg" alt="" onerror="this.style.display='none'" /></span>
         <span><strong>CopiaSoft</strong><small>${studio}</small></span>
       </a>
       <div class="navLinks">
         <a href="${home}">Home</a>
         <a href="${games}">Games</a>
-        <a href="${support}">Support</a>
+        <a class="navCta" href="${support}">Support</a>
         <a href="${privacy}">Privacy</a>
         <a href="${terms}">Terms</a>
-        <a href="${target.alt}">${altLabel}</a>
+        <a class="langPill" href="${target.alt}">${altLabel}</a>
       </div>
     </nav>
   </header>

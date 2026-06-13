@@ -116,7 +116,7 @@ function getHomePage(lang) {
       page: "home",
       lang,
       sections: [
-        { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light" } },
+        { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 320, imageHeightPx: 240, imageFit: "contain", imagePosition: "right", background: "light" } },
         { id: "games", type: "games", visible: true, title: "Games", settings: { paddingTop: 42, paddingBottom: 42, columns: 1, cardImagePosition: "left", background: "dark" } },
         { id: "news", type: "news", visible: true, title: "Latest News", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
         { id: "support", type: "support", visible: true, title: "Support & Policy", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
@@ -136,12 +136,12 @@ function getGamePage(lang, gameSlug) {
       game: gameSlug,
       buttonStyle: "solid",
       sections: [
-        { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" } },
+        { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 360, imageHeightPx: 260, imageFit: "contain", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" } },
         { id: "overview", type: "overview", visible: true, title: lang === "ko" ? "게임 소개" : "Overview", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } },
         { id: "notice", type: "notice", visible: true, title: lang === "ko" ? "공지사항" : "Notice", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
-        { id: "update", type: "update", visible: true, title: lang === "ko" ? "업데이트" : "Updates", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+        { id: "update", type: "update", visible: false, title: lang === "ko" ? "업데이트" : "Updates", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
         { id: "patch-note", type: "patch-note", visible: true, title: lang === "ko" ? "패치노트" : "Patch Notes", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
-        { id: "release-note", type: "release-note", visible: true, title: lang === "ko" ? "출시노트" : "Release Notes", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
+        { id: "release-note", type: "release-note", visible: false, title: lang === "ko" ? "출시노트" : "Release Notes", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
         { id: "support", type: "support", visible: true, title: "Support", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
       ]
     };
@@ -199,7 +199,7 @@ function ensureSection(type) {
   }
 
   const defaults = {
-    hero: { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light" } },
+    hero: { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 320, imageHeightPx: 240, imageFit: "contain", imagePosition: "right", background: "light" } },
     games: { id: "games", type: "games", visible: true, title: "Games", settings: { paddingTop: 42, paddingBottom: 42, columns: 1, cardImagePosition: "left", background: "dark" } },
     news: { id: "news", type: "news", visible: true, title: "Latest News", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
     support: { id: "support", type: "support", visible: true, title: "Support & Policy", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
@@ -223,12 +223,23 @@ function defaultGameSection(type, lang) {
   return {
     id: type,
     type,
-    visible: true,
+    visible: type !== "update" && type !== "release-note",
     title: titles[type] || type,
     settings: type === "hero"
-      ? { paddingTop: 72, paddingBottom: 54, textAlign: "left", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" }
+      ? { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 360, imageHeightPx: 260, imageFit: "contain", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" }
       : { paddingTop: 42, paddingBottom: 42, columns: type === "support" || type === "overview" ? 3 : 2, background: "dark" }
   };
+}
+
+function previewImageStyle(settings) {
+  const width = Number(settings.imageWidthPx || 0) > 0
+    ? `${Number(settings.imageWidthPx)}px`
+    : `${Math.max(1, Math.min(100, Number(settings.imageWidth || 100)))}%`;
+  const height = Number(settings.imageHeightPx || 0) > 0
+    ? `${Number(settings.imageHeightPx)}px`
+    : "auto";
+  const fit = ["contain", "cover", "fill"].includes(settings.imageFit) ? settings.imageFit : "contain";
+  return `width:${width};height:${height};--preview-fit:${fit}`;
 }
 
 function moveGameSection(delta) {
@@ -277,18 +288,18 @@ function renderPreviewSection(section) {
 
   if (section.type === "hero") {
     const featuredGame = visibleGames.find((game) => game.featured) || visibleGames[0];
-    const heroArt = featuredGame?.image
-      ? `<div class="previewArt"><img src="${featuredGame.image}" alt="" /></div>`
+    const heroArt = featuredGame?.image && settings.showImage !== false
+      ? `<div class="previewArt" style="${previewImageStyle(settings)}"><img src="${featuredGame.image}" alt="" /></div>`
       : `<div class="previewArt"><span>No game image</span></div>`;
     const hero = document.createElement("div");
-    hero.className = `previewHero ${settings.textAlign === "center" ? "center" : ""} ${settings.imagePosition === "left" ? "image-left" : ""}`;
+    hero.className = `previewHero ${settings.textAlign === "center" ? "center" : ""} ${settings.imagePosition === "left" ? "image-left" : ""} ${settings.showImage === false ? "noImage" : ""}`;
     hero.innerHTML = `
       <div>
         <div class="previewText">${home.heroEyebrow}</div>
         <div class="previewTitle">${home.heroTitle}</div>
         <div class="previewText">${home.heroDescription}</div>
       </div>
-      ${heroArt}
+      ${settings.showImage === false ? "" : heroArt}
     `;
     base.appendChild(hero);
     if (settings.effect === "animated-gradient") {
@@ -428,6 +439,11 @@ function renderVisual() {
     if (section.type === "hero") {
       fields.append(
         select("Text Align", settings.textAlign || "left", [{ value: "left", label: "Left" }, { value: "center", label: "Center" }], (value) => settings.textAlign = value),
+        checkbox("Show Hero Image", settings.showImage !== false, (value) => settings.showImage = value),
+        input("Hero Image Width %", settings.imageWidth || 100, (value) => settings.imageWidth = Number(value), { type: "number" }),
+        input("Hero Image Width px", settings.imageWidthPx || "", (value) => settings.imageWidthPx = Number(value), { type: "number" }),
+        input("Hero Image Height px", settings.imageHeightPx || "", (value) => settings.imageHeightPx = Number(value), { type: "number" }),
+        select("Hero Image Fit", settings.imageFit || "contain", [{ value: "contain", label: "Contain" }, { value: "cover", label: "Cover" }, { value: "fill", label: "Fill" }], (value) => settings.imageFit = value),
         select("Image Position", settings.imagePosition || "right", [{ value: "right", label: "Right" }, { value: "left", label: "Left" }], (value) => settings.imagePosition = value),
         select("Hero Background Effect", settings.effect || "none", [
           { value: "none", label: "None" },
@@ -503,7 +519,7 @@ function renderGamePreviewSection(section, game, page) {
 
   if (section.type === "hero") {
     const hero = document.createElement("div");
-    hero.className = `previewHero ${settings.textAlign === "center" ? "center" : ""} ${settings.imagePosition === "left" ? "image-left" : ""}`;
+    hero.className = `previewHero ${settings.textAlign === "center" ? "center" : ""} ${settings.imagePosition === "left" ? "image-left" : ""} ${settings.showImage === false ? "noImage" : ""}`;
     hero.innerHTML = `
       <div>
         <div class="previewText">${localized(game.genre, gameVisualLang)}</div>
@@ -511,7 +527,7 @@ function renderGamePreviewSection(section, game, page) {
         <div class="previewText">${localized(game.shortDescription, gameVisualLang)}</div>
         <div class="previewButtonRow"><span class="previewButton ${page.buttonStyle || "solid"}">Google Play</span><span class="previewButton secondary">Contact</span></div>
       </div>
-      <div class="previewArt">${game.image ? `<img src="${game.image}" alt="" />` : "<span>No game image</span>"}</div>
+      ${settings.showImage === false ? "" : `<div class="previewArt" style="${previewImageStyle(settings)}">${game.image ? `<img src="${game.image}" alt="" />` : "<span>No game image</span>"}</div>`}
     `;
     base.appendChild(hero);
     if (settings.effect === "animated-gradient") {
@@ -668,6 +684,11 @@ function renderGameVisual() {
     if (section.type === "hero") {
       fields.append(
         select("Text Align", settings.textAlign || "left", [{ value: "left", label: "Left" }, { value: "center", label: "Center" }], (value) => settings.textAlign = value),
+        checkbox("Show Hero Image", settings.showImage !== false, (value) => settings.showImage = value),
+        input("Hero Image Width %", settings.imageWidth || 100, (value) => settings.imageWidth = Number(value), { type: "number" }),
+        input("Hero Image Width px", settings.imageWidthPx || "", (value) => settings.imageWidthPx = Number(value), { type: "number" }),
+        input("Hero Image Height px", settings.imageHeightPx || "", (value) => settings.imageHeightPx = Number(value), { type: "number" }),
+        select("Hero Image Fit", settings.imageFit || "contain", [{ value: "contain", label: "Contain" }, { value: "cover", label: "Cover" }, { value: "fill", label: "Fill" }], (value) => settings.imageFit = value),
         select("Image Position", settings.imagePosition || "right", [{ value: "right", label: "Right" }, { value: "left", label: "Left" }], (value) => settings.imagePosition = value),
         select("Hero Background Effect", settings.effect || "none", [{ value: "none", label: "None" }, { value: "animated-gradient", label: "Animated Gradient" }, { value: "image", label: "2D Image" }, { value: "video", label: "Video" }], (value) => settings.effect = value),
         assetPicker("Background Image", settings.backgroundImage || "", (value) => settings.backgroundImage = value),

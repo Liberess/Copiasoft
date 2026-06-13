@@ -53,7 +53,8 @@
     .langSwitch a { min-width: 38px; padding: 7px 8px; border-radius: 6px; color: #667085; text-align: center; font-size: 12px; }
     .langSwitch a.active { color: #111827; background: #edf0f7; }
     .hero { padding: 72px 0 54px; color: #111827; }
-    .heroGrid { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr); gap: 46px; align-items: center; }
+    .heroGrid { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr); gap: 46px; align-items: center; }
+    .heroGrid.noImage { grid-template-columns: minmax(0, 1fr); }
     .eyebrow { margin: 0 0 12px; color: #5b4dca; font-weight: 800; font-size: 13px; text-transform: uppercase; }
     h1 { margin: 0; font-size: clamp(34px, 5vw, 58px); line-height: 1.08; letter-spacing: 0; }
     .heroDesc { max-width: 620px; margin: 18px 0 0; color: #475467; font-size: 18px; }
@@ -61,7 +62,9 @@
     .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; border-radius: 8px; font-weight: 800; border: 1px solid transparent; }
     .button.primary { background: #111827; color: #fff; }
     .button.secondary { background: #fff; color: #111827; border-color: rgba(17,24,39,0.14); }
-    .heroArt { border-radius: 8px; overflow: hidden; border: 1px solid rgba(17,24,39,0.12); box-shadow: 0 24px 70px rgba(30,41,59,0.18); background: #101827; }
+    .heroArt { border-radius: 8px; overflow: hidden; border: 1px solid rgba(17,24,39,0.12); box-shadow: 0 24px 70px rgba(30,41,59,0.18); background: #101827; justify-self: stretch; }
+    .heroArt.resized { width: var(--hero-image-width, 100%); max-width: none; height: var(--hero-image-height, auto); }
+    .heroArt.resized img { width: 100%; height: 100%; object-fit: var(--hero-image-fit, cover); }
     .darkBand { background: var(--bg); padding: 56px 0 0; }
     section { padding: 42px 0; }
     .sectionHead { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
@@ -114,6 +117,7 @@
       .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
       .navLinks { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
       .heroGrid, .gameCard, .noticeList, .supportGrid, .infoGrid, .footerGrid { grid-template-columns: 1fr; }
+      .heroArt.resized { max-width: 100%; }
       .hero { padding-top: 44px; }
       .heroDesc { font-size: 16px; }
       .sectionHead { align-items: flex-start; flex-direction: column; }
@@ -150,7 +154,7 @@
 
     <section id="hero" class="hero pageSection section-light" style="--section-pt:72px;--section-pb:54px;">
 
-      <div class="container heroGrid  ">
+      <div class="container heroGrid   ">
         <div>
           <p class="eyebrow">방치형 / 캐주얼</p>
           <h1>우당탕탕 벽뿌셔</h1>
@@ -164,10 +168,10 @@
             <a class="button secondary" href="/ko/support/">문의하기</a>
           </div>
           <div class="tabs">
-            <a href="#overview">게임 소개</a><a href="#notice">공지사항</a><a href="#update">업데이트</a><a href="#patch-note">패치노트</a><a href="#release-note">출시노트</a><a href="#support">Support</a>
+            <a href="#overview">게임 소개</a><a href="#notice">공지사항</a><a href="#patch-note">패치노트</a><a href="#support">Support</a>
           </div>
         </div>
-        <div class="heroArt"><img src="/assets/uploads/1781229233804-Wallbreaker_Game_Icon.png" alt="우당탕탕 벽뿌셔 key art" width="720" height="480" /></div>
+        <div class="heroArt resized" style="--hero-image-width:360px;--hero-image-height:260px;--hero-image-fit:contain;"><img src="/assets/uploads/1781229233804-Wallbreaker_Game_Icon.png" alt="우당탕탕 벽뿌셔 key art" width="720" height="480" /></div>
       </div>
     </section>
       <section id="overview" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
@@ -197,28 +201,39 @@
             </article></div>
         </div>
       </section>
-      <section id="update" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
-        <div class="container">
-          <div class="sectionHead"><div><h2>업데이트</h2></div></div>
-          <div class="noticeList columns-2">
-            <article class="notice">
-              <time datetime="2026-06-11">2026.06.11</time>
-              <strong>개인정보처리방침 및 이용약관 정리</strong>
-              <p>Google Play 등록과 앱 내 옵션 연결을 위한 정책 페이지를 업데이트했습니다.</p>
-              <p>광고 SDK, Google Play 결제, PlayFab 저장 데이터, 구매 복원 안내를 공식 정책 페이지에 반영했습니다.</p>
-            </article></div>
-        </div>
-      </section>
       <section id="patch-note" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
         <div class="container">
           <div class="sectionHead"><div><h2>패치노트</h2></div></div>
-          <div class="noticeList columns-2"><article class="notice"><p>아직 등록된 글이 없습니다.</p></article></div>
-        </div>
-      </section>
-      <section id="release-note" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
-        <div class="container">
-          <div class="sectionHead"><div><h2>출시노트</h2></div></div>
-          <div class="noticeList columns-2"><article class="notice"><p>아직 등록된 글이 없습니다.</p></article></div>
+          <div class="noticeList columns-2">
+            <article class="notice">
+              <time datetime="2026-06-12">2026.06.12 · v0.3.3</time>
+              <strong>[우당탕탕 벽뿌셔] v0.3.3 패치노트</strong>
+              <p>까마귀 이벤트 밸런스가 조정되었습니다.
+
+- 까마귀 등장 확률 및 등장 간격 조정
+- 골드 보상 수량 조정
+- 다이아 보상 획득 확률 및 수량 조정</p>
+              <p>안녕하세요. CopiaSoft입니다.
+
+우당탕탕 벽뿌셔 v0.3.3 패치가 적용되었습니다.
+
+이번 패치에서는 까마귀 이벤트의 보상 밸런스를 조정했습니다.
+
+변경사항
+
+* 까마귀 등장 확률을 조정했습니다.
+* 까마귀 등장 시간 간격을 조정했습니다.
+* 까마귀 이벤트를 통해 획득할 수 있는 골드 보상 수량을 조정했습니다.
+* 까마귀 이벤트를 통해 획득할 수 있는 다이아 보상 확률 및 수량을 조정했습니다.
+
+안내
+
+업데이트 적용을 위해 게임을 최신 버전으로 이용해 주세요.
+게임 이용 중 문제가 발생하는 경우 고객지원 페이지를 통해 문의해 주세요.
+
+감사합니다.
+CopiaSoft</p>
+            </article></div>
         </div>
       </section>
       <section id="support" class="pageSection section-dark" style="--section-pt:42px;--section-pb:42px;">
