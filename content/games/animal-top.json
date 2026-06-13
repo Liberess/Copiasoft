@@ -1,6 +1,6 @@
 {
   "slug": "animal-top",
-  "visible": false,
+  "visible": true,
   "featured": false,
   "image": "/assets/wallbreaker-card.svg",
   "platforms": [

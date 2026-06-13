@@ -228,6 +228,7 @@ function sharedStyles() {
     .supportGrid.columns-2, .infoGrid.columns-2 { grid-template-columns: repeat(2, 1fr); }
     .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
     .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
+    .supportBox.linkOnly { min-height: 96px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 20px; font-weight: 900; }
     .pageHero { padding: 64px 0 34px; color: #111827; }
     .pageHero p { max-width: 680px; color: #475467; font-size: 18px; }
     .splitHead { margin: 34px 0 14px; font-size: 22px; color: var(--text); }
@@ -1021,7 +1022,7 @@ function renderGameSupport(site, games, game, lang, section) {
         <div class="container">
           <div class="sectionHead"><div><h2>${esc(section.title || labels.supportPolicy)}</h2></div></div>
           <div class="supportGrid ${columnClass(section.settings?.columns, 3)}">
-            ${supportLinks.map(([, label, url]) => `<a class="supportBox" href="${attr(url)}"><h3>${esc(label)}</h3><p>${esc(localize(game.title, lang))} ${lang === "ko" ? "관련 정보를 확인합니다." : "related information."}</p><strong>${esc(label)}</strong></a>`).join("")}
+            ${supportLinks.map(([, label, url]) => `<a class="supportBox linkOnly" href="${attr(url)}">${esc(label)}</a>`).join("")}
           </div>
         </div>
       </section>`;
