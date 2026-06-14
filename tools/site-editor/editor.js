@@ -138,6 +138,7 @@ function getGamePage(lang, gameSlug) {
       sections: [
         { id: "hero", type: "hero", visible: true, title: "Hero", settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 360, imageHeightPx: 260, imageFit: "contain", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" } },
         { id: "overview", type: "overview", visible: true, title: lang === "ko" ? "게임 소개" : "Overview", settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } },
+        { id: "screenshots", type: "screenshots", visible: true, title: lang === "ko" ? "스크린샷" : "Screenshots", settings: { paddingTop: 42, paddingBottom: 42, background: "dark" } },
         { id: "notice", type: "notice", visible: true, title: lang === "ko" ? "공지사항" : "Notice", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
         { id: "update", type: "update", visible: false, title: lang === "ko" ? "업데이트" : "Updates", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
         { id: "patch-note", type: "patch-note", visible: true, title: lang === "ko" ? "패치노트" : "Patch Notes", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } },
@@ -165,6 +166,17 @@ function localized(value, lang) {
     return value[lang] || value.en || value.ko || "";
   }
   return value || "";
+}
+
+function localizedObject(value = "") {
+  return value && typeof value === "object" ? value : { ko: value || "", en: value || "" };
+}
+
+function splitList(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 function sectionLabel(section) {
@@ -809,6 +821,9 @@ function renderGames() {
       longDescription: { ko: "", en: "" },
       googlePlayUrl: "",
       steamUrl: "",
+      screenshots: [],
+      carouselArrowPrev: "",
+      carouselArrowNext: "",
       supportUrl: { ko: "/ko/support/", en: "/en/support/" },
       privacyUrl: { ko: "", en: "" },
       termsUrl: { ko: "", en: "" }
@@ -843,6 +858,13 @@ function renderGames() {
       input("Platforms (comma separated)", game.platforms.join(", "), (value) => game.platforms = value.split(",").map((x) => x.trim()).filter(Boolean)),
       input("Google Play URL", game.googlePlayUrl, (value) => game.googlePlayUrl = value),
       input("Steam URL", game.steamUrl || "", (value) => game.steamUrl = value),
+      input("Screenshots (comma separated)", (game.screenshots || []).map((item) => typeof item === "string" ? item : item.src).join(", "), (value) => game.screenshots = splitList(value), { multiline: true }),
+      assetPicker("Add Screenshot", "", (value) => {
+        game.screenshots = game.screenshots || [];
+        game.screenshots.push(value);
+      }, "image/*,video/mp4,video/webm"),
+      assetPicker("Prev Arrow Image", game.carouselArrowPrev || "", (value) => game.carouselArrowPrev = value),
+      assetPicker("Next Arrow Image", game.carouselArrowNext || "", (value) => game.carouselArrowNext = value),
       checkbox("Visible on site", game.visible, (value) => game.visible = value),
       checkbox("Featured on home", game.featured, (value) => game.featured = value)
     );
@@ -864,6 +886,120 @@ function renderGames() {
     el.appendChild(grid);
     panel.appendChild(el);
   });
+}
+
+function renderPostBlocks(post, parent) {
+  post.blocks = Array.isArray(post.blocks) ? post.blocks : [];
+
+  const blockPanel = card("Post Layout Blocks");
+  const actions = document.createElement("div");
+  actions.className = "actions";
+
+  [
+    ["text", "Add Text"],
+    ["emoji", "Add Emoji"],
+    ["image", "Add Image"],
+    ["video", "Add Video"]
+  ].forEach(([type, label]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", () => {
+      post.blocks.push({
+        type,
+        text: { ko: type === "emoji" ? "✨" : "", en: type === "emoji" ? "✨" : "" },
+        src: "",
+        alt: { ko: "", en: "" },
+        align: type === "image" || type === "video" ? "center" : "left",
+        fontSize: type === "emoji" ? 42 : 18,
+        widthPercent: 100,
+        padding: 0
+      });
+      render();
+    });
+    actions.appendChild(button);
+  });
+
+  blockPanel.appendChild(actions);
+
+  post.blocks.forEach((block, blockIndex) => {
+    block.text = localizedObject(block.text);
+    block.alt = localizedObject(block.alt);
+
+    const item = document.createElement("article");
+    item.className = "card";
+    const title = document.createElement("h2");
+    title.textContent = `Block ${blockIndex + 1} / ${block.type || "text"}`;
+    item.appendChild(title);
+
+    const itemActions = document.createElement("div");
+    itemActions.className = "actions";
+    [
+      ["Up", -1],
+      ["Down", 1]
+    ].forEach(([label, delta]) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      button.disabled = blockIndex + delta < 0 || blockIndex + delta >= post.blocks.length;
+      button.addEventListener("click", () => {
+        const nextIndex = blockIndex + delta;
+        [post.blocks[blockIndex], post.blocks[nextIndex]] = [post.blocks[nextIndex], post.blocks[blockIndex]];
+        render();
+      });
+      itemActions.appendChild(button);
+    });
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "danger";
+    remove.textContent = "Remove Block";
+    remove.addEventListener("click", () => {
+      post.blocks.splice(blockIndex, 1);
+      render();
+    });
+    itemActions.appendChild(remove);
+    item.appendChild(itemActions);
+
+    const grid = document.createElement("div");
+    grid.className = "grid2";
+    grid.append(
+      select("Type", block.type || "text", [
+        { value: "text", label: "Text" },
+        { value: "emoji", label: "Emoji / Emoticon" },
+        { value: "image", label: "Image" },
+        { value: "video", label: "Video" }
+      ], (value) => {
+        block.type = value;
+        render();
+      }),
+      select("Align", block.align || "left", [
+        { value: "left", label: "Left" },
+        { value: "center", label: "Center" },
+        { value: "right", label: "Right" }
+      ], (value) => block.align = value),
+      input("Font Size px", block.fontSize || "", (value) => block.fontSize = Number(value) || 0, { type: "number" }),
+      input("Width %", block.widthPercent || 100, (value) => block.widthPercent = Number(value) || 100, { type: "number" }),
+      input("Padding px", block.padding || 0, (value) => block.padding = Number(value) || 0, { type: "number" })
+    );
+
+    if (block.type === "image" || block.type === "video") {
+      grid.append(
+        assetPicker("Media Source", block.src || "", (value) => block.src = value, block.type === "video" ? "video/mp4,video/webm" : "image/*"),
+        input("Alt KO", block.alt.ko, (value) => block.alt.ko = value),
+        input("Alt EN", block.alt.en, (value) => block.alt.en = value)
+      );
+    } else {
+      grid.append(
+        input("Text KO", block.text.ko, (value) => block.text.ko = value, { multiline: true }),
+        input("Text EN", block.text.en, (value) => block.text.en = value, { multiline: true })
+      );
+    }
+
+    item.appendChild(grid);
+    blockPanel.appendChild(item);
+  });
+
+  parent.appendChild(blockPanel);
 }
 
 function renderPosts() {
@@ -888,7 +1024,8 @@ function renderPosts() {
       showOnHome: true,
       title: { ko: "새 공지", en: "New Post" },
       summary: { ko: "", en: "" },
-      body: { ko: "", en: "" }
+      body: { ko: "", en: "" },
+      blocks: []
     });
     render();
   });
@@ -938,6 +1075,7 @@ function renderPosts() {
     }
 
     el.appendChild(grid);
+    renderPostBlocks(post, el);
     panel.appendChild(el);
   });
 }

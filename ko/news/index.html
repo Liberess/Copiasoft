@@ -9,6 +9,13 @@
   <meta property="og:description" content="전체 게임의 공지사항과 패치노트 모음입니다." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://copiasoft.com/ko/news/" />
+  <meta property="og:image" content="https://copiasoft.com/assets/uploads/1781326753210-Copiasoft_Logo.jpg" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://copiasoft.com/assets/uploads/1781326753210-Copiasoft_Logo.jpg" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/assets/uploads/1781326753210-Copiasoft_Logo.jpg" />
   <link rel="alternate" hreflang="ko" href="https://copiasoft.com/ko/news/" />
   <link rel="alternate" hreflang="en" href="https://copiasoft.com/en/news/" />
   <link rel="canonical" href="https://copiasoft.com/ko/news/" />
@@ -101,6 +108,25 @@
     .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
     .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
     .supportBox.linkOnly { min-height: 96px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 20px; font-weight: 900; }
+    .noticeLink { display: block; height: 100%; }
+    .postArticle { max-width: 900px; margin: 0 auto; display: grid; gap: 18px; }
+    .postBlock { padding: var(--block-padding, 0); text-align: var(--block-align, left); font-size: var(--block-font-size, 18px); color: var(--text); }
+    .postBlock.text { white-space: pre-line; }
+    .postBlock.emoji { font-size: var(--block-font-size, 42px); line-height: 1.2; }
+    .postBlock img, .postBlock video { width: min(100%, var(--block-width, 100%)); border-radius: 8px; margin-left: auto; margin-right: auto; box-shadow: 0 18px 48px rgba(0,0,0,.22); }
+    .screenshotFrame { position: relative; max-width: 960px; margin: 0 auto; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .screenshotTrack { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; }
+    .screenshotTrack::-webkit-scrollbar { display: none; }
+    .screenshotSlide { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; min-height: 260px; }
+    .screenshotSlide img, .screenshotSlide video { width: 100%; max-height: 560px; object-fit: contain; background: #0b1220; }
+    .carouselArrow { position: absolute; top: 50%; transform: translateY(-50%); width: 46px; height: 46px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; background: rgba(17,24,39,.78); color: #fff; display: grid; place-items: center; cursor: pointer; z-index: 2; }
+    .carouselArrow.prev { left: 14px; }
+    .carouselArrow.next { right: 14px; }
+    .carouselArrow img { width: 24px; height: 24px; object-fit: contain; }
+    .carouselArrow::before { content: ""; width: 12px; height: 12px; border-top: 3px solid currentColor; border-left: 3px solid currentColor; }
+    .carouselArrow.prev::before { transform: rotate(-45deg); margin-left: 4px; }
+    .carouselArrow.next::before { transform: rotate(135deg); margin-right: 4px; }
+    .carouselArrow.hasImage::before { display: none; }
     .pageHero { padding: 64px 0 34px; color: #111827; }
     .pageHero p { max-width: 680px; color: #475467; font-size: 18px; }
     .splitHead { margin: 34px 0 14px; font-size: 22px; color: var(--text); }
@@ -130,15 +156,19 @@
     .footerLinks { display: grid; gap: 8px; font-size: 14px; }
     .copyright { margin-top: 26px; font-size: 13px; }
     @media (max-width: 860px) {
+      .topbar { position: static; backdrop-filter: none; }
       .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
       .navLinks { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
       .mainNav { flex-wrap: wrap; border-radius: 8px; }
-      .dropdownPanel { position: static; min-width: 100%; margin-top: 6px; opacity: 1; visibility: visible; transform: none; box-shadow: none; }
+      .dropdown { position: relative; }
+      .dropdownPanel { position: absolute; top: calc(100% + 8px); left: 0; min-width: 220px; opacity: 0; visibility: hidden; transform: translateY(-6px); box-shadow: 0 18px 42px rgba(17,24,39,0.14); }
+      .dropdown:hover .dropdownPanel, .dropdown:focus-within .dropdownPanel { opacity: 1; visibility: visible; transform: translateY(0); }
       .heroGrid, .gameCard, .noticeList, .supportGrid, .infoGrid, .footerGrid { grid-template-columns: 1fr; }
       .heroArt.resized { max-width: 100%; }
       .hero { padding-top: 44px; }
       .heroDesc { font-size: 16px; }
       .sectionHead { align-items: flex-start; flex-direction: column; }
+      .carouselArrow { width: 40px; height: 40px; }
     }
   </style>
 </head>
@@ -157,7 +187,7 @@
             <div class="dropdown">
               <a class="navItem" href="/ko/games/">Games <span class="caret" aria-hidden="true"></span></a>
               <div class="dropdownPanel">
-                <a href="/ko/games/animal-top/">AnimalTop</a><a href="/ko/games/wallbreaker/">우당탕탕 벽뿌셔</a><a href="/ko/games/waterballoon/">Don't Pop!: Splash Race</a>
+                <a href="/ko/games/wallbreaker/">우당탕탕 벽뿌셔</a><a href="/ko/games/waterballoon/">Don't Pop!: Splash Race</a>
               </div>
             </div>
             <a class="navItem active" href="/ko/news/">News</a>
@@ -183,22 +213,13 @@
     <div class="darkBand">
       <section class="pageSection section-dark">
         <div class="container">
-          <div class="filterRow"><span class="filterPill">All</span><span class="filterPill">Notice</span><span class="filterPill">Patch Notes</span><span class="filterPill">AnimalTop</span><span class="filterPill">우당탕탕 벽뿌셔</span><span class="filterPill">Don't Pop!: Splash Race</span></div>
+          <div class="filterRow"><span class="filterPill">All</span><span class="filterPill">Notice</span><span class="filterPill">Patch Notes</span><span class="filterPill">우당탕탕 벽뿌셔</span><span class="filterPill">Don't Pop!: Splash Race</span></div>
           <div class="noticeList columns-1">
-          <article class="notice">
+          <a class="notice noticeLink" href="/ko/news/wallbreaker/2026-06-13-wallbreaker-v0-3-3-patch-note/">
             <time datetime="2026-06-12">[패치노트] 우당탕탕 벽뿌셔 · 2026.06.12</time>
-            <strong>[우당탕탕 벽뿌셔] v0.3.3 패치노트</strong>
-            <p>까마귀 이벤트 밸런스가 조정되었습니다.
-
-- 까마귀 등장 확률 및 등장 간격 조정
-- 골드 보상 수량 조정
-- 다이아 보상 획득 확률 및 수량 조정</p>
-          </article>
-          <article class="notice">
-            <time datetime="2026-06-11">[공지사항] 우당탕탕 벽뿌셔 · 2026.06.11</time>
-            <strong>Wallbreaker 공식 홈페이지 오픈</strong>
-            <p>CopiaSoft 공식 사이트에서 Wallbreaker 정보와 고객지원 링크를 확인할 수 있습니다.</p>
-          </article></div>
+            <strong>v0.3.3 패치노트</strong>
+            <p>까마귀 이벤트 밸런스가 조정되었습니다.</p>
+          </a></div>
         </div>
       </section>
 
@@ -219,7 +240,7 @@
             <div>
               <div class="footerTitle">Games</div>
               <div class="footerLinks">
-                <a href="/ko/games/animal-top/">AnimalTop</a><a href="/ko/games/wallbreaker/">우당탕탕 벽뿌셔</a><a href="/ko/games/waterballoon/">Don't Pop!: Splash Race</a>
+                <a href="/ko/games/wallbreaker/">우당탕탕 벽뿌셔</a><a href="/ko/games/waterballoon/">Don't Pop!: Splash Race</a>
               </div>
             </div>
             <div>
@@ -236,5 +257,23 @@
       </footer>
     </div>
   </main>
+<script>
+document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+  const track = carousel.querySelector("[data-carousel-track]");
+  if (!track) return;
+
+  const move = (direction) => {
+    const width = track.clientWidth || 1;
+    const maxLeft = track.scrollWidth - width;
+    let nextLeft = track.scrollLeft + direction * width;
+    if (nextLeft < 0) nextLeft = maxLeft;
+    if (nextLeft > maxLeft - 2) nextLeft = 0;
+    track.scrollTo({ left: nextLeft, behavior: "smooth" });
+  };
+
+  carousel.querySelector("[data-carousel-prev]")?.addEventListener("click", () => move(-1));
+  carousel.querySelector("[data-carousel-next]")?.addEventListener("click", () => move(1));
+});
+</script>
 </body>
 </html>

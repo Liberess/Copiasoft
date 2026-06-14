@@ -3,6 +3,13 @@
   "visible": true,
   "featured": false,
   "image": "/assets/uploads/1781326876592-WaterBalloon_Game_Icon.png",
+  "screenshots": [
+    "/assets/uploads/1781327357971-WaterBalloon_Library_Hero.png",
+    "/assets/uploads/1781333673532-WaterBalloon_Library_Hero.png",
+    "/assets/uploads/1781326876592-WaterBalloon_Game_Icon.png"
+  ],
+  "carouselArrowPrev": "",
+  "carouselArrowNext": "",
   "platforms": [
     "Steam",
     "Windows"

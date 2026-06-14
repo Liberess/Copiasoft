@@ -113,7 +113,8 @@ function saveAllContent(payload) {
   for (const page of payload.pages || []) {
     const lang = safeSlug(page.lang);
     const pageName = safeSlug(page.page);
-    writeJson(path.join(pagesDir, `${lang}-${pageName}.json`), page);
+    const gameName = page.game ? `${safeSlug(page.game)}-` : "";
+    writeJson(path.join(pagesDir, `${lang}-${gameName}${pageName}.json`), page);
   }
 }
 

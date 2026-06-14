@@ -3,6 +3,12 @@
   "visible": true,
   "featured": true,
   "image": "/assets/uploads/1781229233804-Wallbreaker_Game_Icon.png",
+  "screenshots": [
+    "/assets/uploads/1781229233804-Wallbreaker_Game_Icon.png",
+    "/assets/uploads/1781228660784-wallbreaker-card.svg"
+  ],
+  "carouselArrowPrev": "",
+  "carouselArrowNext": "",
   "platforms": [
     "Google Play",
     "Android"

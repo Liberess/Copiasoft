@@ -26,6 +26,15 @@ function cleanGeneratedGamePages() {
   }
 }
 
+function cleanGeneratedNewsPages() {
+  for (const lang of LANGS) {
+    const target = path.join(ROOT, lang, "news");
+    if (target.startsWith(ROOT) && fs.existsSync(target)) {
+      fs.rmSync(target, { recursive: true, force: true });
+    }
+  }
+}
+
 function listJsonFiles(dir) {
   if (!fs.existsSync(dir)) {
     return [];
@@ -55,6 +64,9 @@ function loadContent() {
     .map(readJson)
     .reduce((map, page) => {
       map[`${page.lang}-${page.page}`] = page;
+      if (page.game) {
+        map[`${page.lang}-${page.game}-${page.page}`] = page;
+      }
       return map;
     }, {});
 
@@ -85,8 +97,24 @@ function gameUrl(game, lang) {
   return `/${lang}/games/${game.slug}/`;
 }
 
+function postUrl(post, lang) {
+  return `/${lang}/news/${post.game}/${post.slug}/`;
+}
+
 function policyUrl(game, lang, kind) {
   return localize(game[`${kind}Url`], lang, "");
+}
+
+function absoluteUrl(site, url) {
+  if (!url) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  return `${site.baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
 function hasPlatform(game, platform) {
@@ -229,6 +257,25 @@ function sharedStyles() {
     .supportBox, .infoBox { min-height: 144px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
     .supportBox h3, .infoBox h3 { margin: 0 0 8px; font-size: 18px; }
     .supportBox.linkOnly { min-height: 96px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 20px; font-weight: 900; }
+    .noticeLink { display: block; height: 100%; }
+    .postArticle { max-width: 900px; margin: 0 auto; display: grid; gap: 18px; }
+    .postBlock { padding: var(--block-padding, 0); text-align: var(--block-align, left); font-size: var(--block-font-size, 18px); color: var(--text); }
+    .postBlock.text { white-space: pre-line; }
+    .postBlock.emoji { font-size: var(--block-font-size, 42px); line-height: 1.2; }
+    .postBlock img, .postBlock video { width: min(100%, var(--block-width, 100%)); border-radius: 8px; margin-left: auto; margin-right: auto; box-shadow: 0 18px 48px rgba(0,0,0,.22); }
+    .screenshotFrame { position: relative; max-width: 960px; margin: 0 auto; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .screenshotTrack { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; }
+    .screenshotTrack::-webkit-scrollbar { display: none; }
+    .screenshotSlide { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; min-height: 260px; }
+    .screenshotSlide img, .screenshotSlide video { width: 100%; max-height: 560px; object-fit: contain; background: #0b1220; }
+    .carouselArrow { position: absolute; top: 50%; transform: translateY(-50%); width: 46px; height: 46px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; background: rgba(17,24,39,.78); color: #fff; display: grid; place-items: center; cursor: pointer; z-index: 2; }
+    .carouselArrow.prev { left: 14px; }
+    .carouselArrow.next { right: 14px; }
+    .carouselArrow img { width: 24px; height: 24px; object-fit: contain; }
+    .carouselArrow::before { content: ""; width: 12px; height: 12px; border-top: 3px solid currentColor; border-left: 3px solid currentColor; }
+    .carouselArrow.prev::before { transform: rotate(-45deg); margin-left: 4px; }
+    .carouselArrow.next::before { transform: rotate(135deg); margin-right: 4px; }
+    .carouselArrow.hasImage::before { display: none; }
     .pageHero { padding: 64px 0 34px; color: #111827; }
     .pageHero p { max-width: 680px; color: #475467; font-size: 18px; }
     .splitHead { margin: 34px 0 14px; font-size: 22px; color: var(--text); }
@@ -258,15 +305,19 @@ function sharedStyles() {
     .footerLinks { display: grid; gap: 8px; font-size: 14px; }
     .copyright { margin-top: 26px; font-size: 13px; }
     @media (max-width: 860px) {
+      .topbar { position: static; backdrop-filter: none; }
       .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
       .navLinks { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
       .mainNav { flex-wrap: wrap; border-radius: 8px; }
-      .dropdownPanel { position: static; min-width: 100%; margin-top: 6px; opacity: 1; visibility: visible; transform: none; box-shadow: none; }
+      .dropdown { position: relative; }
+      .dropdownPanel { position: absolute; top: calc(100% + 8px); left: 0; min-width: 220px; opacity: 0; visibility: hidden; transform: translateY(-6px); box-shadow: 0 18px 42px rgba(17,24,39,0.14); }
+      .dropdown:hover .dropdownPanel, .dropdown:focus-within .dropdownPanel { opacity: 1; visibility: visible; transform: translateY(0); }
       .heroGrid, .gameCard, .noticeList, .supportGrid, .infoGrid, .footerGrid { grid-template-columns: 1fr; }
       .heroArt.resized { max-width: 100%; }
       .hero { padding-top: 44px; }
       .heroDesc { font-size: 16px; }
       .sectionHead { align-items: flex-start; flex-direction: column; }
+      .carouselArrow { width: 40px; height: 40px; }
     }
   `;
 }
@@ -358,6 +409,7 @@ function footer(site, games, lang) {
 function pageShell({ site, lang, title, description, canonical, body, titlePath = "" }) {
   const altLang = lang === "ko" ? "en" : "ko";
   const altCanonical = canonical.replace(`/${lang}/`, `/${altLang}/`);
+  const shareImage = absoluteUrl(site, site.assets?.logo || "/assets/Copiasoft_Logo.jpg");
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -369,6 +421,13 @@ function pageShell({ site, lang, title, description, canonical, body, titlePath 
   <meta property="og:description" content="${attr(description)}" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="${attr(canonical)}" />
+  <meta property="og:image" content="${attr(shareImage)}" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="${attr(shareImage)}" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="${attr(site.assets?.logo || "/assets/Copiasoft_Logo.jpg")}" />
   <link rel="alternate" hreflang="ko" href="${attr(lang === "ko" ? canonical : altCanonical)}" />
   <link rel="alternate" hreflang="en" href="${attr(lang === "en" ? canonical : altCanonical)}" />
   <link rel="canonical" href="${attr(canonical)}" />
@@ -378,6 +437,24 @@ function pageShell({ site, lang, title, description, canonical, body, titlePath 
 <body>
 ${header(site, lang, titlePath)}
 ${body}
+<script>
+document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+  const track = carousel.querySelector("[data-carousel-track]");
+  if (!track) return;
+
+  const move = (direction) => {
+    const width = track.clientWidth || 1;
+    const maxLeft = track.scrollWidth - width;
+    let nextLeft = track.scrollLeft + direction * width;
+    if (nextLeft < 0) nextLeft = maxLeft;
+    if (nextLeft > maxLeft - 2) nextLeft = 0;
+    track.scrollTo({ left: nextLeft, behavior: "smooth" });
+  };
+
+  carousel.querySelector("[data-carousel-prev]")?.addEventListener("click", () => move(-1));
+  carousel.querySelector("[data-carousel-next]")?.addEventListener("click", () => move(1));
+});
+</script>
 </body>
 </html>`;
 }
@@ -528,11 +605,11 @@ function renderHomeNews(site, games, posts, lang, section) {
   const postCards = homePosts.map((post) => {
     const game = games.find((candidate) => candidate.slug === post.game);
     return `
-            <article class="notice">
+            <a class="notice noticeLink" href="${attr(postUrl(post, lang))}">
               <time datetime="${attr(post.date)}">${esc(post.date.replaceAll("-", "."))}</time>
               <strong>[${esc(game ? localize(game.title, lang) : post.game)}] ${esc(localize(post.title, lang))}</strong>
               <p>${esc(localize(post.summary, lang))}</p>
-            </article>`;
+            </a>`;
   }).join("");
 
   return `
@@ -646,6 +723,38 @@ ${footer(site, visibleGames, lang)}
   });
 }
 
+function renderRootRedirect(site) {
+  const title = "CopiaSoft";
+  const description = "CopiaSoft 공식 홈페이지. 작고 가볍게 즐길 수 있는 캐주얼/인디 게임을 개발합니다.";
+  const shareImage = absoluteUrl(site, site.assets?.logo || "/assets/Copiasoft_Logo.jpg");
+  return `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="${attr(description)}" />
+  <meta name="theme-color" content="#111827" />
+  <meta property="og:title" content="${attr(title)}" />
+  <meta property="og:description" content="${attr(description)}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${attr(site.baseUrl)}/" />
+  <meta property="og:image" content="${attr(shareImage)}" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="${attr(shareImage)}" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="${attr(site.assets?.logo || "/assets/Copiasoft_Logo.jpg")}" />
+  <link rel="canonical" href="${attr(site.baseUrl)}/ko/" />
+  <meta http-equiv="refresh" content="0; url=/ko/" />
+  <title>${esc(title)}</title>
+</head>
+<body>
+  <p><a href="/ko/">CopiaSoft 홈페이지로 이동</a></p>
+</body>
+</html>`;
+}
+
 function renderGameCards(site, games, lang) {
   return games.map((game) => `
           <article class="gameCard">
@@ -713,11 +822,11 @@ function renderNewsIndex(content, lang) {
   const cards = posts.length > 0 ? posts.map((post) => {
     const game = games.find((candidate) => candidate.slug === post.game);
     return `
-          <article class="notice">
+          <a class="notice noticeLink" href="${attr(postUrl(post, lang))}">
             <time datetime="${attr(post.date)}">[${esc(postTypeLabel(post.type, lang))}] ${esc(game ? localize(game.title, lang) : post.game)} · ${esc(post.date.replaceAll("-", "."))}</time>
             <strong>${esc(localize(post.title, lang))}</strong>
             <p>${esc(localize(post.summary, lang))}</p>
-          </article>`;
+          </a>`;
   }).join("") : `<article class="notice"><p>${lang === "ko" ? "아직 등록된 소식이 없습니다." : "No news yet."}</p></article>`;
   const lead = lang === "ko" ? "전체 게임의 공지사항과 패치노트 모음입니다." : "Notices and patch notes across all games.";
   const body = `
@@ -747,6 +856,87 @@ ${footer(site, games.filter((game) => game.visible), lang)}
     canonical: `${site.baseUrl}/${lang}/news/`,
     body,
     titlePath: "/news/"
+  });
+}
+
+function renderPostBlock(block, lang) {
+  const type = block.type || "text";
+  const align = ["left", "center", "right"].includes(block.align) ? block.align : "left";
+  const fontSize = Number(block.fontSize || (type === "emoji" ? 42 : 18));
+  const width = Number(block.widthPercent || 100);
+  const padding = Number(block.padding || 0);
+  const style = [
+    `--block-align:${align};`,
+    `--block-font-size:${Math.max(8, fontSize)}px;`,
+    `--block-width:${Math.max(1, Math.min(100, width))}%;`,
+    `--block-padding:${Math.max(0, padding)}px;`,
+    block.fontWeight ? `font-weight:${attr(block.fontWeight)};` : ""
+  ].join("");
+
+  if (type === "image") {
+    const src = block.src || "";
+    if (!src) return "";
+    const altText = localize(block.alt, lang, "");
+    return `<div class="postBlock image" style="${style}"><img src="${attr(src)}" alt="${attr(altText)}" loading="lazy" /></div>`;
+  }
+
+  if (type === "video") {
+    const src = block.src || "";
+    if (!src) return "";
+    return `<div class="postBlock video" style="${style}"><video src="${attr(src)}" controls playsinline></video></div>`;
+  }
+
+  const text = localize(block.text ?? block.content, lang, "");
+  if (!text) return "";
+  return `<div class="postBlock ${type === "emoji" ? "emoji" : "text"}" style="${style}">${esc(text)}</div>`;
+}
+
+function postBlocks(post, lang) {
+  const blocks = Array.isArray(post.blocks) ? post.blocks : [];
+  const rendered = blocks.map((block) => renderPostBlock(block, lang)).filter(Boolean).join("");
+  if (rendered) {
+    return rendered;
+  }
+
+  const body = localize(post.body, lang, "");
+  return body ? renderPostBlock({ type: "text", text: { [lang]: body }, fontSize: 18 }, lang) : "";
+}
+
+function renderPostPage(content, post, lang) {
+  const { site, games } = content;
+  const game = games.find((candidate) => candidate.slug === post.game);
+  const titleText = localize(post.title, lang);
+  const summary = localize(post.summary, lang, "");
+  const body = `
+  <main>
+    <section class="pageHero">
+      <div class="container">
+        <p class="heroEyebrow">${esc(postTypeLabel(post.type, lang))}${game ? ` / ${esc(localize(game.title, lang))}` : ""}</p>
+        <h1>${esc(titleText)}</h1>
+        ${summary ? `<p>${esc(summary)}</p>` : ""}
+      </div>
+    </section>
+    <div class="darkBand">
+      <section class="pageSection section-dark">
+        <div class="container">
+          <article class="postArticle">
+            <time datetime="${attr(post.date)}">${esc(post.date.replaceAll("-", "."))}${post.version ? ` / ${esc(post.version)}` : ""}</time>
+            ${postBlocks(post, lang)}
+          </article>
+        </div>
+      </section>
+${footer(site, games.filter((candidate) => candidate.visible), lang)}
+    </div>
+  </main>`;
+
+  return pageShell({
+    site,
+    lang,
+    title: `${titleText} | ${site.company.name}`,
+    description: summary || titleText,
+    canonical: `${site.baseUrl}${postUrl(post, lang)}`,
+    body,
+    titlePath: `/news/${post.game}/${post.slug}/`
   });
 }
 
@@ -886,12 +1076,12 @@ function renderPostSection(site, posts, lang, type) {
   const typedPosts = posts.filter((post) => post.visible && post.type === type);
   const content = typedPosts.length > 0
     ? typedPosts.map((post) => `
-          <article class="notice">
+          <a class="notice noticeLink" href="${attr(postUrl(post, lang))}">
             <time datetime="${attr(post.date)}">${esc(post.date.replaceAll("-", "."))}${post.version ? ` · ${esc(post.version)}` : ""}</time>
             <strong>${esc(localize(post.title, lang))}</strong>
             <p>${esc(localize(post.summary, lang))}</p>
             <p>${esc(localize(post.body, lang))}</p>
-          </article>`).join("")
+          </a>`).join("")
     : `<article class="notice"><p>${lang === "ko" ? "아직 등록된 글이 없습니다." : "No posts yet."}</p></article>`;
 
   return `
@@ -914,6 +1104,7 @@ function fallbackGamePage(lang, game) {
     sections: [
       { id: "hero", type: "hero", visible: true, settings: { paddingTop: 72, paddingBottom: 54, textAlign: "left", showImage: true, imageWidth: 100, imageWidthPx: 360, imageHeightPx: 260, imageFit: "contain", imagePosition: "right", background: "light", effect: "none", backgroundImage: "", backgroundVideo: "" } },
       { id: "overview", type: "overview", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } },
+      { id: "screenshots", type: "screenshots", visible: true, title: lang === "ko" ? "스크린샷" : "Screenshots", settings: { paddingTop: 42, paddingBottom: 42, background: "dark" } },
       ...POST_TYPES.map((type) => ({ id: type, type, visible: type !== "update" && type !== "release-note", settings: { paddingTop: 42, paddingBottom: 42, columns: 2, background: "dark" } })),
       { id: "support", type: "support", visible: true, settings: { paddingTop: 42, paddingBottom: 42, columns: 3, background: "dark" } }
     ]
@@ -987,17 +1178,48 @@ function renderGameOverview(site, game, lang, section) {
       </section>`;
 }
 
+function renderGameScreenshots(site, game, lang, section) {
+  const items = Array.isArray(game.screenshots) ? game.screenshots.filter(Boolean) : [];
+  if (items.length === 0) {
+    return "";
+  }
+
+  const prevImage = game.carouselArrowPrev || "";
+  const nextImage = game.carouselArrowNext || "";
+  const slides = items.map((item, index) => {
+    const src = typeof item === "string" ? item : item.src;
+    const type = typeof item === "object" ? item.type : "";
+    const altText = typeof item === "object" ? localize(item.alt, lang, localize(game.title, lang)) : localize(game.title, lang);
+    const media = type === "video" || /\.(mp4|webm)$/i.test(src)
+      ? `<video src="${attr(src)}" controls playsinline></video>`
+      : `<img src="${attr(src)}" alt="${attr(altText)} screenshot ${index + 1}" loading="lazy" />`;
+    return `<div class="screenshotSlide">${media}</div>`;
+  }).join("");
+
+  return `
+      <section id="screenshots" class="${sectionClass(section)}" style="${sectionStyle(section)}">
+        <div class="container">
+          <div class="sectionHead"><div><h2>${esc(section.title || (lang === "ko" ? "스크린샷" : "Screenshots"))}</h2></div></div>
+          <div class="screenshotFrame" data-carousel>
+            <button class="carouselArrow prev ${prevImage ? "hasImage" : ""}" type="button" data-carousel-prev aria-label="Previous screenshot">${prevImage ? `<img src="${attr(prevImage)}" alt="" />` : ""}</button>
+            <div class="screenshotTrack" data-carousel-track>${slides}</div>
+            <button class="carouselArrow next ${nextImage ? "hasImage" : ""}" type="button" data-carousel-next aria-label="Next screenshot">${nextImage ? `<img src="${attr(nextImage)}" alt="" />` : ""}</button>
+          </div>
+        </div>
+      </section>`;
+}
+
 function renderGamePostList(site, posts, lang, section) {
   const type = section.type;
   const typedPosts = posts.filter((post) => post.visible && post.type === type);
   const content = typedPosts.length > 0
     ? typedPosts.map((post) => `
-            <article class="notice">
+            <a class="notice noticeLink" href="${attr(postUrl(post, lang))}">
               <time datetime="${attr(post.date)}">${esc(post.date.replaceAll("-", "."))}${post.version ? ` · ${esc(post.version)}` : ""}</time>
               <strong>${esc(localize(post.title, lang))}</strong>
               <p>${esc(localize(post.summary, lang))}</p>
               <p>${esc(localize(post.body, lang))}</p>
-            </article>`).join("")
+            </a>`).join("")
     : `<article class="notice"><p>${lang === "ko" ? "아직 등록된 글이 없습니다." : "No posts yet."}</p></article>`;
 
   return `
@@ -1039,6 +1261,8 @@ function renderGameSection(content, game, lang, page, section) {
       return renderGameHero(content.site, game, lang, page, section);
     case "overview":
       return renderGameOverview(content.site, game, lang, section);
+    case "screenshots":
+      return renderGameScreenshots(content.site, game, lang, section);
     case "notice":
     case "update":
     case "patch-note":
@@ -1078,7 +1302,7 @@ ${footer(site, games.filter((candidate) => candidate.visible), lang)}
   });
 }
 
-function renderSitemap(site, games) {
+function renderSitemap(site, games, posts = []) {
   const urls = Array.from(new Set([
     "/ko/",
     "/en/",
@@ -1094,6 +1318,7 @@ function renderSitemap(site, games) {
       policyUrl(game, lang, "privacy"),
       policyUrl(game, lang, "terms")
     ]).filter(Boolean)),
+    ...posts.filter((post) => post.visible).flatMap((post) => LANGS.map((lang) => postUrl(post, lang))),
     "/ko/support/",
     "/en/support/"
   ]));
@@ -1108,8 +1333,11 @@ ${urls.map((url) => `  <url><loc>${site.baseUrl}${url}</loc></url>`).join("\n")}
 function build() {
   const content = loadContent();
   const visibleGames = content.games.filter((game) => game.visible);
+  const visiblePosts = content.posts.filter((post) => post.visible);
 
   cleanGeneratedGamePages();
+  cleanGeneratedNewsPages();
+  writeFile("index.html", renderRootRedirect(content.site));
 
   for (const lang of LANGS) {
     writeFile(`${lang}/index.html`, renderIndex(content, lang));
@@ -1126,7 +1354,13 @@ function build() {
     }
   }
 
-  writeFile("sitemap.xml", renderSitemap(content.site, content.games));
+  for (const post of visiblePosts) {
+    for (const lang of LANGS) {
+      writeFile(`${lang}/news/${post.game}/${post.slug}/index.html`, renderPostPage(content, post, lang));
+    }
+  }
+
+  writeFile("sitemap.xml", renderSitemap(content.site, content.games, content.posts));
   polishPages();
 }
 

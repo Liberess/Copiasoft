@@ -1,8 +1,13 @@
 {
   "slug": "animal-top",
-  "visible": true,
+  "visible": false,
   "featured": false,
   "image": "/assets/wallbreaker-card.svg",
+  "screenshots": [
+    "/assets/wallbreaker-card.svg"
+  ],
+  "carouselArrowPrev": "",
+  "carouselArrowNext": "",
   "platforms": [
     "Google Play",
     "Android"

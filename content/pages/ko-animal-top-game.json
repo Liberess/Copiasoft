@@ -1,0 +1,112 @@
+{
+  "page": "game",
+  "lang": "ko",
+  "game": "animal-top",
+  "buttonStyle": "solid",
+  "sections": [
+    {
+      "id": "hero",
+      "type": "hero",
+      "visible": true,
+      "title": "Hero",
+      "settings": {
+        "paddingTop": 72,
+        "paddingBottom": 54,
+        "textAlign": "left",
+        "showImage": true,
+        "imageWidth": 100,
+        "imageWidthPx": 360,
+        "imageHeightPx": 260,
+        "imageFit": "contain",
+        "imagePosition": "right",
+        "background": "light",
+        "effect": "none",
+        "backgroundImage": "",
+        "backgroundVideo": ""
+      }
+    },
+    {
+      "id": "overview",
+      "type": "overview",
+      "visible": true,
+      "title": "게임 소개",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 3,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "screenshots",
+      "type": "screenshots",
+      "visible": true,
+      "title": "스크린샷",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "notice",
+      "type": "notice",
+      "visible": true,
+      "title": "공지사항",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "update",
+      "type": "update",
+      "visible": false,
+      "title": "업데이트",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "patch-note",
+      "type": "patch-note",
+      "visible": true,
+      "title": "패치노트",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "release-note",
+      "type": "release-note",
+      "visible": false,
+      "title": "출시노트",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 2,
+        "background": "dark"
+      }
+    },
+    {
+      "id": "support",
+      "type": "support",
+      "visible": true,
+      "title": "Support",
+      "settings": {
+        "paddingTop": 42,
+        "paddingBottom": 42,
+        "columns": 3,
+        "background": "dark"
+      }
+    }
+  ]
+}
