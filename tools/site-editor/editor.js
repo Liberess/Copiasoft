@@ -100,6 +100,42 @@ function assetPicker(label, currentValue, onChange, accept = "image/*") {
   return wrapper;
 }
 
+function assetUploader(label, onUpload, accept = "image/*") {
+  const wrapper = document.createElement("label");
+  wrapper.textContent = label;
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = accept;
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch("/api/upload-asset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName: file.name, dataUrl })
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Upload failed.");
+
+      onUpload(data.path);
+      render();
+      setStatus(`Uploaded ${data.path}. Save & Build로 반영하세요.`);
+    } catch (error) {
+      setStatus(error.message, true);
+    }
+  });
+  wrapper.appendChild(fileInput);
+  return wrapper;
+}
+
 function card(title) {
   const el = document.createElement("article");
   el.className = "card";
@@ -226,6 +262,7 @@ function defaultGameSection(type, lang) {
   const titles = {
     hero: "Hero",
     overview: lang === "ko" ? "게임 소개" : "Overview",
+    screenshots: lang === "ko" ? "스크린샷" : "Screenshots",
     notice: lang === "ko" ? "공지사항" : "Notice",
     update: lang === "ko" ? "업데이트" : "Updates",
     "patch-note": lang === "ko" ? "패치노트" : "Patch Notes",
@@ -277,6 +314,65 @@ function ensureGameSection(type) {
   }
   renderGameVisual();
   renderRaw();
+}
+
+function renderScreenshotInspector(game, parent) {
+  game.screenshots = Array.isArray(game.screenshots) ? game.screenshots : [];
+
+  const panel = card("Screenshot Media");
+  const grid = document.createElement("div");
+  grid.className = "grid2";
+  grid.append(
+    input("Screenshots (comma separated)", game.screenshots.map((item) => typeof item === "string" ? item : item.src).join(", "), (value) => {
+      game.screenshots = splitList(value);
+    }, { multiline: true }),
+    assetUploader("Upload Screenshot / Video", (value) => {
+      game.screenshots.push(value);
+    }, "image/*,video/mp4,video/webm"),
+    assetPicker("Prev Arrow Image", game.carouselArrowPrev || "", (value) => game.carouselArrowPrev = value),
+    assetPicker("Next Arrow Image", game.carouselArrowNext || "", (value) => game.carouselArrowNext = value)
+  );
+  panel.appendChild(grid);
+
+  const list = document.createElement("div");
+  list.className = "noticeList columns-1";
+  if (game.screenshots.length === 0) {
+    const empty = document.createElement("p");
+    empty.textContent = "No screenshots yet.";
+    panel.appendChild(empty);
+  }
+
+  game.screenshots.forEach((item, index) => {
+    const src = typeof item === "string" ? item : item.src;
+    const row = document.createElement("article");
+    row.className = "card";
+    row.innerHTML = `<h2>Screenshot ${index + 1}</h2>`;
+    const controls = document.createElement("div");
+    controls.className = "actions";
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "danger";
+    remove.textContent = "Remove";
+    remove.addEventListener("click", () => {
+      game.screenshots.splice(index, 1);
+      renderGameVisual();
+      renderRaw();
+    });
+    controls.appendChild(remove);
+    row.append(
+      input("Path", src, (value) => {
+        if (typeof item === "string") {
+          game.screenshots[index] = value;
+        } else {
+          item.src = value;
+        }
+      }),
+      controls
+    );
+    list.appendChild(row);
+  });
+  panel.appendChild(list);
+  parent.appendChild(panel);
 }
 
 function renderPreviewSection(section) {
@@ -586,13 +682,24 @@ function renderGamePreviewSection(section, game, page) {
       { title: { [gameVisualLang]: "Terms" }, summary: { [gameVisualLang]: "Terms of service" } }
     ];
   }
+  if (section.type === "screenshots") {
+    const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
+    if (shots.length === 0) {
+      source = [{ title: { [gameVisualLang]: "No screenshots yet" }, summary: { [gameVisualLang]: "" } }];
+    } else {
+      source = shots.slice(0, 4).map((item, index) => {
+        const src = typeof item === "string" ? item : item.src;
+        return { title: { [gameVisualLang]: `Screenshot ${index + 1}` }, summary: { [gameVisualLang]: src }, image: src };
+      });
+    }
+  }
   if (source.length === 0) {
     source = [{ title: { [gameVisualLang]: "No posts yet" }, summary: { [gameVisualLang]: "" } }];
   }
   source.forEach((item) => {
     const cardEl = document.createElement("div");
     cardEl.className = "previewCard";
-    cardEl.innerHTML = `<strong>${localized(item.title, gameVisualLang) || item.slug || item.game}</strong><div class="previewText">${localized(item.shortDescription || item.summary || item.body, gameVisualLang)}</div>`;
+    cardEl.innerHTML = `${item.image ? `<div class="previewArt" style="width:100%;height:140px"><img src="${item.image}" alt="" /></div>` : ""}<strong>${localized(item.title, gameVisualLang) || item.slug || item.game}</strong><div class="previewText">${localized(item.shortDescription || item.summary, gameVisualLang)}</div>`;
     grid.appendChild(cardEl);
   });
   base.appendChild(grid);
@@ -646,7 +753,7 @@ function renderGameVisual() {
   });
   const mini = document.createElement("div");
   mini.className = "miniButtons";
-  ["hero", "overview", "notice", "update", "patch-note", "release-note", "support"].forEach((type) => {
+  ["hero", "overview", "screenshots", "notice", "update", "patch-note", "release-note", "support"].forEach((type) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.textContent = `Add ${type}`;
@@ -717,6 +824,9 @@ function renderGameVisual() {
       fields.append(select("Columns", String(settings.columns || 2), [{ value: "1", label: "1" }, { value: "2", label: "2" }, { value: "3", label: "3" }], (value) => settings.columns = Number(value)));
     }
     inspector.appendChild(fields);
+    if (section.type === "screenshots") {
+      renderScreenshotInspector(game, inspector);
+    }
 
     const actions = document.createElement("div");
     actions.className = "actions";
@@ -859,7 +969,7 @@ function renderGames() {
       input("Google Play URL", game.googlePlayUrl, (value) => game.googlePlayUrl = value),
       input("Steam URL", game.steamUrl || "", (value) => game.steamUrl = value),
       input("Screenshots (comma separated)", (game.screenshots || []).map((item) => typeof item === "string" ? item : item.src).join(", "), (value) => game.screenshots = splitList(value), { multiline: true }),
-      assetPicker("Add Screenshot", "", (value) => {
+      assetUploader("Upload Screenshot", (value) => {
         game.screenshots = game.screenshots || [];
         game.screenshots.push(value);
       }, "image/*,video/mp4,video/webm"),

@@ -1080,7 +1080,6 @@ function renderPostSection(site, posts, lang, type) {
             <time datetime="${attr(post.date)}">${esc(post.date.replaceAll("-", "."))}${post.version ? ` · ${esc(post.version)}` : ""}</time>
             <strong>${esc(localize(post.title, lang))}</strong>
             <p>${esc(localize(post.summary, lang))}</p>
-            <p>${esc(localize(post.body, lang))}</p>
           </a>`).join("")
     : `<article class="notice"><p>${lang === "ko" ? "아직 등록된 글이 없습니다." : "No posts yet."}</p></article>`;
 
@@ -1218,7 +1217,6 @@ function renderGamePostList(site, posts, lang, section) {
               <time datetime="${attr(post.date)}">${esc(post.date.replaceAll("-", "."))}${post.version ? ` · ${esc(post.version)}` : ""}</time>
               <strong>${esc(localize(post.title, lang))}</strong>
               <p>${esc(localize(post.summary, lang))}</p>
-              <p>${esc(localize(post.body, lang))}</p>
             </a>`).join("")
     : `<article class="notice"><p>${lang === "ko" ? "아직 등록된 글이 없습니다." : "No posts yet."}</p></article>`;
 

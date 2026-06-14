@@ -1,7 +1,7 @@
 {
   "page": "game",
   "lang": "en",
-  "game": "wallbreaker",
+  "game": "animal-top",
   "buttonStyle": "solid",
   "sections": [
     {
@@ -15,9 +15,9 @@
         "textAlign": "left",
         "showImage": true,
         "imageWidth": 100,
-        "imageWidthPx": 180,
-        "imageHeightPx": 180,
-        "imageFit": "fill",
+        "imageWidthPx": 360,
+        "imageHeightPx": 260,
+        "imageFit": "contain",
         "imagePosition": "right",
         "background": "light",
         "effect": "none",
@@ -45,7 +45,6 @@
       "settings": {
         "paddingTop": 42,
         "paddingBottom": 42,
-        "columns": 2,
         "background": "dark"
       }
     },
