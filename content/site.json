@@ -1,6 +1,17 @@
 {
   "baseUrl": "https://copiasoft.com",
   "supportEmail": "support@copiasoft.com",
+  "maintenance": {
+    "enabled": true,
+    "title": {
+      "ko": "홈페이지 점검 중",
+      "en": "Website Under Maintenance"
+    },
+    "message": {
+      "ko": "CopiaSoft 공식 홈페이지는 현재 정비 중입니다. 개인정보처리방침과 이용약관은 아래 링크에서 확인할 수 있습니다.",
+      "en": "The official CopiaSoft website is currently under maintenance. Privacy Policy and Terms of Service are available below."
+    }
+  },
   "assets": {
     "logo": "/assets/uploads/1781326753210-Copiasoft_Logo.jpg",
     "defaultHeroBackground": ""

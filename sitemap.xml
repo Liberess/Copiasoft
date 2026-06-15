@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://copiasoft.com/</loc></url>
   <url><loc>https://copiasoft.com/ko/</loc></url>
   <url><loc>https://copiasoft.com/en/</loc></url>
-  <url><loc>https://copiasoft.com/ko/games/</loc></url>
-  <url><loc>https://copiasoft.com/ko/news/</loc></url>
-  <url><loc>https://copiasoft.com/ko/support/</loc></url>
-  <url><loc>https://copiasoft.com/ko/legal/</loc></url>
   <url><loc>https://copiasoft.com/ko/terms/</loc></url>
-  <url><loc>https://copiasoft.com/en/games/</loc></url>
-  <url><loc>https://copiasoft.com/en/news/</loc></url>
-  <url><loc>https://copiasoft.com/en/support/</loc></url>
-  <url><loc>https://copiasoft.com/en/legal/</loc></url>
   <url><loc>https://copiasoft.com/en/terms/</loc></url>
-  <url><loc>https://copiasoft.com/ko/games/wallbreaker/</loc></url>
-  <url><loc>https://copiasoft.com/en/games/wallbreaker/</loc></url>
-  <url><loc>https://copiasoft.com/ko/games/waterballoon/</loc></url>
-  <url><loc>https://copiasoft.com/en/games/waterballoon/</loc></url>
+  <url><loc>https://copiasoft.com/ko/privacy/animal-top/</loc></url>
+  <url><loc>https://copiasoft.com/en/privacy/animal-top/</loc></url>
   <url><loc>https://copiasoft.com/ko/privacy/wallbreaker/</loc></url>
   <url><loc>https://copiasoft.com/en/privacy/wallbreaker/</loc></url>
   <url><loc>https://copiasoft.com/ko/privacy/waterballoon/</loc></url>
   <url><loc>https://copiasoft.com/en/privacy/waterballoon/</loc></url>
-  <url><loc>https://copiasoft.com/ko/news/wallbreaker/2026-06-13-wallbreaker-v0-3-3-patch-note/</loc></url>
-  <url><loc>https://copiasoft.com/en/news/wallbreaker/2026-06-13-wallbreaker-v0-3-3-patch-note/</loc></url>
 </urlset>

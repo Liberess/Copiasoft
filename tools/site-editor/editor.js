@@ -874,11 +874,26 @@ function renderSite() {
   const grid = document.createElement("div");
   grid.className = "grid2";
   state.site.assets = state.site.assets || {};
+  state.site.maintenance = state.site.maintenance || {
+    enabled: false,
+    title: { ko: "홈페이지 점검 중", en: "Website Under Maintenance" },
+    message: {
+      ko: "CopiaSoft 공식 홈페이지는 현재 정비 중입니다. 개인정보처리방침과 이용약관은 아래 링크에서 확인할 수 있습니다.",
+      en: "The official CopiaSoft website is currently under maintenance. Privacy Policy and Terms of Service are available below."
+    }
+  };
+  state.site.maintenance.title = localizedObject(state.site.maintenance.title);
+  state.site.maintenance.message = localizedObject(state.site.maintenance.message);
   grid.append(
     input("Base URL", state.site.baseUrl, (value) => state.site.baseUrl = value),
     input("Support Email", state.site.supportEmail, (value) => state.site.supportEmail = value),
     input("Company Name", state.site.company.name, (value) => state.site.company.name = value),
     assetPicker("Logo Image", state.site.assets.logo, (value) => state.site.assets.logo = value),
+    checkbox("Maintenance Enabled", state.site.maintenance.enabled, (value) => state.site.maintenance.enabled = value),
+    input("Maintenance Title KO", state.site.maintenance.title.ko, (value) => state.site.maintenance.title.ko = value),
+    input("Maintenance Title EN", state.site.maintenance.title.en, (value) => state.site.maintenance.title.en = value),
+    input("Maintenance Message KO", state.site.maintenance.message.ko, (value) => state.site.maintenance.message.ko = value, { multiline: true }),
+    input("Maintenance Message EN", state.site.maintenance.message.en, (value) => state.site.maintenance.message.en = value, { multiline: true }),
     input("Studio Label KO", state.site.company.studioLabel.ko, (value) => state.site.company.studioLabel.ko = value),
     input("Studio Label EN", state.site.company.studioLabel.en, (value) => state.site.company.studioLabel.en = value)
   );

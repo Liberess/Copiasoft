@@ -723,6 +723,121 @@ ${footer(site, visibleGames, lang)}
   });
 }
 
+function maintenanceConfig(site) {
+  return site.maintenance || {};
+}
+
+function isMaintenanceEnabled(site) {
+  return maintenanceConfig(site).enabled === true;
+}
+
+function maintenanceTitle(site, lang) {
+  return localize(maintenanceConfig(site).title, lang, lang === "ko" ? "홈페이지 점검 중" : "Website Under Maintenance");
+}
+
+function maintenanceMessage(site, lang) {
+  return localize(
+    maintenanceConfig(site).message,
+    lang,
+    lang === "ko"
+      ? "CopiaSoft 공식 홈페이지는 현재 정비 중입니다. 개인정보처리방침과 이용약관은 아래 링크에서 확인할 수 있습니다."
+      : "The official CopiaSoft website is currently under maintenance. Privacy Policy and Terms of Service are available below."
+  );
+}
+
+function renderMaintenanceLinks(content, lang) {
+  const { site, games } = content;
+  const labels = site.labels[lang];
+  const privacyLinks = games
+    .map((game) => {
+      const url = policyUrl(game, lang, "privacy");
+      return url ? `<a class="supportBox linkOnly" href="${attr(url)}">${esc(localize(game.title, lang))} ${esc(labels.privacyPolicy)}</a>` : "";
+    })
+    .filter(Boolean)
+    .join("");
+
+  return `
+          <div class="supportGrid columns-2">
+            ${privacyLinks}
+            <a class="supportBox linkOnly" href="/${lang}/terms/">${esc(labels.termsOfService)}</a>
+          </div>`;
+}
+
+function renderMaintenancePage(content, lang, titlePath = "/") {
+  const { site, games } = content;
+  const title = maintenanceTitle(site, lang);
+  const message = maintenanceMessage(site, lang);
+  const body = `
+  <main>
+    <section class="pageHero">
+      <div class="container">
+        <h1>${esc(title)}</h1>
+        <p>${esc(message)}</p>
+      </div>
+    </section>
+    <div class="darkBand">
+      <section class="pageSection section-dark">
+        <div class="container">
+${renderMaintenanceLinks(content, lang)}
+        </div>
+      </section>
+${footer(site, games.filter((game) => game.visible), lang)}
+    </div>
+  </main>`;
+
+  return pageShell({
+    site,
+    lang,
+    title: `${title} | ${site.company.name}`,
+    description: message,
+    canonical: `${site.baseUrl}/${lang}${titlePath === "/" ? "/" : titlePath}`,
+    body,
+    titlePath
+  });
+}
+
+function renderMaintenanceRoot(content) {
+  const { site } = content;
+  const title = maintenanceTitle(site, "ko");
+  const description = maintenanceMessage(site, "ko");
+  const shareImage = absoluteUrl(site, site.assets?.logo || "/assets/Copiasoft_Logo.jpg");
+  return `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="${attr(description)}" />
+  <meta name="theme-color" content="#111827" />
+  <meta property="og:title" content="${attr(title)}" />
+  <meta property="og:description" content="${attr(description)}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${attr(site.baseUrl)}/" />
+  <meta property="og:image" content="${attr(shareImage)}" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="${attr(site.assets?.logo || "/assets/Copiasoft_Logo.jpg")}" />
+  <title>${esc(title)} | ${esc(site.company.name)}</title>
+  <style>${sharedStyles()}</style>
+</head>
+<body>
+  <main>
+    <section class="pageHero">
+      <div class="container">
+        <h1>${esc(title)}</h1>
+        <p>${esc(description)}</p>
+      </div>
+    </section>
+    <div class="darkBand">
+      <section class="pageSection section-dark">
+        <div class="container">
+${renderMaintenanceLinks(content, "ko")}
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>`;
+}
+
 function renderRootRedirect(site) {
   const title = "CopiaSoft";
   const description = "CopiaSoft 공식 홈페이지. 작고 가볍게 즐길 수 있는 캐주얼/인디 게임을 개발합니다.";
@@ -1328,6 +1443,21 @@ ${urls.map((url) => `  <url><loc>${site.baseUrl}${url}</loc></url>`).join("\n")}
 `;
 }
 
+function renderMaintenanceSitemap(site, games) {
+  const urls = Array.from(new Set([
+    "/",
+    ...LANGS.map((lang) => `/${lang}/`),
+    ...LANGS.map((lang) => `/${lang}/terms/`),
+    ...games.flatMap((game) => LANGS.map((lang) => policyUrl(game, lang, "privacy")).filter(Boolean))
+  ]));
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((url) => `  <url><loc>${site.baseUrl}${url}</loc></url>`).join("\n")}
+</urlset>
+`;
+}
+
 function build() {
   const content = loadContent();
   const visibleGames = content.games.filter((game) => game.visible);
@@ -1335,6 +1465,21 @@ function build() {
 
   cleanGeneratedGamePages();
   cleanGeneratedNewsPages();
+  if (isMaintenanceEnabled(content.site)) {
+    writeFile("index.html", renderMaintenanceRoot(content));
+    for (const lang of LANGS) {
+      writeFile(`${lang}/index.html`, renderMaintenancePage(content, lang, "/"));
+      writeFile(`${lang}/games/index.html`, renderMaintenancePage(content, lang, "/games/"));
+      writeFile(`${lang}/news/index.html`, renderMaintenancePage(content, lang, "/news/"));
+      writeFile(`${lang}/support/index.html`, renderMaintenancePage(content, lang, "/support/"));
+      writeFile(`${lang}/legal/index.html`, renderMaintenancePage(content, lang, "/legal/"));
+      writeFile(`${lang}/terms/index.html`, renderCommonTermsPage(content, lang));
+    }
+    writeFile("sitemap.xml", renderMaintenanceSitemap(content.site, content.games));
+    polishPages();
+    return;
+  }
+
   writeFile("index.html", renderRootRedirect(content.site));
 
   for (const lang of LANGS) {
